@@ -1,6 +1,7 @@
 import pygame
 
-from gameplay.Level import Level
+from gameplay.Actor import TestAnimatedActor
+from gameplay.Scene import Level
 
 
 class App:
@@ -15,6 +16,7 @@ class App:
         self._running = True
         self.level = Level(self.size)
         self.level.load("data/maps/test.tmx")
+        self.level.add(TestAnimatedActor())
 
     def on_event(self, event):
         if event.type == pygame.QUIT:
@@ -42,7 +44,7 @@ class App:
 
             self.on_loop(dt)
             self.on_render()
-            pygame.display.flip()
+            pygame.display.update()
 
         self.on_cleanup()
 

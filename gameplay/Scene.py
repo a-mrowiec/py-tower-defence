@@ -13,6 +13,9 @@ class Level:
         self.map_layer = pyscroll.BufferedRenderer(self.map_data, self.screen_size)
         self.group = PyscrollGroup(map_layer=self.map_layer)
 
+    def add(self, sprite):
+        sprite.layer="Background"
+        self.group.add(sprite)
 
     def update(self, dt):
         self.group.update(dt)
