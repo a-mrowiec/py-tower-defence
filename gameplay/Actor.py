@@ -1,23 +1,32 @@
 import pygame
-
+from pygame.math import Vector2
+from gameplay.Controllers import PathController
 
 class Actor(pygame.sprite.Sprite):
-    _position = [0, 0]
-    _prev_position = [0, 0]
-    _velocity = [0, 0]
+    _position = Vector2(0, 0)
+    _prev_position = Vector2(0, 0)
+    _velocity = Vector2(0, 0)
+    _speed = 50
     rect = pygame.Rect(0, 0, 0, 0)
     animation = None
+    controllers = []
 
     def __init__(self):
-        pygame.sprite.DirtySprite.__init__(self)
+        pygame.sprite.Sprite.__init__(self)
 
     def update(self, dt):
-        self._prev_position = self._position[:]
-        self._position[0] += self._velocity[0] * dt
-        self._position[1] += self._velocity[1] * dt
+        for controller in self.controllers:
+            controller.update(dt)
+
+        self._prev_position = Vector2(self._position)#[:]
+        self._position += (self._velocity*dt)
         self.rect.center = self._position
         if self.animation is not None:
             self.image = self.animation.getCurrentFrame()
+
+    def add_controller(self, controller):
+        controller.set_actor(self)
+        self.controllers.append(controller)
 
     @property
     def velocity(self):
@@ -25,7 +34,7 @@ class Actor(pygame.sprite.Sprite):
 
     @velocity.setter
     def velocity(self, value):
-        self.velocity = value
+        self._velocity = value.normalize() * self._speed
 
     @property
     def position(self):

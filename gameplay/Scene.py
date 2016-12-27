@@ -4,6 +4,7 @@ from pyscroll.group import PyscrollGroup
 
 
 class Level:
+    paths = []
     def __init__(self, screen_size):
         self.screen_size = screen_size
 
@@ -13,9 +14,18 @@ class Level:
         self.map_layer = pyscroll.BufferedRenderer(self.map_data, self.screen_size)
         self.group = PyscrollGroup(map_layer=self.map_layer)
 
+        for obj in self.tmx_data.get_layer_by_name("paths"):
+            self.paths.append(obj.points)
+
     def add(self, sprite):
-        sprite.layer="Background"
-        self.group.add(sprite)
+        self.tmx_data.get_layer_by_name("actors")
+        self.group.add(sprite, layer=self.get_layer_index("actors"))
+
+    def get_layer_index(self, layer_name):
+        for i, layer in enumerate(self.tmx_data.layers):
+            if layer.name == layer_name:
+                return i
+        return -1
 
     def update(self, dt):
         self.group.update(dt)

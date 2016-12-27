@@ -1,6 +1,7 @@
 import pygame
 
 from gameplay.Actor import TestAnimatedActor
+from gameplay.Controllers import PathController
 from gameplay.Scene import Level
 
 
@@ -16,7 +17,11 @@ class App:
         self._running = True
         self.level = Level(self.size)
         self.level.load("data/maps/test.tmx")
-        self.level.add(TestAnimatedActor())
+        actor = TestAnimatedActor()
+        path_controller=PathController()
+        path_controller.set_path(self.level.paths[0])
+        actor.add_controller(path_controller)
+        self.level.add(actor)
 
     def on_event(self, event):
         if event.type == pygame.QUIT:
@@ -44,7 +49,7 @@ class App:
 
             self.on_loop(dt)
             self.on_render()
-            pygame.display.update()
+            pygame.display.flip()
 
         self.on_cleanup()
 
