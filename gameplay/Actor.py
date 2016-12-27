@@ -1,7 +1,5 @@
 import pygame
 
-from graphic.Animation import Animation
-
 
 class Actor(pygame.sprite.Sprite):
     _position = [0, 0]
@@ -11,7 +9,7 @@ class Actor(pygame.sprite.Sprite):
     animation = None
 
     def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
+        pygame.sprite.DirtySprite.__init__(self)
 
     def update(self, dt):
         self._prev_position = self._position[:]
@@ -19,7 +17,6 @@ class Actor(pygame.sprite.Sprite):
         self._position[1] += self._velocity[1] * dt
         self.rect.center = self._position
         if self.animation is not None:
-            self.animation.update(dt)
             self.image = self.animation.getCurrentFrame()
 
     @property
@@ -59,5 +56,5 @@ class TestAnimatedActor(Actor):
         allImages = pyganim.getImagesFromSpriteSheet('data/terrex_0.png', rects=rects)
         frames = list(zip(allImages, [100] * len(allImages)))
 
-        self.animation = Animation(frames)
+        self.animation = pyganim.PygAnimation(frames)
         self.animation.play() # there is also a pause() and stop() method
