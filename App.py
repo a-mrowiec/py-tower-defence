@@ -1,6 +1,7 @@
 import pygame
+from pygame.math import Vector2
 
-from gameplay.Actor import TestAnimatedActor
+from gameplay.Actor import OgreActor, BanditActor
 from gameplay.Controllers import PathController
 from gameplay.Scene import Level
 
@@ -17,10 +18,17 @@ class App:
         self._running = True
         self.level = Level(self.size)
         self.level.load("data/maps/test.tmx")
-        actor = TestAnimatedActor()
+        actor = OgreActor()
+        actor.position = Vector2(10, 10)
         path_controller=PathController()
         path_controller.set_path(self.level.paths[0])
         actor.add_controller(path_controller)
+
+
+        static_actor = BanditActor()
+        static_actor.position = Vector2(350, 400)
+
+        self.level.add(static_actor)
         self.level.add(actor)
 
     def on_event(self, event):

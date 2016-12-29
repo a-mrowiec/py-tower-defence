@@ -11,6 +11,7 @@ class ActorStatistics:
         self.speed = 0
         self.attack = 0
         self.attack_speed = 0
+        self.attack_range = 0
 
 
 class ActorState(Enum):
@@ -20,20 +21,21 @@ class ActorState(Enum):
 
 
 class Actor(pygame.sprite.Sprite):
-    _position = Vector2(0, 0)
-    _prev_position = Vector2(0, 0)
-    _velocity = Vector2(0, 0)
-    rect = pygame.Rect(0, 0, 0, 0)
-    _animations = {}
-    _current_animation = None
-    controllers = []
-    _state = ActorState.IDLE
-    _statistics = ActorStatistics()
-    _angle = 0
-    image = None
-
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
+        self._position = Vector2(0, 0)
+        self._prev_position = Vector2(0, 0)
+        self._velocity = Vector2(0, 0)
+        self._rect = pygame.Rect(0, 0, 0, 0)
+        self._animations = {}
+        self._current_animation = None
+        self.controllers = []
+        self._team = 0
+        self._state = ActorState.IDLE
+        self._statistics = ActorStatistics()
+        self._angle = 0
+        self._actors_in_attack_range = []
+        self.image = None
 
     def update(self, dt):
         for controller in self.controllers:
@@ -41,7 +43,7 @@ class Actor(pygame.sprite.Sprite):
 
         self._prev_position = Vector2(self._position)
         self._position += (self._velocity * dt)
-        self.rect.center = self._position
+        self._rect.center = self._position
         if self._current_animation is not None:
             self.image = pygame.transform.rotate(self._current_animation.getCurrentFrame(), self._angle)
             if self._current_animation.isFinished():
@@ -67,12 +69,18 @@ class Actor(pygame.sprite.Sprite):
 
     def _change_state(self, new_state):
         if self._state != new_state:
-            if self._current_animation is not None:
-                self._current_animation.stop()
+            self._stop_current_animation()
             self._state = new_state
-            self._current_animation = self._animations.get(self._state, None)
-            if self._current_animation is not None:
-                self._current_animation.play()
+            self._play_current_animation()
+
+    def _stop_current_animation(self):
+        if self._current_animation is not None:
+            self._current_animation.stop()
+
+    def _play_current_animation(self):
+        self._current_animation = self._animations.get(self._state, None)
+        if self._current_animation is not None:
+            self._current_animation.play()
 
     @property
     def statistics(self):
@@ -81,6 +89,18 @@ class Actor(pygame.sprite.Sprite):
     @property
     def velocity(self):
         return self._velocity
+
+    @property
+    def angle(self):
+        return self._angle
+
+    @property
+    def rect(self):
+        return self._rect
+
+    @rect.setter
+    def rect(self, value):
+        self._rect = value
 
     def go_to_direction(self, direction):
         self._velocity = direction.normalize() * self._statistics.speed
@@ -95,11 +115,22 @@ class Actor(pygame.sprite.Sprite):
     def position(self):
         return self._position
 
+    @property
+    def radius(self):
+        return max(self._rect.width, self._rect.height)
+
     @position.setter
     def position(self, value):
         self._position = value
-        self.rect.center = self._position
+        self._rect.center = self._position
 
+    @property
+    def actors_in_attack_range(self):
+        return self._actors_in_attack_range
+
+    @actors_in_attack_range.setter
+    def actors_in_attack_range(self, value):
+        self._actors_in_attack_range = value
 
 import pyganim
 
@@ -125,7 +156,7 @@ ogre_move_rects = [(0, 0, 64, 64),
 ogre_idle_rects = [(0, 0, 64, 64)]
 
 
-class TestAnimatedActor(Actor):
+class OgreActor(Actor):
     def __init__(self):
         super().__init__()
         self._statistics.speed = 50
@@ -142,3 +173,27 @@ class TestAnimatedActor(Actor):
         attack_animation = pyganim.PygAnimation(attack_frames)
         attack_animation.loop = False
         self.add_animation(ActorState.ATTACK, attack_animation)
+
+        self.statistics.attack_range = 100
+        self._change_state(ActorState.MOVE)
+
+class BanditActor(Actor):
+    def __init__(self):
+        super().__init__()
+        self._statistics.speed = 50
+        move_images = pyganim.getImagesFromSpriteSheet('data/bandit-move.png', rects=ogre_move_rects)
+        move_frames = list(zip(move_images, [100] * len(move_images)))
+        self.add_animation(ActorState.MOVE, pyganim.PygAnimation(move_frames))
+
+        idle_images = pyganim.getImagesFromSpriteSheet('data/bandit-move.png', rects=ogre_idle_rects)
+        idle_frames = list(zip(idle_images, [100] * len(idle_images)))
+        self.add_animation(ActorState.IDLE, pyganim.PygAnimation(idle_frames))
+
+        attack_images = pyganim.getImagesFromSpriteSheet('data/bandit-attack.png', rects=ogre_move_rects)
+        attack_frames = list(zip(attack_images, [100] * len(attack_images)))
+        attack_animation = pyganim.PygAnimation(attack_frames)
+        attack_animation.loop = False
+        self.add_animation(ActorState.ATTACK, attack_animation)
+
+        self.statistics.attack_range = 100
+        self._play_current_animation()
