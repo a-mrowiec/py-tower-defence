@@ -177,6 +177,9 @@ class OgreActor(Actor):
         self.statistics.attack_range = 100
         self._change_state(ActorState.MOVE)
 
+        self.rect.width = 64
+        self.rect.height = 64
+
 class BanditActor(Actor):
     def __init__(self):
         super().__init__()
@@ -197,3 +200,6 @@ class BanditActor(Actor):
 
         self.statistics.attack_range = 100
         self._play_current_animation()
+
+        self.rect.width = 64
+        self.rect.height = 64

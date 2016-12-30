@@ -51,7 +51,7 @@
 </data>
  </layer>
  <objectgroup name="paths">
-  <object id="20" x="1" y="34">
+  <object id="20" x="38" y="78">
    <polyline points="0,0 158,-1 160,251 321,253 322,413 639,412"/>
   </object>
  </objectgroup>
