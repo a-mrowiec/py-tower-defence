@@ -47,9 +47,12 @@ class Actor(pygame.sprite.Sprite):
         if self._current_animation is not None:
             self.image = pygame.transform.rotate(self._current_animation.getCurrentFrame(), self._angle)
             if self._current_animation.isFinished():
+                for controller in self.controllers:
+                    controller.on_animation_end()
                 self._change_state(ActorState.IDLE)
 
     def hit(self, damage):
+        print("hit")
         self._statistics.current_health -= damage
         if self._statistics.current_health < 0:
             self.on_death()

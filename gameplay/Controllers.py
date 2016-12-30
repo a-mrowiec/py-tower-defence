@@ -1,7 +1,11 @@
 from pygame.math import Vector2
 
+from gameplay.Actor import ActorState
+
+
 class BaseController:
-    _actor = None
+    def __init__(self):
+        self._actor = None
 
     def set_actor(self, actor):
         self._actor = actor
@@ -9,12 +13,18 @@ class BaseController:
     def update(self, dt):
         pass
 
+    def on_animation_end(self):
+        pass
+
 
 class PathController(BaseController):
-    path = []
-    current_path_point = 0
-    finished = False
-    path_vector = Vector2()
+
+    def __init__(self):
+        super().__init__()
+        self.path = []
+        self.current_path_point = 0
+        self.finished = False
+        self.path_vector = Vector2()
 
     def set_path(self, path):
         self.path = path
@@ -41,3 +51,27 @@ class PathController(BaseController):
 
     def _on_path_point_change(self):
         self.path_vector = self._actor.position - self.path[self.current_path_point]
+
+
+class AttackController(BaseController):
+    def __init__(self):
+        super().__init__()
+        self._target = None
+
+    @property
+    def target(self):
+        return self._target
+
+    @target.setter
+    def target(self, value):
+        self._target = value
+
+    def update(self, dt):
+        super().update(dt)
+        if self._actor._state != ActorState.ATTACK:
+            if self._target in self._actor.actors_in_attack_range:
+                self._actor._change_state(ActorState.ATTACK)
+
+    def on_animation_end(self):
+        if self._target is not None:
+            self._target.hit(self._actor.statistics.attack)
