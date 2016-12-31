@@ -19,8 +19,8 @@ class BaseController:
     def stop(self):
         pass
 
-class PathController(BaseController):
 
+class PathController(BaseController):
     def __init__(self):
         super().__init__()
         self.path = []

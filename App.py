@@ -1,6 +1,7 @@
 import pygame
 from pygame.math import Vector2
 
+from gameplay.AI import StandardAI
 from gameplay.Actor import OgreActor, BanditActor
 from gameplay.Controllers import PathController, AttackController, DeathController
 from gameplay.Scene import Level
@@ -29,9 +30,10 @@ class App:
         static_actor = BanditActor()
         static_actor.position = Vector2(350, 400)
         attack_controller=AttackController()
-        attack_controller.target = actor
         static_actor.add_controller(attack_controller)
         static_actor.add_controller(DeathController())
+        static_actor.set_ai(StandardAI())
+        static_actor.statistics.team = 1
         self.level.add(static_actor)
         self.level.add(actor)
 

@@ -6,6 +6,7 @@ from pygame.math import Vector2
 
 class ActorStatistics:
     def __init__(self):
+        self.team = 0
         self.current_health = 0
         self.max_health = 0
         self.speed = 0
@@ -30,16 +31,19 @@ class Actor(pygame.sprite.Sprite):
         self._rect = pygame.Rect(0, 0, 0, 0)
         self._animations = {}
         self._current_animation = None
-        self.controllers = []
-        self._team = 0
+        self._controllers = []
         self._state = ActorState.IDLE
         self._statistics = ActorStatistics()
         self._angle = 0
         self._actors_in_attack_range = []
+        self._ai = None
         self.image = None
 
     def update(self, dt):
-        for controller in self.controllers:
+        if self._ai is not None:
+            self._ai.update(dt)
+
+        for controller in self._controllers:
             controller.update(dt)
 
         self._prev_position = Vector2(self._position)
@@ -48,7 +52,7 @@ class Actor(pygame.sprite.Sprite):
         if self._current_animation is not None:
             self.image = pygame.transform.rotate(self._current_animation.getCurrentFrame(), self._angle)
             if self._current_animation.isFinished():
-                for controller in self.controllers:
+                for controller in self._controllers:
                     controller.on_animation_end()
                 self._change_state(ActorState.IDLE)
 
@@ -59,10 +63,14 @@ class Actor(pygame.sprite.Sprite):
 
     def add_controller(self, controller):
         controller.set_actor(self)
-        self.controllers.append(controller)
+        self._controllers.append(controller)
+
+    @property
+    def controllers(self):
+        return self._controllers
 
     def on_death(self):
-        self._stop_controllers()
+        self.stop_controllers()
         self._velocity = Vector2()
         self._change_state(ActorState.DEATH)
 
@@ -86,9 +94,15 @@ class Actor(pygame.sprite.Sprite):
             self._state = new_state
             self._play_current_animation()
 
-    def _stop_controllers(self):
-        for controller in self.controllers:
+    def stop_controllers(self):
+        for controller in self._controllers:
             controller.stop()
+
+    def get_controller(self, type):
+        for c in self._controllers:
+            if isinstance(c, type):
+                return c
+        return None
 
     def _stop_current_animation(self):
         if self._current_animation is not None:
@@ -118,6 +132,10 @@ class Actor(pygame.sprite.Sprite):
     @property
     def rect(self):
         return self._rect
+
+    def set_ai(self, value):
+        value.set_actor(self)
+        self._ai = value
 
     @rect.setter
     def rect(self, value):
