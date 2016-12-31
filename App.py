@@ -2,8 +2,8 @@ import pygame
 from pygame.math import Vector2
 
 from gameplay.AI import StandardAI
-from gameplay.Actor import OgreActor, BanditActor
 from gameplay.Controllers import PathController, AttackController, DeathController
+from gameplay.Monsters import Ogre, Bandit
 from gameplay.Scene import Level
 
 
@@ -19,7 +19,7 @@ class App:
         self._running = True
         self.level = Level(self.size)
         self.level.load("data/maps/test.tmx")
-        actor = OgreActor()
+        actor = Ogre()
         actor.position = Vector2(10, 10)
         path_controller=PathController()
         path_controller.set_path(self.level.paths[0])
@@ -27,7 +27,7 @@ class App:
         actor.add_controller(DeathController())
 
 
-        static_actor = BanditActor()
+        static_actor = Bandit()
         static_actor.position = Vector2(350, 400)
         attack_controller=AttackController()
         static_actor.add_controller(attack_controller)
