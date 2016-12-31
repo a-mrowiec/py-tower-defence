@@ -1,5 +1,6 @@
 from gameplay.Actor import ActorState
-from gameplay.Controllers import AttackController
+
+from src.gameplay.Controllers import AttackController
 
 
 class BaseAI:

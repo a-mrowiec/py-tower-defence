@@ -1,5 +1,5 @@
 
-from gameplay.Actor import ActorState, Actor
+from src.gameplay.Actor import ActorState, Actor
 
 rects = [(0, 154, 94, 77),
          (94, 154, 94, 77),

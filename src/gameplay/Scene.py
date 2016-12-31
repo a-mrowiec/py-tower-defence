@@ -1,9 +1,9 @@
-import pyscroll
 import pygame
-from pytmx.util_pygame import load_pygame
+import pyscroll
 from pyscroll.group import PyscrollGroup
+from pytmx.util_pygame import load_pygame
 
-from gameplay.Actor import Actor, ActorState
+from src.gameplay.Actor import Actor, ActorState
 
 
 class Level:

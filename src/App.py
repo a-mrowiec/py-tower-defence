@@ -1,10 +1,10 @@
 import pygame
+from src.gameplay.AI import StandardAI
+from src.gameplay.Controllers import PathController, AttackController, DeathController
+from src.gameplay.Scene import Level
 from pygame.math import Vector2
 
-from gameplay.AI import StandardAI
-from gameplay.Controllers import PathController, AttackController, DeathController
-from gameplay.Monsters import Ogre, Bandit
-from gameplay.Scene import Level
+from src.gameplay.Monsters import Ogre, Bandit
 
 
 class App:

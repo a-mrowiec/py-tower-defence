@@ -1,6 +1,6 @@
 from pygame.math import Vector2
 
-from gameplay.Actor import ActorState
+from src.gameplay.Actor import ActorState
 
 
 class BaseController:
