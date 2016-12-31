@@ -16,6 +16,8 @@ class BaseController:
     def on_animation_end(self):
         pass
 
+    def stop(self):
+        pass
 
 class PathController(BaseController):
 
@@ -49,6 +51,10 @@ class PathController(BaseController):
         super().set_actor(actor)
         self._on_path_point_change()
 
+    def stop(self):
+        super().stop()
+        self.finished = True
+
     def _on_path_point_change(self):
         self.path_vector = self._actor.position - self.path[self.current_path_point]
 
@@ -75,3 +81,9 @@ class AttackController(BaseController):
     def on_animation_end(self):
         if self._target is not None:
             self._target.hit(self._actor.statistics.attack)
+
+
+class DeathController(BaseController):
+    def on_animation_end(self):
+        if self._actor._state == ActorState.DEATH:
+            self._actor.kill()

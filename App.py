@@ -2,7 +2,7 @@ import pygame
 from pygame.math import Vector2
 
 from gameplay.Actor import OgreActor, BanditActor
-from gameplay.Controllers import PathController, AttackController
+from gameplay.Controllers import PathController, AttackController, DeathController
 from gameplay.Scene import Level
 
 
@@ -23,6 +23,7 @@ class App:
         path_controller=PathController()
         path_controller.set_path(self.level.paths[0])
         actor.add_controller(path_controller)
+        actor.add_controller(DeathController())
 
 
         static_actor = BanditActor()
@@ -30,7 +31,7 @@ class App:
         attack_controller=AttackController()
         attack_controller.target = actor
         static_actor.add_controller(attack_controller)
-
+        static_actor.add_controller(DeathController())
         self.level.add(static_actor)
         self.level.add(actor)
 

@@ -18,6 +18,7 @@ class ActorState(Enum):
     IDLE = 0
     MOVE = 1
     ATTACK = 2
+    DEATH = 3
 
 
 class Actor(pygame.sprite.Sprite):
@@ -52,7 +53,6 @@ class Actor(pygame.sprite.Sprite):
                 self._change_state(ActorState.IDLE)
 
     def hit(self, damage):
-        print("hit")
         self._statistics.current_health -= damage
         if self._statistics.current_health < 0:
             self.on_death()
@@ -62,7 +62,9 @@ class Actor(pygame.sprite.Sprite):
         self.controllers.append(controller)
 
     def on_death(self):
-        pass
+        self._stop_controllers()
+        self._velocity = Vector2()
+        self._change_state(ActorState.DEATH)
 
     def stop(self):
         self._change_state(ActorState.IDLE)
@@ -70,11 +72,23 @@ class Actor(pygame.sprite.Sprite):
     def add_animation(self, state, animation):
         self._animations[state] = animation
 
+    def create_and_add_animation(self, images_path, rects, state, **kwargs):
+        images = pyganim.getImagesFromSpriteSheet(images_path, rects=rects)
+        speed = kwargs.get('speed', [100])
+        frames = list(zip(images, speed * len(images)))
+        animation = pyganim.PygAnimation(frames)
+        animation.loop = kwargs.get('loop', True)
+        self.add_animation(state, animation)
+
     def _change_state(self, new_state):
         if self._state != new_state:
             self._stop_current_animation()
             self._state = new_state
             self._play_current_animation()
+
+    def _stop_controllers(self):
+        for controller in self.controllers:
+            controller.stop()
 
     def _stop_current_animation(self):
         if self._current_animation is not None:
@@ -88,6 +102,10 @@ class Actor(pygame.sprite.Sprite):
     @property
     def statistics(self):
         return self._statistics
+
+    @property
+    def state(self):
+        return self._state
 
     @property
     def velocity(self):
@@ -135,6 +153,7 @@ class Actor(pygame.sprite.Sprite):
     def actors_in_attack_range(self, value):
         self._actors_in_attack_range = value
 
+
 import pyganim
 
 rects = [(0, 154, 94, 77),
@@ -158,24 +177,49 @@ ogre_move_rects = [(0, 0, 64, 64),
 
 ogre_idle_rects = [(0, 0, 64, 64)]
 
+ogre_death_rects = [(0, 0, 64, 64),
+                     (64, 0, 64, 64),
+                     (128, 0, 64, 64),
+                     (192, 0, 64, 64),
+                     (0, 64, 64, 64),
+                     (64, 64, 64, 64),
+                     (128, 64, 64, 64),
+                     (192, 64, 64, 64),
+                     (0, 128, 64, 64),
+                     (64, 128, 64, 64),
+                     (128, 128, 64, 64),
+                     (192, 128, 64, 64),
+                     (0, 192, 64, 64),
+                     (64, 192, 64, 64),
+                     (128, 192, 64, 64),
+                     (192, 192, 64, 64),
+                     (0, 256, 64, 64),
+                     (64, 256, 64, 64),
+                     (128, 256, 64, 64),
+                     (192, 256, 64, 64),
+                     (0, 320, 64, 64),
+                     (64, 320, 64, 64),
+                     (128, 320, 64, 64),
+                     (192, 320, 64, 64),
+                     (0, 384, 64, 64),
+                     (64, 384, 64, 64),
+                     (128, 384, 64, 64),
+                     (192, 384, 64, 64),
+                     (0, 448, 64, 64),
+                     (64, 448, 64, 64),
+                     (128, 448, 64, 64),
+                     (192, 448, 64, 64)]
+
 
 class OgreActor(Actor):
     def __init__(self):
         super().__init__()
         self._statistics.speed = 50
-        move_images = pyganim.getImagesFromSpriteSheet('data/ogre-move.png', rects=ogre_move_rects)
-        move_frames = list(zip(move_images, [100] * len(move_images)))
-        self.add_animation(ActorState.MOVE, pyganim.PygAnimation(move_frames))
 
-        idle_images = pyganim.getImagesFromSpriteSheet('data/ogre-move.png', rects=ogre_idle_rects)
-        idle_frames = list(zip(idle_images, [100] * len(idle_images)))
-        self.add_animation(ActorState.IDLE, pyganim.PygAnimation(idle_frames))
-
-        attack_images = pyganim.getImagesFromSpriteSheet('data/ogre-attack.png', rects=ogre_move_rects)
-        attack_frames = list(zip(attack_images, [100] * len(attack_images)))
-        attack_animation = pyganim.PygAnimation(attack_frames)
-        attack_animation.loop = False
-        self.add_animation(ActorState.ATTACK, attack_animation)
+        self.create_and_add_animation('data/ogre-move.png', ogre_move_rects, ActorState.MOVE)
+        self.create_and_add_animation('data/ogre-move.png', ogre_idle_rects, ActorState.IDLE)
+        self.create_and_add_animation('data/ogre-attack.png', ogre_move_rects, ActorState.ATTACK, loop=False)
+        self.create_and_add_animation('data/ogre-death.png', ogre_death_rects, ActorState.DEATH, loop=False, speed=[20])
 
         self.statistics.attack_range = 100
         self._change_state(ActorState.MOVE)
@@ -183,25 +227,19 @@ class OgreActor(Actor):
         self.rect.width = 64
         self.rect.height = 64
 
+
 class BanditActor(Actor):
     def __init__(self):
         super().__init__()
         self._statistics.speed = 50
-        move_images = pyganim.getImagesFromSpriteSheet('data/bandit-move.png', rects=ogre_move_rects)
-        move_frames = list(zip(move_images, [100] * len(move_images)))
-        self.add_animation(ActorState.MOVE, pyganim.PygAnimation(move_frames))
 
-        idle_images = pyganim.getImagesFromSpriteSheet('data/bandit-move.png', rects=ogre_idle_rects)
-        idle_frames = list(zip(idle_images, [100] * len(idle_images)))
-        self.add_animation(ActorState.IDLE, pyganim.PygAnimation(idle_frames))
-
-        attack_images = pyganim.getImagesFromSpriteSheet('data/bandit-attack.png', rects=ogre_move_rects)
-        attack_frames = list(zip(attack_images, [100] * len(attack_images)))
-        attack_animation = pyganim.PygAnimation(attack_frames)
-        attack_animation.loop = False
-        self.add_animation(ActorState.ATTACK, attack_animation)
+        self.create_and_add_animation('data/bandit-move.png', ogre_move_rects, ActorState.MOVE)
+        self.create_and_add_animation('data/bandit-move.png', ogre_idle_rects, ActorState.IDLE)
+        self.create_and_add_animation('data/bandit-attack.png', ogre_move_rects, ActorState.ATTACK, loop=False)
+        self.create_and_add_animation('data/bandit-death.png', ogre_death_rects, ActorState.DEATH, loop=False)
 
         self.statistics.attack_range = 100
+        self.statistics.attack = 5
         self._play_current_animation()
 
         self.rect.width = 64

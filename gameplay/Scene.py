@@ -3,7 +3,7 @@ import pygame
 from pytmx.util_pygame import load_pygame
 from pyscroll.group import PyscrollGroup
 
-from gameplay.Actor import Actor
+from gameplay.Actor import Actor, ActorState
 
 
 class Level:
@@ -34,8 +34,9 @@ class Level:
         self.group.update(dt)
         for o in self.group.sprites():
             if isinstance(o, Actor):
-                visible = pygame.sprite.spritecollide(o, self.group.sprites(), False, is_visible)
-                o.actors_in_attack_range = visible
+                if o.state != ActorState.DEATH:
+                    visible = pygame.sprite.spritecollide(o, self.group.sprites(), False, is_visible)
+                    o.actors_in_attack_range = visible
 
     def draw(self, surface):
         self.group.draw(surface)
@@ -48,5 +49,5 @@ def is_visible(left, right):
     if left == right:
         return False
 
-    return(left.position - right.position).length() < left.statistics.attack_range + left.radius + right.radius
+    return right.state != ActorState.DEATH and (left.position - right.position).length() < left.statistics.attack_range + left.radius + right.radius
 
