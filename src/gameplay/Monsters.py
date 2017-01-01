@@ -67,7 +67,7 @@ class Ogre(Actor):
         self.create_and_add_animation('data/ogre-death.png', ogre_death_rects, ActorState.DEATH, loop=False, speed=[20])
 
         self.statistics.attack_range = 100
-        self._change_state(ActorState.MOVE)
+        self.change_state(ActorState.MOVE)
 
         self.rect.width = 64
         self.rect.height = 64

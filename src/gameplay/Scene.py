@@ -7,9 +7,13 @@ from src.gameplay.Actor import Actor, ActorState
 
 
 class Level:
-    paths = []
     def __init__(self, screen_size):
         self.screen_size = screen_size
+        self.tmx_data = None
+        self.map_data = None
+        self.map_layer = None
+        self.group = None
+        self.paths = []
 
     def load(self, filename):
         self.tmx_data = load_pygame(filename)

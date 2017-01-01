@@ -74,9 +74,10 @@ class AttackController(BaseController):
 
     def update(self, dt):
         super().update(dt)
-        if self._actor._state != ActorState.ATTACK:
+        if self._actor.state != ActorState.ATTACK:
             if self._target in self._actor.actors_in_attack_range:
-                self._actor._change_state(ActorState.ATTACK)
+                self._actor.rotate_to_direction(self._target.position - self._actor.position)
+                self._actor.change_state(ActorState.ATTACK)
 
     def on_animation_end(self):
         if self._target is not None:
@@ -85,5 +86,5 @@ class AttackController(BaseController):
 
 class DeathController(BaseController):
     def on_animation_end(self):
-        if self._actor._state == ActorState.DEATH:
+        if self._actor.state == ActorState.DEATH:
             self._actor.kill()

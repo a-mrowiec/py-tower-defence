@@ -4,6 +4,8 @@ import pygame
 import pyganim
 from pygame.math import Vector2
 
+from src.Utils import rot_center
+
 
 class ActorStatistics:
     def __init__(self):
@@ -51,11 +53,11 @@ class Actor(pygame.sprite.Sprite):
         self._position += (self._velocity * dt)
         self._rect.center = self._position
         if self._current_animation is not None:
-            self.image = pygame.transform.rotate(self._current_animation.getCurrentFrame(), self._angle)
+            self.image = rot_center(self._current_animation.getCurrentFrame(), self._angle)
             if self._current_animation.isFinished():
                 for controller in self._controllers:
                     controller.on_animation_end()
-                self._change_state(ActorState.IDLE)
+                self.change_state(ActorState.IDLE)
 
     def hit(self, damage):
         self._statistics.current_health -= damage
@@ -73,10 +75,10 @@ class Actor(pygame.sprite.Sprite):
     def on_death(self):
         self.stop_controllers()
         self._velocity = Vector2()
-        self._change_state(ActorState.DEATH)
+        self.change_state(ActorState.DEATH)
 
     def stop(self):
-        self._change_state(ActorState.IDLE)
+        self.change_state(ActorState.IDLE)
 
     def add_animation(self, state, animation):
         self._animations[state] = animation
@@ -89,7 +91,7 @@ class Actor(pygame.sprite.Sprite):
         animation.loop = kwargs.get('loop', True)
         self.add_animation(state, animation)
 
-    def _change_state(self, new_state):
+    def change_state(self, new_state):
         if self._state != new_state:
             self._stop_current_animation()
             self._state = new_state
@@ -142,14 +144,17 @@ class Actor(pygame.sprite.Sprite):
     def rect(self, value):
         self._rect = value
 
+    def rotate_to_direction(self, direction):
+        self._angle = direction.angle_to(Vector2(0, -1))
+
     def go_to_direction(self, direction):
         self._velocity = direction.normalize() * self._statistics.speed
-        self._angle = self._velocity.angle_to(Vector2(0, -1))
-        self._change_state(ActorState.MOVE)
+        self.rotate_to_direction(direction)
+        self.change_state(ActorState.MOVE)
 
     def stop(self):
         self._velocity = Vector2()
-        self._change_state(ActorState.IDLE)
+        self.change_state(ActorState.IDLE)
 
     @property
     def position(self):
