@@ -1,0 +1,16 @@
+{
+  "waves": [
+    {
+      "type": "standard",
+      "objects": ["test_object"],
+      "start_time": 5000,
+      "creation_interval": 2000
+    },
+    {
+      "type": "standard",
+      "objects": ["test_object", "test_object"],
+      "start_time": 0,
+      "creation_interval": 1000
+    }
+  ]
+}
