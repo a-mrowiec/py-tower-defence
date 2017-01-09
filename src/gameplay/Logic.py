@@ -9,13 +9,14 @@ class StandardWave:
         self._number_of_created_objects = 0
 
     def should_run(self, time_elapsed):
-        return self._start_time >= time_elapsed >= len(self._objects) * self._object_creation_interval + self._start_time
+        return self._start_time <= time_elapsed and self._number_of_created_objects < len(self._objects)
 
     def get_objects_to_create(self, time_elapsed):
         objects_to_create = []
         while self._number_of_created_objects * self._object_creation_interval + self._start_time < time_elapsed:
             objects_to_create.append(self._get_object_template(self._number_of_created_objects))
             self._number_of_created_objects += 1
+        return objects_to_create
 
     def _get_object_template(self, index):
         return self._objects[index]
@@ -45,7 +46,7 @@ class WaveManager:
                     self._create_object(obj_template)
 
     def _create_object(self, object_template):
-        pass
+        print("Create object: "+object_template)
 
     def _load_waves(self):
         self._waves = []
