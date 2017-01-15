@@ -18,11 +18,24 @@ class GameObject(pygame.sprite.Sprite):
         self._velocity = Vector2(0, 0)
         self._rect = pygame.Rect(0, 0, 0, 0)
         self.alive = True
+        self._sprite = None
+        self._angle = 0
 
     def update(self, dt):
         self._prev_position = Vector2(self._position)
         self._position += (self._velocity * dt)
         self._rect.center = self._position
+        if self._sprite is not None:
+            self.image = rot_center(self._sprite, self._angle)
+
+    @property
+    def sprite(self):
+        return self._sprite
+
+    @sprite.setter
+    def sprite(self, value):
+        self._sprite = value
+        self.image = rot_center(self._sprite, self._angle)
 
     @property
     def velocity(self):
@@ -73,7 +86,8 @@ class Bullet(GameObject):
         self._owner = owner
         self._start_position = Vector2(owner.position)
         self._speed = 500
-        self.image = pygame.image.load('data/flaming-arrow.png')
+        self.sprite = pygame.image.load('data/flaming-arrow.png')
+
 
     @property
     def target(self):
@@ -106,7 +120,6 @@ class Actor(GameObject):
         self._controllers = []
         self._state = ActorState.IDLE
         self._statistics = ActorStatistics()
-        self._angle = 0
         self._actors_in_attack_range = []
         self._ai = None
 
@@ -118,7 +131,7 @@ class Actor(GameObject):
             controller.update(dt)
 
         super().update(dt)
-        if self._current_animation is not None:
+        if self._current_animation is not None and self._sprite is None:
             self.image = rot_center(self._current_animation.getCurrentFrame(), self._angle)
             if self._current_animation.isFinished():
                 for controller in self._controllers:
