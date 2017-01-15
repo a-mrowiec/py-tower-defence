@@ -17,6 +17,7 @@ class GameObject(pygame.sprite.Sprite):
         self._velocity = Vector2(0, 0)
         self._rect = pygame.Rect(0, 0, 0, 0)
         self.alive = True
+        self.image = None
         self._sprite = None
         self._angle = 0
 
@@ -205,9 +206,7 @@ class Actor(GameObject):
         self._ai = value
 
     def go_to_direction(self, direction):
-        # TODO: use 'velocity' setter
-        self._velocity = direction.normalize() * self._statistics.speed
-        self.rotate_to_direction(direction)
+        self.velocity = direction.normalize() * self._statistics.speed
         self.change_state(ActorState.MOVE)
 
     def stop(self):
