@@ -1,10 +1,10 @@
 from enum import Enum
 
-import pygame
 import pyganim
 from pygame.math import Vector2
 
 from src.Utils import rot_center
+from src.gameplay.Objects import GameObject
 
 
 class ActorStatistics:
@@ -25,13 +25,9 @@ class ActorState(Enum):
     DEATH = 3
 
 
-class Actor(pygame.sprite.Sprite):
+class Actor(GameObject):
     def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
-        self._position = Vector2(0, 0)
-        self._prev_position = Vector2(0, 0)
-        self._velocity = Vector2(0, 0)
-        self._rect = pygame.Rect(0, 0, 0, 0)
+        super().__init__()
         self._animations = {}
         self._current_animation = None
         self._controllers = []
@@ -40,7 +36,6 @@ class Actor(pygame.sprite.Sprite):
         self._angle = 0
         self._actors_in_attack_range = []
         self._ai = None
-        self.image = None
 
     def update(self, dt):
         if self._ai is not None:
@@ -49,9 +44,7 @@ class Actor(pygame.sprite.Sprite):
         for controller in self._controllers:
             controller.update(dt)
 
-        self._prev_position = Vector2(self._position)
-        self._position += (self._velocity * dt)
-        self._rect.center = self._position
+        super().update(dt)
         if self._current_animation is not None:
             self.image = rot_center(self._current_animation.getCurrentFrame(), self._angle)
             if self._current_animation.isFinished():
@@ -124,28 +117,9 @@ class Actor(pygame.sprite.Sprite):
     def state(self):
         return self._state
 
-    @property
-    def velocity(self):
-        return self._velocity
-
-    @property
-    def angle(self):
-        return self._angle
-
-    @property
-    def rect(self):
-        return self._rect
-
     def set_ai(self, value):
         value.set_actor(self)
         self._ai = value
-
-    @rect.setter
-    def rect(self, value):
-        self._rect = value
-
-    def rotate_to_direction(self, direction):
-        self._angle = direction.angle_to(Vector2(0, -1))
 
     def go_to_direction(self, direction):
         self._velocity = direction.normalize() * self._statistics.speed
@@ -155,19 +129,6 @@ class Actor(pygame.sprite.Sprite):
     def stop(self):
         self._velocity = Vector2()
         self.change_state(ActorState.IDLE)
-
-    @property
-    def position(self):
-        return self._position
-
-    @property
-    def radius(self):
-        return max(self._rect.width, self._rect.height)
-
-    @position.setter
-    def position(self, value):
-        self._position = value
-        self._rect.center = self._position
 
     @property
     def actors_in_attack_range(self):
