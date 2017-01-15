@@ -3,7 +3,7 @@ import pyscroll
 from pyscroll.group import PyscrollGroup
 from pytmx.util_pygame import load_pygame
 
-from src.gameplay.Objects import GameObject, Actor, ActorState
+from pytowerdefence.gameplay.Objects import GameObject, Actor, ActorState
 
 
 class Level:
@@ -58,5 +58,5 @@ def is_visible(left, right):
     if left == right:
         return False
 
-    return right.state != ActorState.DEATH and (left.position - right.position).length() < left.statistics.attack_range + left.radius + right.radius
-
+    return right.state != ActorState.DEATH and (left.position - right.position).length() \
+                                               < left.statistics.attack_range + left.radius + right.radius

@@ -1,11 +1,11 @@
 import pygame
-from src.gameplay.AI import StandardAI
-from src.gameplay.Controllers import PathController, AttackController, DeathController, RangeAttackController
-from src.gameplay.Logic import WaveManager
-from src.gameplay.Scene import Level
 from pygame.math import Vector2
 
-from src.gameplay.Monsters import Ogre, Bandit
+from pytowerdefence.gameplay.AI import StandardAI
+from pytowerdefence.gameplay.Controllers import PathController
+from pytowerdefence.gameplay.Logic import WaveManager
+from pytowerdefence.gameplay.Monsters import Ogre, Bandit
+from pytowerdefence.gameplay.Scene import Level
 
 
 class App:
@@ -27,9 +27,8 @@ class App:
 
         actor = Ogre()
         actor.position = Vector2(10, 10)
-        path_controller=actor.get_controller(PathController)
+        path_controller = actor.get_controller(PathController)
         path_controller.set_path(self.level.paths[0])
-
 
         static_actor = Bandit()
         static_actor.position = Vector2(350, 400)
@@ -69,6 +68,7 @@ class App:
             pygame.display.flip()
 
         self.on_cleanup()
+
 
 if __name__ == "__main__":
     app = App()

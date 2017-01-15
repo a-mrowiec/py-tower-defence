@@ -4,11 +4,10 @@ import pygame
 import pyganim
 from pygame.math import Vector2
 
-from src.Utils import rot_center
+from pytowerdefence.Utils import rot_center
 
 
 class GameObject(pygame.sprite.Sprite):
-
     _objects_to_create = []
 
     def __init__(self):
@@ -88,7 +87,6 @@ class Bullet(GameObject):
         self._speed = 500
         self.sprite = pygame.image.load('data/flaming-arrow.png')
 
-
     @property
     def target(self):
         return self._target
@@ -101,7 +99,7 @@ class Bullet(GameObject):
         super().update(dt)
         projection_vector = self._position - self._start_position
         to_goal_vector = self._target.position - self._position
-        self.velocity = to_goal_vector.normalize()*self._speed
+        self.velocity = to_goal_vector.normalize() * self._speed
         dot = projection_vector.dot(to_goal_vector)
         if dot < 0:
             self._on_hit()
@@ -207,7 +205,7 @@ class Actor(GameObject):
         self._ai = value
 
     def go_to_direction(self, direction):
-        #TODO: use 'velocity' setter
+        # TODO: use 'velocity' setter
         self._velocity = direction.normalize() * self._statistics.speed
         self.rotate_to_direction(direction)
         self.change_state(ActorState.MOVE)

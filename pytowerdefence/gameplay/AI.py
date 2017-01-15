@@ -1,6 +1,5 @@
-from src.gameplay.Objects import ActorState
-
-from src.gameplay.Controllers import AttackController
+from pytowerdefence.gameplay.Controllers import AttackController
+from pytowerdefence.gameplay.Objects import ActorState
 
 
 class BaseAI:

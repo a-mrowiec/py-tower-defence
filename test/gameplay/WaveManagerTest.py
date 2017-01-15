@@ -1,7 +1,10 @@
 from unittest import TestCase
-from src.gameplay.Logic import WaveManager
-from test.TestUtils import path_to_test_data
+
 import mock
+
+from pytowerdefence.gameplay.Logic import WaveManager
+from test.TestUtils import path_to_test_data
+
 
 class TestWaveManager(TestCase):
     def test_load(self):

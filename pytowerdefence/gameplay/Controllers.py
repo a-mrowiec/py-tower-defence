@@ -1,6 +1,6 @@
 from pygame.math import Vector2
 
-from src.gameplay.Objects import Bullet, ActorState
+from pytowerdefence.gameplay.Objects import Bullet, ActorState
 
 
 class BaseController:
@@ -91,14 +91,13 @@ class AttackController(BaseController):
 
 
 class RangeAttackController(AttackController):
-
     def __init__(self):
         super().__init__()
         self._bullet = None
 
     def _process_animation_end(self):
         if self._bullet is None or not self._bullet.alive:
-            self._bullet=Bullet(self._actor)
+            self._bullet = Bullet(self._actor)
             self._bullet.position = Vector2(self._actor.position)
             self._bullet.target = self._target
             self._actor._objects_to_create.append(self._bullet)

@@ -1,7 +1,7 @@
-import json
 import importlib
+import json
 
-from src.gameplay.Controllers import PathController
+from pytowerdefence.gameplay.Controllers import PathController
 
 
 class StandardWave:
@@ -50,10 +50,10 @@ class WaveManager:
                     self._create_object(obj_template)
 
     def _create_object(self, object_template):
-        monsters_module=importlib.import_module("src.gameplay.Monsters")
-        monster=getattr(monsters_module, object_template["name"])()
+        monsters_module = importlib.import_module("pytowerdefence.gameplay.Monsters")
+        monster = getattr(monsters_module, object_template["name"])()
 
-        path_controller=monster.get_controller(PathController)
+        path_controller = monster.get_controller(PathController)
         if path_controller is not None:
             path_controller.set_path(self._level.paths[object_template["path"]])
 

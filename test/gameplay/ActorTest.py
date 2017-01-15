@@ -2,7 +2,7 @@ import unittest
 
 from pygame.math import Vector2
 
-from src.gameplay.Objects import Actor
+from pytowerdefence.gameplay.Objects import Actor
 
 
 class TestActor(Actor):
@@ -16,7 +16,7 @@ class TestActor(Actor):
 class ActorTests(unittest.TestCase):
     def test_updateForNotConfiguredActor_shouldWork(self):
         actor = TestActor()
-        actor.go_to_direction(Vector2(1,0))
+        actor.go_to_direction(Vector2(1, 0))
         actor.update(1.0)
 
         self.assertEqual(actor.position, Vector2(1, 0))
