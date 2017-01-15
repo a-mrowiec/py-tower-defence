@@ -1,6 +1,7 @@
 import pygame
 from src.gameplay.AI import StandardAI
 from src.gameplay.Controllers import PathController, AttackController, DeathController
+from src.gameplay.Logic import WaveManager
 from src.gameplay.Scene import Level
 from pygame.math import Vector2
 
@@ -12,6 +13,7 @@ class App:
         self._running = True
         self._display_surf = None
         self.size = self.width, self.height = 1024, 768
+        self._wave_manager = None
 
     def on_init(self):
         pygame.init()
@@ -19,6 +21,10 @@ class App:
         self._running = True
         self.level = Level(self.size)
         self.level.load("data/maps/test.tmx")
+
+        self._wave_manager = WaveManager(level=self.level)
+        self._wave_manager.load("data/test_wave.json")
+
         actor = Ogre()
         actor.position = Vector2(10, 10)
         path_controller=PathController()
@@ -42,6 +48,8 @@ class App:
             self._running = False
 
     def on_loop(self, dt):
+        if self._wave_manager is not None:
+            self._wave_manager.update(dt)
         self.level.update(dt)
 
     def on_render(self):

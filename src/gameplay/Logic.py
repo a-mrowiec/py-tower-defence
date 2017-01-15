@@ -1,4 +1,7 @@
 import json
+import importlib
+
+from src.gameplay.Controllers import PathController
 
 
 class StandardWave:
@@ -7,27 +10,29 @@ class StandardWave:
         self._start_time = json_object["start_time"]
         self._object_creation_interval = json_object["creation_interval"]
         self._number_of_created_objects = 0
+        self._number_of_objects = json_object["number_of_objects"]
 
     def should_run(self, time_elapsed):
-        return self._start_time <= time_elapsed and self._number_of_created_objects < len(self._objects)
+        return self._start_time <= time_elapsed and self._number_of_created_objects < self._number_of_objects
 
     def get_objects_to_create(self, time_elapsed):
         objects_to_create = []
-        while self._number_of_created_objects * self._object_creation_interval + self._start_time < time_elapsed:
+        while self._number_of_created_objects * self._object_creation_interval + self._start_time < time_elapsed and self._number_of_created_objects < self._number_of_objects:
             objects_to_create.append(self._get_object_template(self._number_of_created_objects))
             self._number_of_created_objects += 1
         return objects_to_create
 
     def _get_object_template(self, index):
-        return self._objects[index]
+        return self._objects[0]
 
 
 class WaveManager:
-    def __init__(self):
+    def __init__(self, level):
         self._waves = []
         self._data = None
         self._time_elapsed = 0.
         self._last_wave_index = 0
+        self._level = level
 
     def load(self, filename):
         with open(filename) as file_data:
@@ -46,7 +51,15 @@ class WaveManager:
                     self._create_object(obj_template)
 
     def _create_object(self, object_template):
-        print("Create object: "+object_template)
+        monsters_module=importlib.import_module("src.gameplay.Monsters")
+        monster=getattr(monsters_module, object_template["name"])()
+
+        path_controller=PathController()
+        path_controller.set_path(self._level.paths[object_template["path"]])
+
+        monster.add_controller(path_controller)
+
+        self._level.add(monster)
 
     def _load_waves(self):
         self._waves = []

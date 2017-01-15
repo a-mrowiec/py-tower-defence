@@ -5,17 +5,17 @@ import mock
 
 class TestWaveManager(TestCase):
     def test_load(self):
-        manager = WaveManager()
+        manager = WaveManager(mock.Mock())
         manager.load(path_to_test_data("test_wave.json"))
 
         self.assertEqual(len(manager._waves), 2)
 
     def test_loadUnknownType_shouldRaiseError(self):
-        manager = WaveManager()
+        manager = WaveManager(mock.Mock())
         self.failUnlessRaises(RuntimeError, lambda: manager.load(path_to_test_data("test_wave_bad_type.json")))
 
     def test_update(self):
-        manager = WaveManager()
+        manager = WaveManager(mock.Mock())
         manager._create_object = mock.Mock()
         manager.load(path_to_test_data("test_wave.json"))
 

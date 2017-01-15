@@ -2,13 +2,21 @@
   "waves": [
     {
       "type": "standard",
-      "objects": ["test_object"],
+      "number_of_objects": 1,
+      "objects": [ {
+        "name": "test_object",
+        "path": 0
+      }],
       "start_time": 1,
       "creation_interval": 0.5
     },
     {
       "type": "standard",
-      "objects": ["test_object", "test_object"],
+      "number_of_objects": 2,
+      "objects": [{
+        "name":"test_object",
+        "path": 0
+      }],
       "start_time": 0,
       "creation_interval": 0.5
     }
