@@ -1,4 +1,4 @@
-from gameplay.Actor import ActorState
+from src.gameplay.Objects import ActorState
 
 from src.gameplay.Controllers import AttackController
 

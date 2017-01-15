@@ -2,7 +2,7 @@ import unittest
 
 from pygame.math import Vector2
 
-from src.gameplay.Actor import Actor
+from src.gameplay.Objects import Actor
 
 
 class TestActor(Actor):

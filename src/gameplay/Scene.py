@@ -3,7 +3,7 @@ import pyscroll
 from pyscroll.group import PyscrollGroup
 from pytmx.util_pygame import load_pygame
 
-from src.gameplay.Actor import Actor, ActorState
+from src.gameplay.Objects import GameObject, Actor, ActorState
 
 
 class Level:
@@ -41,6 +41,11 @@ class Level:
                 if o.state != ActorState.DEATH:
                     visible = pygame.sprite.spritecollide(o, self.group.sprites(), False, is_visible)
                     o.actors_in_attack_range = visible
+
+        for new_object in GameObject._objects_to_create:
+            self.add(new_object)
+
+        GameObject._objects_to_create.clear()
 
     def draw(self, surface):
         self.group.draw(surface)

@@ -1,6 +1,6 @@
 
-from src.gameplay.Actor import ActorState, Actor
-from src.gameplay.Controllers import PathController, DeathController
+from src.gameplay.Objects import Actor, ActorState
+from src.gameplay.Controllers import PathController, DeathController, RangeAttackController
 
 rects = [(0, 154, 94, 77),
          (94, 154, 94, 77),
@@ -83,14 +83,15 @@ class Bandit(Actor):
 
         self.create_and_add_animation('data/bandit-move.png', ogre_move_rects, ActorState.MOVE)
         self.create_and_add_animation('data/bandit-move.png', ogre_idle_rects, ActorState.IDLE)
-        self.create_and_add_animation('data/bandit-attack.png', ogre_move_rects, ActorState.ATTACK, loop=False)
+        self.create_and_add_animation('data/bandit-attack.png', ogre_move_rects, ActorState.ATTACK, loop=False, speed=[10])
         self.create_and_add_animation('data/bandit-death.png', ogre_death_rects, ActorState.DEATH, loop=False)
 
         self.statistics.attack_range = 100
-        self.statistics.attack = 5
+        self.statistics.attack_damage = 5
         self._play_current_animation()
 
         self.rect.width = 64
         self.rect.height = 64
         self.add_controller(PathController())
         self.add_controller(DeathController())
+        self.add_controller(RangeAttackController())

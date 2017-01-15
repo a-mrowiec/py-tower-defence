@@ -1,6 +1,6 @@
 import pygame
 from src.gameplay.AI import StandardAI
-from src.gameplay.Controllers import PathController, AttackController, DeathController
+from src.gameplay.Controllers import PathController, AttackController, DeathController, RangeAttackController
 from src.gameplay.Logic import WaveManager
 from src.gameplay.Scene import Level
 from pygame.math import Vector2
@@ -33,8 +33,6 @@ class App:
 
         static_actor = Bandit()
         static_actor.position = Vector2(350, 400)
-        attack_controller=AttackController()
-        static_actor.add_controller(attack_controller)
         static_actor.set_ai(StandardAI())
         static_actor.statistics.team = 1
         self.level.add(static_actor)
