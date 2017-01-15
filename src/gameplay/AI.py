@@ -21,7 +21,7 @@ class StandardAI(BaseAI):
     def update(self, dt):
         if self._actor.state != ActorState.ATTACK:
             for t in self._actor.actors_in_attack_range:
-                if t.statistics.team != self._actor.statistics.team:
+                if t.statistics.team != self._actor.statistics.team and t.state != ActorState.DEATH:
                     controller = self._actor.get_controller(AttackController)
                     if controller is not None:
                         controller.target = t

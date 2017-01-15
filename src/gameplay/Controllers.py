@@ -32,6 +32,7 @@ class PathController(BaseController):
         self.path = path
         self.current_path_point = 0
         self.finished = False
+        self._on_path_point_change()
 
     def update(self, dt):
         super().update(dt)
@@ -56,7 +57,8 @@ class PathController(BaseController):
         self.finished = True
 
     def _on_path_point_change(self):
-        self.path_vector = self._actor.position - self.path[self.current_path_point]
+        if len(self.path) > 0:
+            self.path_vector = self._actor.position - self.path[self.current_path_point]
 
 
 class AttackController(BaseController):

@@ -27,17 +27,14 @@ class App:
 
         actor = Ogre()
         actor.position = Vector2(10, 10)
-        path_controller=PathController()
+        path_controller=actor.get_controller(PathController)
         path_controller.set_path(self.level.paths[0])
-        actor.add_controller(path_controller)
-        actor.add_controller(DeathController())
 
 
         static_actor = Bandit()
         static_actor.position = Vector2(350, 400)
         attack_controller=AttackController()
         static_actor.add_controller(attack_controller)
-        static_actor.add_controller(DeathController())
         static_actor.set_ai(StandardAI())
         static_actor.statistics.team = 1
         self.level.add(static_actor)

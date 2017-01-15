@@ -42,7 +42,6 @@ class WaveManager:
 
     def update(self, dt):
         self._time_elapsed += dt
-        # TODO: get list of objects to create from waves
 
         for wave in self._waves:
             if wave.should_run(self._time_elapsed):
@@ -54,10 +53,9 @@ class WaveManager:
         monsters_module=importlib.import_module("src.gameplay.Monsters")
         monster=getattr(monsters_module, object_template["name"])()
 
-        path_controller=PathController()
-        path_controller.set_path(self._level.paths[object_template["path"]])
-
-        monster.add_controller(path_controller)
+        path_controller=monster.get_controller(PathController)
+        if path_controller is not None:
+            path_controller.set_path(self._level.paths[object_template["path"]])
 
         self._level.add(monster)
 

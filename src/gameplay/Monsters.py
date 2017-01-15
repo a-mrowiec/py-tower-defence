@@ -1,5 +1,6 @@
 
 from src.gameplay.Actor import ActorState, Actor
+from src.gameplay.Controllers import PathController, DeathController
 
 rects = [(0, 154, 94, 77),
          (94, 154, 94, 77),
@@ -71,6 +72,8 @@ class Ogre(Actor):
 
         self.rect.width = 64
         self.rect.height = 64
+        self.add_controller(PathController())
+        self.add_controller(DeathController())
 
 
 class Bandit(Actor):
@@ -89,3 +92,5 @@ class Bandit(Actor):
 
         self.rect.width = 64
         self.rect.height = 64
+        self.add_controller(PathController())
+        self.add_controller(DeathController())
