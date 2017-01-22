@@ -1,6 +1,7 @@
 import pygame
 from pygame.math import Vector2
 
+from pytowerdefence.UI import UIManager, Text
 from pytowerdefence.gameplay.AI import StandardAI
 from pytowerdefence.gameplay.Controllers import PathController
 from pytowerdefence.gameplay.Logic import WaveManager
@@ -14,9 +15,12 @@ class App:
         self._display_surf = None
         self.size = self.width, self.height = 1024, 768
         self._wave_manager = None
+        self._ui_manager = None
 
     def on_init(self):
         pygame.init()
+        self._ui_manager = UIManager()
+        self._ui_manager.add_widget(Text("Testowy tekst"))
         self._display_surf = pygame.display.set_mode(self.size, pygame.HWSURFACE | pygame.DOUBLEBUF)
         self._running = True
         self.level = Level(self.size)
@@ -40,14 +44,18 @@ class App:
     def on_event(self, event):
         if event.type == pygame.QUIT:
             self._running = False
+        else:
+            self._ui_manager.process_event(event)
 
     def on_loop(self, dt):
         if self._wave_manager is not None:
             self._wave_manager.update(dt)
         self.level.update(dt)
+        self._ui_manager.update(dt)
 
     def on_render(self):
         self.level.draw(self._display_surf)
+        self._ui_manager.draw(self._display_surf)
 
     def on_cleanup(self):
         pygame.quit()
