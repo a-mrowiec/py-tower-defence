@@ -85,7 +85,7 @@ class GameObject(pygame.sprite.Sprite):
 
     @position.setter
     def position(self, value):
-        self._position = value
+        self._position = Vector2(value)
         self._rect.center = self._position
 
     def rotate_to_direction(self, direction):

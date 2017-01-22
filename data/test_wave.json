@@ -15,7 +15,7 @@
       "number_of_objects": 2,
       "objects": [{
         "name": "Ogre",
-        "path": 0
+        "path": 1
       }],
       "start_time": 5,
       "creation_interval": 3

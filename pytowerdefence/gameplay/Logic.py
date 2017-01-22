@@ -54,8 +54,12 @@ class WaveManager:
         monster = getattr(monsters_module, object_template["name"])()
 
         path_controller = monster.get_controller(PathController)
-        if path_controller is not None:
-            path_controller.set_path(self._level.paths[object_template["path"]])
+        path = self._level.paths[object_template["path"]]
+        if path_controller is not None and path is not None:
+            monster.position = path[0]
+
+            path_controller.set_path(path)
+            path_controller.current_path_point = 1
 
         self._level.add(monster)
 

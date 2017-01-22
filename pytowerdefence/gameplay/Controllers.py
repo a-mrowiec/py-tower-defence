@@ -24,25 +24,34 @@ class PathController(BaseController):
     def __init__(self):
         super().__init__()
         self.path = []
-        self.current_path_point = 0
+        self._current_path_point = 0
         self.finished = False
         self.path_vector = Vector2()
 
     def set_path(self, path):
         self.path = path
-        self.current_path_point = 0
+        self._current_path_point = 0
         self.finished = False
+        self._on_path_point_change()
+
+    @property
+    def current_path_point(self):
+        return self._current_path_point
+
+    @current_path_point.setter
+    def current_path_point(self, value):
+        self._current_path_point = value
         self._on_path_point_change()
 
     def update(self, dt):
         super().update(dt)
         if self.path and not self.finished:
-            self._actor.go_to_direction(self.path[self.current_path_point] - self._actor.position)
-            to_goal_vector = self._actor.position - self.path[self.current_path_point]
+            self._actor.go_to_direction(self.path[self._current_path_point] - self._actor.position)
+            to_goal_vector = self._actor.position - self.path[self._current_path_point]
             dot = self.path_vector.dot(to_goal_vector)
             if dot < 0:
-                self.current_path_point += 1
-                if self.current_path_point >= len(self.path):
+                self._current_path_point += 1
+                if self._current_path_point >= len(self.path):
                     self.finished = True
                     self._actor.stop()
                 else:
@@ -58,7 +67,7 @@ class PathController(BaseController):
 
     def _on_path_point_change(self):
         if len(self.path) > 0:
-            self.path_vector = self._actor.position - self.path[self.current_path_point]
+            self.path_vector = self._actor.position - self.path[self._current_path_point]
 
 
 class AttackController(BaseController):
@@ -98,7 +107,7 @@ class RangeAttackController(AttackController):
     def _process_animation_end(self):
         if self._bullet is None or not self._bullet.alive:
             self._bullet = Bullet(self._actor)
-            self._bullet.position = Vector2(self._actor.position)
+            self._bullet.position = self._actor.position
             self._bullet.target = self._target
             self._actor._objects_to_create.append(self._bullet)
 

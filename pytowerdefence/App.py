@@ -31,17 +31,11 @@ class App:
 
         self._ui_manager.add_widget(GameWindow(self.level, self.width, self.height))
 
-        actor = Ogre()
-        actor.position = Vector2(10, 10)
-        path_controller = actor.get_controller(PathController)
-        path_controller.set_path(self.level.paths[0])
-
         static_actor = Bandit()
         static_actor.position = Vector2(350, 400)
         static_actor.set_ai(StandardAI())
         static_actor.statistics.team = 1
         self.level.add(static_actor)
-        self.level.add(actor)
 
     def on_event(self, event):
         if event.type == pygame.QUIT:
