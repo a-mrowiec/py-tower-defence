@@ -8,6 +8,9 @@ from pytowerdefence.Utils import rot_center
 
 
 class GameObject(pygame.sprite.Sprite):
+    """
+    Base class for any game object, which can be drawed and updated
+    """
     _objects_to_create = []
 
     def __init__(self):
@@ -22,6 +25,11 @@ class GameObject(pygame.sprite.Sprite):
         self._angle = 0
 
     def update(self, dt):
+        """
+        Update method, updated every frame
+        :param dt:
+        :return:
+        """
         self._prev_position = Vector2(self._position)
         self._position += (self._velocity * dt)
         self._rect.center = self._position
@@ -30,10 +38,19 @@ class GameObject(pygame.sprite.Sprite):
 
     @property
     def sprite(self):
+        """
+        Getter
+        :return:
+        """
         return self._sprite
 
     @sprite.setter
     def sprite(self, value):
+        """
+        Sets sprite
+        :param value:
+        :return:
+        """
         self._sprite = value
         self.image = rot_center(self._sprite, self._angle)
 
@@ -80,6 +97,9 @@ class GameObject(pygame.sprite.Sprite):
 
 
 class Bullet(GameObject):
+    """
+    Class that represents bullet
+    """
     def __init__(self, owner):
         super().__init__()
         self._target = None
@@ -90,10 +110,19 @@ class Bullet(GameObject):
 
     @property
     def target(self):
+        """
+        Target is an actor
+        :return: target
+        """
         return self._target
 
     @target.setter
     def target(self, val):
+        """
+        Setter
+        :param val:
+        :return:
+        """
         self._target = val
 
     def update(self, dt):
@@ -109,6 +138,24 @@ class Bullet(GameObject):
         self._target.hit(self._owner.statistics.attack_damage)
         self._owner.change_state(ActorState.IDLE)
         self.kill()
+
+
+class ActorState(Enum):
+    IDLE = 0
+    MOVE = 1
+    ATTACK = 2
+    DEATH = 3
+
+
+class ActorStatistics:
+    def __init__(self):
+        self.team = 0
+        self.current_health = 0
+        self.max_health = 0
+        self.speed = 0
+        self.attack_damage = 0
+        self.attack_speed = 0
+        self.attack_range = 0
 
 
 class Actor(GameObject):
@@ -221,20 +268,3 @@ class Actor(GameObject):
     def actors_in_attack_range(self, value):
         self._actors_in_attack_range = value
 
-
-class ActorState(Enum):
-    IDLE = 0
-    MOVE = 1
-    ATTACK = 2
-    DEATH = 3
-
-
-class ActorStatistics:
-    def __init__(self):
-        self.team = 0
-        self.current_health = 0
-        self.max_health = 0
-        self.speed = 0
-        self.attack_damage = 0
-        self.attack_speed = 0
-        self.attack_range = 0
