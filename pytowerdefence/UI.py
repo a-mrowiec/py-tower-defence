@@ -5,7 +5,7 @@ from pygame.math import Vector2
 
 class Widget(pygame.sprite.Sprite):
     def __init__(self):
-        self.z = 0
+        self.z = 1
         self.rect = pygame.Rect(0, 0, 0, 0)
         self.position = Vector2()
 
@@ -32,6 +32,25 @@ class Text(Widget):
 
     def draw(self, surface):
         surface.blit(self.surface, self.position)
+
+
+class GameWindow(Widget):
+    def __init__(self, level, width, height):
+        super().__init__()
+        self.z = 0
+        self.rect.width = width
+        self.rect.height = height
+        self.level = level
+
+    def on_mouse_event(self, event):
+        actor_clicked = self._find_clicked_actor(event.pos)
+        print("Actor clicked: ", actor_clicked)
+
+    def _find_clicked_actor(self, pos):
+        for actor in self.level.actor_iterator():
+            if actor.rect.collidepoint(pos):
+                return actor
+        return None
 
 
 class UIManager(object):

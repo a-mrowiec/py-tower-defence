@@ -25,8 +25,12 @@ class Level:
             self.paths.append(obj.points)
 
     def add(self, sprite):
-        self.tmx_data.get_layer_by_name("actors")
         self.group.add(sprite, layer=self.get_layer_index("actors"))
+
+    def actor_iterator(self):
+        for o in self.group.sprites():
+            if isinstance(o, Actor):
+                yield o
 
     def get_layer_index(self, layer_name):
         for i, layer in enumerate(self.tmx_data.layers):
@@ -36,11 +40,10 @@ class Level:
 
     def update(self, dt):
         self.group.update(dt)
-        for o in self.group.sprites():
-            if isinstance(o, Actor):
-                if o.state != ActorState.DEATH:
-                    visible = pygame.sprite.spritecollide(o, self.group.sprites(), False, is_visible)
-                    o.actors_in_attack_range = visible
+        for o in self.actor_iterator():
+            if o.state != ActorState.DEATH:
+                visible = pygame.sprite.spritecollide(o, self.group.sprites(), False, is_visible)
+                o.actors_in_attack_range = visible
 
         for new_object in GameObject._objects_to_create:
             self.add(new_object)

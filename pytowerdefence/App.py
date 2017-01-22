@@ -1,7 +1,7 @@
 import pygame
 from pygame.math import Vector2
 
-from pytowerdefence.UI import UIManager, Text
+from pytowerdefence.UI import UIManager, Text, GameWindow
 from pytowerdefence.gameplay.AI import StandardAI
 from pytowerdefence.gameplay.Controllers import PathController
 from pytowerdefence.gameplay.Logic import WaveManager
@@ -28,6 +28,8 @@ class App:
 
         self._wave_manager = WaveManager(level=self.level)
         self._wave_manager.load("data/test_wave.json")
+
+        self._ui_manager.add_widget(GameWindow(self.level, self.width, self.height))
 
         actor = Ogre()
         actor.position = Vector2(10, 10)
