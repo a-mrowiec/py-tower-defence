@@ -61,10 +61,10 @@ class Ogre(Actor):
         super().__init__()
         self._statistics.speed = 50
 
-        self.create_and_add_animation('data/ogre-move.png', ogre_move_rects, ActorState.MOVE)
-        self.create_and_add_animation('data/ogre-move.png', ogre_idle_rects, ActorState.IDLE)
-        self.create_and_add_animation('data/ogre-attack.png', ogre_move_rects, ActorState.ATTACK, loop=False)
-        self.create_and_add_animation('data/ogre-death.png', ogre_death_rects, ActorState.DEATH, loop=False, speed=[20])
+        self.create_and_set_animation('data/ogre-move.png', ogre_move_rects, ActorState.MOVE)
+        self.create_and_set_animation('data/ogre-move.png', ogre_idle_rects, ActorState.IDLE)
+        self.create_and_set_animation('data/ogre-attack.png', ogre_move_rects, ActorState.ATTACK, loop=False)
+        self.create_and_set_animation('data/ogre-death.png', ogre_death_rects, ActorState.DEATH, loop=False, speed=[20])
 
         self.statistics.attack_range = 100
         self.change_state(ActorState.MOVE)
@@ -80,11 +80,11 @@ class Bandit(Actor):
         super().__init__()
         self._statistics.speed = 50
 
-        self.create_and_add_animation('data/bandit-move.png', ogre_move_rects, ActorState.MOVE)
-        self.create_and_add_animation('data/bandit-move.png', ogre_idle_rects, ActorState.IDLE)
-        self.create_and_add_animation('data/bandit-attack.png', ogre_move_rects, ActorState.ATTACK, loop=False,
+        self.create_and_set_animation('data/bandit-move.png', ogre_move_rects, ActorState.MOVE)
+        self.create_and_set_animation('data/bandit-move.png', ogre_idle_rects, ActorState.IDLE)
+        self.create_and_set_animation('data/bandit-attack.png', ogre_move_rects, ActorState.ATTACK, loop=False,
                                       speed=[10])
-        self.create_and_add_animation('data/bandit-death.png', ogre_death_rects, ActorState.DEATH, loop=False)
+        self.create_and_set_animation('data/bandit-death.png', ogre_death_rects, ActorState.DEATH, loop=False)
 
         self.statistics.attack_range = 100
         self.statistics.attack_damage = 5

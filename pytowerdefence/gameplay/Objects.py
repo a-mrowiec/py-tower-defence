@@ -204,16 +204,16 @@ class Actor(GameObject):
     def stop(self):
         self.change_state(ActorState.IDLE)
 
-    def add_animation(self, state, animation):
+    def set_animation(self, state, animation):
         self._animations[state] = animation
 
-    def create_and_add_animation(self, images_path, rects, state, **kwargs):
+    def create_and_set_animation(self, images_path, rects, state, **kwargs):
         images = pyganim.getImagesFromSpriteSheet(images_path, rects=rects)
         speed = kwargs.get('speed', [100])
         frames = list(zip(images, speed * len(images)))
         animation = pyganim.PygAnimation(frames)
         animation.loop = kwargs.get('loop', True)
-        self.add_animation(state, animation)
+        self.set_animation(state, animation)
 
     def change_state(self, new_state):
         if self._state != new_state:
@@ -268,3 +268,31 @@ class Actor(GameObject):
     def actors_in_attack_range(self, value):
         self._actors_in_attack_range = value
 
+
+class EvolvingActor(Actor):
+    def __init__(self):
+        super().__init__()
+        self._current_evolution_level = 0
+        self._evolution_statistics = []
+        self._evolution_animations = []
+
+    def add_evolution_level(self, statistics, animations=None):
+        self._evolution_statistics.append(statistics)
+        self._evolution_animations.append(animations)
+
+    @property
+    def current_evolution_level(self):
+        return self._current_animation
+
+    def evolve(self):
+        self._current_evolution_level += 1
+        i = self._current_evolution_level
+
+        self._statistics = self._evolution_statistics[i]
+        animations = self._evolution_animations[i]
+        if animations is not None:
+            for state, animation in animations:
+                self.set_animation(state, animation)
+
+    def can_evolve(self):
+        return self._current_evolution_level < len(self._evolution_statistics) - 1
