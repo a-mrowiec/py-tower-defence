@@ -32,7 +32,7 @@ class App:
         self._ui_manager.add_widget(GameWindow(self.level, self.width, self.height))
 
         static_actor = Bandit()
-        static_actor.position = Vector2(350, 400)
+        static_actor.position = Vector2(877, 117)
         static_actor.set_ai(StandardAI())
         static_actor.statistics.team = 1
         self.level.add(static_actor)

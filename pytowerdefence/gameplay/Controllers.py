@@ -91,8 +91,8 @@ class AttackController(BaseController):
                 self._actor.change_state(ActorState.ATTACK)
 
     def _process_animation_end(self):
-        self._target.hit(self._actor.statistics.attack)
-        self._actor.state = ActorState.IDLE
+        self._target.hit(self._actor.statistics.attack_damage)
+        self._actor.change_state(ActorState.IDLE)
 
     def on_animation_end(self):
         if self._target is not None:

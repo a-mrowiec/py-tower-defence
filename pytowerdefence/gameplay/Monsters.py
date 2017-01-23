@@ -1,5 +1,6 @@
+from pytowerdefence.gameplay.AI import StandardAI
 from pytowerdefence.gameplay.Objects import Actor, ActorState
-from pytowerdefence.gameplay.Controllers import PathController, DeathController, RangeAttackController
+from pytowerdefence.gameplay.Controllers import PathController, DeathController, RangeAttackController, AttackController
 
 rects = [(0, 154, 94, 77),
          (94, 154, 94, 77),
@@ -66,14 +67,17 @@ class Ogre(Actor):
         self.create_and_set_animation('data/ogre-attack.png', ogre_move_rects, ActorState.ATTACK, loop=False)
         self.create_and_set_animation('data/ogre-death.png', ogre_death_rects, ActorState.DEATH, loop=False, speed=[20])
 
-        self.statistics.attack_range = 100
-        self.statistics.max_health = self.statistics.current_health = 50
+        self.statistics.attack_range = 2
+        self.statistics.attack_damage = 1
+        self.statistics.max_health = self.statistics.current_health = 100
         self.change_state(ActorState.MOVE)
 
         self.rect.width = 64
         self.rect.height = 64
+        self.add_controller(AttackController())
         self.add_controller(PathController())
         self.add_controller(DeathController())
+        self.set_ai(StandardAI())
 
 
 class Bandit(Actor):
@@ -88,7 +92,7 @@ class Bandit(Actor):
         self.create_and_set_animation('data/bandit-death.png', ogre_death_rects, ActorState.DEATH, loop=False)
 
         self.statistics.attack_range = 100
-        self.statistics.attack_damage = 5
+        self.statistics.attack_damage = 1
         self._play_current_animation()
 
         self.rect.width = 64
@@ -96,3 +100,5 @@ class Bandit(Actor):
         self.add_controller(PathController())
         self.add_controller(DeathController())
         self.add_controller(RangeAttackController())
+
+        self.set_ai(StandardAI(debug=True))

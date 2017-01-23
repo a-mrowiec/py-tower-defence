@@ -2,6 +2,16 @@
   "waves": [
     {
       "type": "standard",
+      "number_of_objects": 0,
+      "objects": [{
+        "name": "Bandit",
+        "path": 1
+      }],
+      "start_time": 1,
+      "creation_interval": 2
+    },
+    {
+      "type": "standard",
       "number_of_objects": 2,
       "objects": [{
         "name": "Ogre",
