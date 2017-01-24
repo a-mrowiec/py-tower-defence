@@ -81,7 +81,7 @@ class GameObject(pygame.sprite.Sprite):
 
     @property
     def radius(self):
-        return max(self._rect.width, self._rect.height)
+        return max(self._rect.width/2.0, self._rect.height/2.0)
 
     @position.setter
     def position(self, value):
@@ -168,13 +168,13 @@ class Actor(GameObject):
         self._statistics = ActorStatistics()
         self._actors_in_attack_range = []
         self._ai = None
+        self._prev_updated_controller = None
 
     def update(self, dt):
         if self._ai is not None:
             self._ai.update(dt)
 
-        for controller in self._controllers:
-            controller.update(dt)
+        self._update_controllers(dt)
 
         super().update(dt)
         if self._current_animation is not None and self._sprite is None:
@@ -182,6 +182,15 @@ class Actor(GameObject):
             if self._current_animation.isFinished():
                 for controller in self._controllers:
                     controller.on_animation_end()
+
+    def _update_controllers(self, dt):
+        for controller in self._controllers:
+            need_update = controller.need_update()
+            if need_update:
+                if self._prev_updated_controller != controller and self._prev_updated_controller is not None:
+                    self._prev_updated_controller.on_update_end()
+                controller.update(dt)
+                self._prev_updated_controller = controller
 
     def hit(self, damage):
         self._statistics.current_health -= damage
@@ -257,8 +266,11 @@ class Actor(GameObject):
         self.change_state(ActorState.MOVE)
 
     def stop(self):
-        self._velocity = Vector2()
+        self.zero_velocity()
         self.change_state(ActorState.IDLE)
+
+    def zero_velocity(self):
+        self._velocity = Vector2()
 
     @property
     def actors_in_attack_range(self):

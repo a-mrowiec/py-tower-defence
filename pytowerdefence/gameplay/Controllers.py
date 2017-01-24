@@ -7,6 +7,12 @@ class BaseController:
     def __init__(self):
         self._actor = None
 
+    def need_update(self):
+        return False
+
+    def on_update_end(self):
+        pass
+
     def set_actor(self, actor):
         self._actor = actor
 
@@ -43,19 +49,23 @@ class PathController(BaseController):
         self._current_path_point = value
         self._on_path_point_change()
 
+    def need_update(self):
+        return self.path and not self.finished
+
     def update(self, dt):
-        super().update(dt)
-        if self.path and not self.finished:
-            self._actor.go_to_direction(self.path[self._current_path_point] - self._actor.position)
-            to_goal_vector = self._actor.position - self.path[self._current_path_point]
-            dot = self.path_vector.dot(to_goal_vector)
-            if dot < 0:
-                self._current_path_point += 1
-                if self._current_path_point >= len(self.path):
-                    self.finished = True
-                    self._actor.stop()
-                else:
-                    self._on_path_point_change()
+        self._actor.go_to_direction(self.path[self._current_path_point] - self._actor.position)
+        to_goal_vector = self._actor.position - self.path[self._current_path_point]
+        dot = self.path_vector.dot(to_goal_vector)
+        if dot < 0:
+            self._current_path_point += 1
+            if self._current_path_point >= len(self.path):
+                self.finished = True
+                self._actor.stop()
+            else:
+                self._on_path_point_change()
+
+    def on_update_end(self):
+        self._actor.zero_velocity()
 
     def set_actor(self, actor):
         super().set_actor(actor)
@@ -82,13 +92,13 @@ class AttackController(BaseController):
     @target.setter
     def target(self, value):
         self._target = value
-
-    def update(self, dt):
-        super().update(dt)
         if self._actor.state != ActorState.ATTACK:
             if self._target in self._actor.actors_in_attack_range:
                 self._actor.rotate_to_direction(self._target.position - self._actor.position)
                 self._actor.change_state(ActorState.ATTACK)
+
+    def need_update(self):
+        return self._actor.state == ActorState.ATTACK
 
     def _process_animation_end(self):
         self._target.hit(self._actor.statistics.attack_damage)
@@ -113,6 +123,10 @@ class RangeAttackController(AttackController):
 
 
 class DeathController(BaseController):
+
+    def need_update(self):
+        return self._actor.state == ActorState.DEATH
+
     def on_animation_end(self):
         if self._actor.state == ActorState.DEATH:
             self._actor.kill()

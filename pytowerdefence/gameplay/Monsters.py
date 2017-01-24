@@ -74,9 +74,9 @@ class Ogre(Actor):
 
         self.rect.width = 64
         self.rect.height = 64
+        self.add_controller(DeathController())
         self.add_controller(AttackController())
         self.add_controller(PathController())
-        self.add_controller(DeathController())
         self.set_ai(StandardAI())
 
 
@@ -97,8 +97,8 @@ class Bandit(Actor):
 
         self.rect.width = 64
         self.rect.height = 64
-        self.add_controller(PathController())
         self.add_controller(DeathController())
         self.add_controller(RangeAttackController())
+        self.add_controller(PathController())
 
         self.set_ai(StandardAI(debug=True))
