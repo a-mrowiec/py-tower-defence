@@ -1,3 +1,5 @@
+from enum import Enum
+
 import pygame
 
 from pygame.math import Vector2
@@ -26,9 +28,17 @@ class Widget(pygame.sprite.Sprite):
         self._rect.x = value.x
         self._rect.y = value.y
 
-    def on_mouse_event(self, event):
+    def on_mouse_click_event(self, event):
         """
         Invoked when widget is on top (based on Z property), and rect collides with click point
+        :param event:
+        :return:
+        """
+        pass
+
+    def on_mouse_motion_event(self, event):
+        """
+        Invoked when widget is on top (based on Z property) and mouse is moved over element
         :param event:
         :return:
         """
@@ -101,6 +111,11 @@ class Button(Text):
         super().draw(surface)
 
 
+class GameWindowState(Enum):
+    IDLE = 0,
+    ADDING_TOWER = 1
+
+
 class GameWindow(Widget):
     def __init__(self, level, width, height):
         super().__init__()
@@ -108,8 +123,29 @@ class GameWindow(Widget):
         self._rect.width = width
         self._rect.height = height
         self.level = level
+        self.state = GameWindowState.IDLE
+        self._tower = None
 
-    def on_mouse_event(self, event):
+    def start_adding_tower(self, tower):
+        if self.state == GameWindowState.IDLE:
+            self._tower = tower
+            self.state = GameWindowState.ADDING_TOWER
+
+    def on_mouse_motion_event(self, event):
+        if self.state == GameWindowState.ADDING_TOWER:
+            self._tower.position = Vector2(event.pos)
+            #TODO: Checking collision with obstacles
+            print("Move")
+
+    def draw(self, surface):
+        if self.state == GameWindowState.ADDING_TOWER and self._tower is not None:
+            surface.blit(self._tower.image, [self._tower.rect.x, self._tower.rect.y])
+
+    def on_mouse_click_event(self, event):
+        if self.state == GameWindowState.ADDING_TOWER:
+            self._tower = None
+            self.state = GameWindowState.IDLE
+
         actor_clicked = self._find_clicked_actor(event.pos)
         print("Actor clicked: ", actor_clicked)
 
@@ -124,8 +160,11 @@ def is_keyboard_event(event):
     return pygame.event.event_name(event.type).startswith("K_")
 
 
-def is_mouse_event(event):
+def is_mouse_click_event(event):
     return (event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.MOUSEBUTTONUP) and event.button == 1
+
+def is_mouse_motion_event(event):
+    return event.type == pygame.MOUSEMOTION
 
 
 class UIManager(object):
@@ -174,11 +213,14 @@ class UIManager(object):
         :param event:
         :return:
         """
-        if is_mouse_event(event):
+        if is_mouse_click_event(event):
             clicked = self._get_colliding_widget(event.pos)
             if clicked is not None:
-                clicked.on_mouse_event(event)
-
+                clicked.on_mouse_click_event(event)
+        elif is_mouse_motion_event(event):
+            moved_over = self._get_colliding_widget(event.pos)
+            if moved_over is not None:
+                moved_over.on_mouse_motion_event(event)
         elif is_keyboard_event(event):
             if self._focused_widget is not None:
                 self._focused_widget.on_keyboard_event(event)

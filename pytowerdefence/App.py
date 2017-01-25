@@ -16,12 +16,20 @@ class App:
         self.size = self.width, self.height = 1024, 768
         self._wave_manager = None
         self._ui_manager = None
+        self._game_window = None
+        self.level = None
+
+    def on_add_tower(self, event):
+        tower = Bandit()
+        self._game_window.start_adding_tower(tower)
+        tower.update(0.0)
 
     def on_init(self):
         pygame.init()
         self._ui_manager = UIManager()
         add_button = Button(img=pygame.image.load("data/add-button.png"))
         add_button.position = Vector2(900, 650)
+        add_button.on_mouse_click_event = self.on_add_tower
         self._ui_manager.add_widget(add_button)
         self._display_surf = pygame.display.set_mode(self.size, pygame.HWSURFACE | pygame.DOUBLEBUF)
         self._running = True
@@ -31,7 +39,8 @@ class App:
         self._wave_manager = WaveManager(level=self.level)
         self._wave_manager.load("data/test_wave.json")
 
-        self._ui_manager.add_widget(GameWindow(self.level, self.width, self.height))
+        self._game_window = GameWindow(self.level, self.width, self.height)
+        self._ui_manager.add_widget(self._game_window)
 
         static_actor = Bandit()
         static_actor.position = Vector2(877, 117)
