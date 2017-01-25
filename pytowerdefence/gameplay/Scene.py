@@ -24,6 +24,9 @@ class Level:
         for obj in self.tmx_data.get_layer_by_name("paths"):
             self.paths.append(obj.points)
 
+        for obstacle in self.obstacle_iterator():
+            print(obstacle)
+
     def add(self, sprite):
         self.group.add(sprite, layer=self.get_layer_index("actors"))
 
@@ -31,6 +34,10 @@ class Level:
         for o in self.group.sprites():
             if isinstance(o, Actor):
                 yield o
+
+    def obstacle_iterator(self):
+        for obstacle in self.tmx_data.get_layer_by_name("obstacles"):
+            yield obstacle
 
     def get_layer_index(self, layer_name):
         for i, layer in enumerate(self.tmx_data.layers):
