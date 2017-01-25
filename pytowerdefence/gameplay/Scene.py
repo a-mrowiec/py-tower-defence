@@ -25,7 +25,7 @@ class Level:
             self.paths.append(obj.points)
 
         for obstacle in self.obstacle_iterator():
-            print(obstacle)
+            obstacle.rect = pygame.Rect(obstacle.x, obstacle.y, obstacle.width, obstacle.height)
 
     def add(self, sprite):
         self.group.add(sprite, layer=self.get_layer_index("actors"))
@@ -44,6 +44,12 @@ class Level:
             if layer.name == layer_name:
                 return i
         return -1
+
+    def is_rectangle_colliding(self, rectangle):
+        for obstacle in self.obstacle_iterator():
+            if rectangle.colliderect(obstacle.rect):
+                return True
+        return False
 
     def update(self, dt):
         self.group.update(dt)

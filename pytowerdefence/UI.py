@@ -134,8 +134,8 @@ class GameWindow(Widget):
     def on_mouse_motion_event(self, event):
         if self.state == GameWindowState.ADDING_TOWER:
             self._tower.position = Vector2(event.pos)
-            #TODO: Checking collision with obstacles
-            print("Move")
+            if self.level.is_rectangle_colliding(self._tower.rect):
+                print("Colliding")
 
     def draw(self, surface):
         if self.state == GameWindowState.ADDING_TOWER and self._tower is not None:
