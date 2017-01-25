@@ -1,4 +1,3 @@
-import importlib
 import json
 
 from pytowerdefence.gameplay.Controllers import PathController
@@ -27,12 +26,12 @@ class StandardWave:
 
 
 class WaveManager:
-    def __init__(self, level):
+    def __init__(self, factory):
         self._waves = []
         self._data = None
         self._time_elapsed = 0.
         self._last_wave_index = 0
-        self._level = level
+        self._creatures_factory = factory
 
     def load(self, filename):
         with open(filename) as file_data:
@@ -50,18 +49,14 @@ class WaveManager:
                     self._create_object(obj_template)
 
     def _create_object(self, object_template):
-        monsters_module = importlib.import_module("pytowerdefence.gameplay.Monsters")
-        monster = getattr(monsters_module, object_template["name"])()
+        with self._creatures_factory.create_on_scene(object_template["name"]) as (monster, level):
+            path_controller = monster.get_controller(PathController)
+            path = level.paths[object_template["path"]]
+            if path_controller is not None and path is not None:
+                monster.position = path[0]
 
-        path_controller = monster.get_controller(PathController)
-        path = self._level.paths[object_template["path"]]
-        if path_controller is not None and path is not None:
-            monster.position = path[0]
-
-            path_controller.set_path(path)
-            path_controller.current_path_point = 1
-
-        self._level.add(monster)
+                path_controller.set_path(path)
+                path_controller.current_path_point = 1
 
     def _load_waves(self):
         self._waves = []

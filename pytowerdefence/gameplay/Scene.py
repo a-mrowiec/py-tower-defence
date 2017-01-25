@@ -1,5 +1,8 @@
 import pygame
 import pyscroll
+import importlib
+
+from contextlib import contextmanager
 from pyscroll.group import PyscrollGroup
 from pytmx.util_pygame import load_pygame
 
@@ -65,6 +68,18 @@ class Level:
 
     def draw(self, surface):
         self.group.draw(surface)
+
+
+class CreaturesFactory:
+    def __init__(self, level):
+        self._level = level
+
+    @contextmanager
+    def create_on_scene(self, name, **kwargs):
+        monsters_module = importlib.import_module("pytowerdefence.gameplay.Monsters")
+        monster = getattr(monsters_module, name)()
+        yield monster, self._level
+        self._level.add(monster)
 
 
 def is_visible(left, right):

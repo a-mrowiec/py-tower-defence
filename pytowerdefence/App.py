@@ -1,12 +1,11 @@
 import pygame
 from pygame.math import Vector2
 
-from pytowerdefence.UI import UIManager, Text, GameWindow, Button
+from pytowerdefence.UI import UIManager, GameWindow, Button
 from pytowerdefence.gameplay.AI import StandardAI
-from pytowerdefence.gameplay.Controllers import PathController
 from pytowerdefence.gameplay.Logic import WaveManager
 from pytowerdefence.gameplay.Monsters import Ogre, Bandit
-from pytowerdefence.gameplay.Scene import Level
+from pytowerdefence.gameplay.Scene import Level, CreaturesFactory
 
 
 class App:
@@ -18,6 +17,7 @@ class App:
         self._ui_manager = None
         self._game_window = None
         self.level = None
+        self._creatures_factory = None
 
     def on_add_tower(self, event):
         tower = Bandit()
@@ -35,8 +35,9 @@ class App:
         self._running = True
         self.level = Level(self.size)
         self.level.load("data/maps/test.tmx")
+        self._creatures_factory = CreaturesFactory(self.level)
 
-        self._wave_manager = WaveManager(level=self.level)
+        self._wave_manager = WaveManager(factory=self._creatures_factory)
         self._wave_manager.load("data/test_wave.json")
 
         self._game_window = GameWindow(self.level, self.width, self.height)
