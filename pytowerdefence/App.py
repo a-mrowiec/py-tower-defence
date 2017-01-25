@@ -1,7 +1,7 @@
 import pygame
 from pygame.math import Vector2
 
-from pytowerdefence.UI import UIManager, Text, GameWindow
+from pytowerdefence.UI import UIManager, Text, GameWindow, Button
 from pytowerdefence.gameplay.AI import StandardAI
 from pytowerdefence.gameplay.Controllers import PathController
 from pytowerdefence.gameplay.Logic import WaveManager
@@ -20,7 +20,9 @@ class App:
     def on_init(self):
         pygame.init()
         self._ui_manager = UIManager()
-        self._ui_manager.add_widget(Text("Testowy tekst"))
+        add_button = Button(img=pygame.image.load("data/add-button.png"))
+        add_button.position = Vector2(900, 650)
+        self._ui_manager.add_widget(add_button)
         self._display_surf = pygame.display.set_mode(self.size, pygame.HWSURFACE | pygame.DOUBLEBUF)
         self._running = True
         self.level = Level(self.size)

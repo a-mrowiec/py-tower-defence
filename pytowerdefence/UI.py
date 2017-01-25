@@ -9,8 +9,22 @@ class Widget(pygame.sprite.Sprite):
     """
     def __init__(self):
         self.z = 1
-        self.rect = pygame.Rect(0, 0, 0, 0)
-        self.position = Vector2()
+        self._rect = pygame.Rect(0, 0, 0, 0)
+        self._position = Vector2()
+
+    @property
+    def rect(self):
+        return self._rect
+
+    @property
+    def position(self):
+        return self._position
+
+    @position.setter
+    def position(self, value):
+        self._position = value
+        self._rect.x = value.x
+        self._rect.y = value.y
 
     def on_mouse_event(self, event):
         """
@@ -48,21 +62,51 @@ class Widget(pygame.sprite.Sprite):
 class Text(Widget):
     def __init__(self, text, size=24, color=(0, 0, 0)):
         super().__init__()
-        self.font = pygame.font.Font(pygame.font.get_default_font(), size)
-        self.surface = self.font.render(text, True, color)
-        self.rect.width = self.surface.get_width()
-        self.rect.height = self.surface.get_height()
+        self._color = color
+        self._size = size
+        self._text = None
+        self._font = None
+        self._surface = None
+        self.set_text(text)
+
+    def set_text(self, text):
+        if text is not None:
+            self._text = text
+            self._font = pygame.font.Font(pygame.font.get_default_font(), self._size)
+            self._surface = self.font.render(text, True, self._color)
+            self._rect.width = self.surface.get_width()
+            self._rect.height = self.surface.get_height()
 
     def draw(self, surface):
-        surface.blit(self.surface, self.position)
+        if self._surface is not None:
+            surface.blit(self.surface, self.position)
+
+
+class Button(Text):
+    def __init__(self, text=None, img=None, size=24, color=(0, 0, 0)):
+        super().__init__(text, size, color)
+        self._img = None
+        self.set_image(img)
+
+    def set_image(self, img):
+        self._img = img
+        if self._img is not None:
+            rect = self._img.get_rect()
+            self._rect.width = rect.width
+            self._rect.height = rect.height
+
+    def draw(self, surface):
+        if self._img is not None:
+            surface.blit(self._img, self.position)
+        super().draw(surface)
 
 
 class GameWindow(Widget):
     def __init__(self, level, width, height):
         super().__init__()
         self.z = 0
-        self.rect.width = width
-        self.rect.height = height
+        self._rect.width = width
+        self._rect.height = height
         self.level = level
 
     def on_mouse_event(self, event):
