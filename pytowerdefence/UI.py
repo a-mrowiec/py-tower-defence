@@ -111,43 +111,25 @@ class Button(Text):
         super().draw(surface)
 
 
-class GameWindowState(Enum):
-    IDLE = 0,
-    ADDING_TOWER = 1
-
-
 class GameWindow(Widget):
-    def __init__(self, level, width, height):
+    def __init__(self, width, height):
         super().__init__()
         self.z = 0
         self._rect.width = width
         self._rect.height = height
-        self.level = level
-        self.state = GameWindowState.IDLE
-        self._tower = None
-
-    def start_adding_tower(self, tower):
-        if self.state == GameWindowState.IDLE:
-            self._tower = tower
-            self.state = GameWindowState.ADDING_TOWER
+        self.mediator = None
 
     def on_mouse_motion_event(self, event):
-        if self.state == GameWindowState.ADDING_TOWER:
-            self._tower.position = Vector2(event.pos)
-            if self.level.is_rectangle_colliding(self._tower.rect):
-                print("Colliding")
+        if self.mediator is not None:
+            self.mediator.on_mouse_motion_event(event)
 
     def draw(self, surface):
-        if self.state == GameWindowState.ADDING_TOWER and self._tower is not None:
-            surface.blit(self._tower.image, [self._tower.rect.x, self._tower.rect.y])
+        if self.mediator is not None:
+            self.mediator.draw(surface)
 
     def on_mouse_click_event(self, event):
-        if self.state == GameWindowState.ADDING_TOWER:
-            self._tower = None
-            self.state = GameWindowState.IDLE
-
-        actor_clicked = self._find_clicked_actor(event.pos)
-        print("Actor clicked: ", actor_clicked)
+        if self.mediator is not None:
+            self.mediator.on_mouse_click_event(event)
 
     def _find_clicked_actor(self, pos):
         for actor in self.level.actor_iterator():
@@ -162,6 +144,7 @@ def is_keyboard_event(event):
 
 def is_mouse_click_event(event):
     return (event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.MOUSEBUTTONUP) and event.button == 1
+
 
 def is_mouse_motion_event(event):
     return event.type == pygame.MOUSEMOTION

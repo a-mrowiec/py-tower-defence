@@ -3,6 +3,7 @@ from pygame.math import Vector2
 
 from pytowerdefence.UI import UIManager, GameWindow, Button
 from pytowerdefence.gameplay.AI import StandardAI
+from pytowerdefence.gameplay.Action import ActionManager
 from pytowerdefence.gameplay.Logic import WaveManager
 from pytowerdefence.gameplay.Monsters import Ogre, Bandit
 from pytowerdefence.gameplay.Scene import Level, CreaturesFactory
@@ -18,11 +19,13 @@ class App:
         self._game_window = None
         self.level = None
         self._creatures_factory = None
+        self._action_manager = None
 
     def on_add_tower(self, event):
-        tower = Bandit()
-        self._game_window.start_adding_tower(tower)
-        tower.update(0.0)
+        if event.type == pygame.MOUSEBUTTONUP:
+            tower = Bandit()
+            self._action_manager.start_action('AddTower', tower=tower)
+            tower.update(0.0)
 
     def on_init(self):
         pygame.init()
@@ -40,7 +43,8 @@ class App:
         self._wave_manager = WaveManager(factory=self._creatures_factory)
         self._wave_manager.load("data/test_wave.json")
 
-        self._game_window = GameWindow(self.level, self.width, self.height)
+        self._game_window = GameWindow(self.width, self.height)
+        self._action_manager = ActionManager(self._game_window, self.level)
         self._ui_manager.add_widget(self._game_window)
 
         static_actor = Bandit()
@@ -60,6 +64,7 @@ class App:
             self._wave_manager.update(dt)
         self.level.update(dt)
         self._ui_manager.update(dt)
+        self._action_manager.update(dt)
 
     def on_render(self):
         self.level.draw(self._display_surf)
