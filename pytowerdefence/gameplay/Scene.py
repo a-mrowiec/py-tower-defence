@@ -34,7 +34,7 @@ class Level:
         self.group.add(sprite, layer=self.get_layer_index("actors"))
 
     def add_obstacle(self, obstacle):
-        self.group.add(obstacle, layer=self.get_layer_index("obstacles"))
+        self.tmx_data.get_layer_by_name("obstacles").append(obstacle)
 
     def actor_iterator(self):
         for o in self.group.sprites():
