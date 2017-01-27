@@ -1,8 +1,8 @@
+import importlib
+from contextlib import contextmanager
+
 import pygame
 import pyscroll
-import importlib
-
-from contextlib import contextmanager
 from pyscroll.group import PyscrollGroup
 from pytmx.util_pygame import load_pygame
 

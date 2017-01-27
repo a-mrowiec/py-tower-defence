@@ -14,7 +14,7 @@ class BaseAI:
 
 
 class StandardAI(BaseAI):
-    def __init__(self,debug=False):
+    def __init__(self, debug=False):
         super().__init__()
         self._debug = debug
 

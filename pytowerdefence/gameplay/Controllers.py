@@ -123,7 +123,6 @@ class RangeAttackController(AttackController):
 
 
 class DeathController(BaseController):
-
     def need_update(self):
         return self._actor.state == ActorState.DEATH
 

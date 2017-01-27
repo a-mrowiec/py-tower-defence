@@ -1,6 +1,6 @@
 from pytowerdefence.gameplay.AI import StandardAI
-from pytowerdefence.gameplay.Objects import Actor, ActorState
 from pytowerdefence.gameplay.Controllers import PathController, DeathController, RangeAttackController, AttackController
+from pytowerdefence.gameplay.Objects import Actor, ActorState
 
 rects = [(0, 154, 94, 77),
          (94, 154, 94, 77),

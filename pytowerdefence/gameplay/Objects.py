@@ -81,7 +81,7 @@ class GameObject(pygame.sprite.Sprite):
 
     @property
     def radius(self):
-        return max(self._rect.width/2.0, self._rect.height/2.0)
+        return max(self._rect.width / 2.0, self._rect.height / 2.0)
 
     @position.setter
     def position(self, value):
@@ -100,6 +100,7 @@ class Bullet(GameObject):
     """
     Class that represents bullet
     """
+
     def __init__(self, owner):
         super().__init__()
         self._target = None

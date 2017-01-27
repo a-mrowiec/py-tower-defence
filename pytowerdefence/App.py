@@ -1,11 +1,11 @@
 import pygame
 from pygame.math import Vector2
 
-from pytowerdefence.UI import UIManager, GameWindow, Button
+from pytowerdefence.UI import UIManager, GameWindow
 from pytowerdefence.gameplay.AI import StandardAI
 from pytowerdefence.gameplay.Action import ActionManager, GameActionButton
 from pytowerdefence.gameplay.Logic import WaveManager
-from pytowerdefence.gameplay.Monsters import Ogre, Bandit
+from pytowerdefence.gameplay.Monsters import Bandit
 from pytowerdefence.gameplay.Scene import Level, CreaturesFactory
 
 
@@ -44,7 +44,8 @@ class App:
         static_actor.statistics.team = 1
         self.level.add(static_actor)
 
-        add_button = GameActionButton(img=pygame.image.load("data/add-button.png"),action_name="AddTower",action_manager=self._action_manager, tower='Bandit')
+        add_button = GameActionButton(img=pygame.image.load("data/add-button.png"), action_name="AddTower",
+                                      action_manager=self._action_manager, tower='Bandit')
         add_button.position = Vector2(900, 650)
         self._ui_manager.add_widget(add_button)
 

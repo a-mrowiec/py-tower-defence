@@ -6,7 +6,7 @@ from pytowerdefence.gameplay.Graphics import AttackRangeDrawer
 
 
 class GameActionButton(Button):
-    def __init__(self, action_name, action_manager, text=None, img=None, size=24, color=(0,0,0), **kwargs):
+    def __init__(self, action_name, action_manager, text=None, img=None, size=24, color=(0, 0, 0), **kwargs):
         super().__init__(text, img, size, color)
         self._action_name = action_name
         self._action_args = kwargs
@@ -70,13 +70,12 @@ class AddTowerAction(BaseContinuousAction):
 
     def draw(self, surface):
         if self._tower is not None:
-            self._attack_range_drawer.color = (255,0 ,0) if self._colliding else (255,255,255)
+            self._attack_range_drawer.color = (255, 0, 0) if self._colliding else (255, 255, 255)
             self._attack_range_drawer.draw(surface)
             surface.blit(self._tower.image, [self._tower.rect.x, self._tower.rect.y])
 
 
 class ActionManager:
-
     def __init__(self, game_window, level, creatures_factory):
         self.game_window = game_window
         self._current_action = None

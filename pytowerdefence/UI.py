@@ -7,6 +7,7 @@ class Widget(pygame.sprite.Sprite):
     """
     Base class for any UI widget
     """
+
     def __init__(self):
         self.z = 1
         self._rect = pygame.Rect(0, 0, 0, 0)
@@ -161,6 +162,7 @@ class UIManager(object):
     """
     Manager of any widget
     """
+
     def __init__(self):
         self._widgets = {}
         self._focused_widget = None
@@ -171,7 +173,7 @@ class UIManager(object):
         :param dt:
         :return:
         """
-        for _ , layer in self._widgets.items():
+        for _, layer in self._widgets.items():
             for widget in layer:
                 widget.update(dt)
 
