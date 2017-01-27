@@ -1,5 +1,7 @@
 import pygame
 
+from pytowerdefence.gameplay.Scene import Camera
+
 
 class AttackRangeDrawer:
     def __init__(self, actor=None, color=(255, 255, 255)):
@@ -28,8 +30,10 @@ class AttackRangeDrawer:
                                (self._attack_range, self._attack_range), self._attack_range)
             pygame.draw.circle(self._surface, (self._color[0], self._color[1], self._color[2], 255),
                                (self._attack_range, self._attack_range), self._attack_range, 4)
+
+            on_screen_pos = Camera.to_screen_position(self._actor.position)
             surface.blit(self._surface,
-                         [self._actor.position.x - self._attack_range, self._actor.position.y - self._attack_range])
+                         [on_screen_pos.x - self._attack_range, on_screen_pos.y - self._attack_range])
 
     @property
     def color(self):

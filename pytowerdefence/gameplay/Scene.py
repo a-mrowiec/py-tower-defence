@@ -3,11 +3,35 @@ from contextlib import contextmanager
 
 import pygame
 import pyscroll
+from pygame.math import Vector2
 from pyscroll.group import PyscrollGroup
 from pytmx.util_pygame import load_pygame
 
 from pytowerdefence.gameplay.Objects import GameObject, Actor, ActorState
 
+
+class Camera:
+    _position = Vector2(0, 0)
+    _group = None
+    _map_layer = None
+
+    @classmethod
+    def set_up(cls, group, map_layer):
+        cls._group = group
+        cls._map_layer = map_layer
+
+    @classmethod
+    def set_position(cls, value):
+        cls._group.center(value)
+        cls._position = Vector2(cls._map_layer.get_center_offset())
+
+    @classmethod
+    def to_world_position(cls, screen_position):
+        return screen_position - cls._position
+
+    @classmethod
+    def to_screen_position(cls, world_position):
+        return world_position + cls._position
 
 class Level:
     def __init__(self, screen_size):
@@ -21,9 +45,9 @@ class Level:
     def load(self, filename):
         self.tmx_data = load_pygame(filename)
         self.map_data = pyscroll.TiledMapData(self.tmx_data)
-        self.map_layer = pyscroll.BufferedRenderer(self.map_data, self.screen_size)
+        self.map_layer = pyscroll.BufferedRenderer(self.map_data, self.screen_size, alpha=True)
         self.group = PyscrollGroup(map_layer=self.map_layer)
-
+        Camera.set_up(self.group, self.map_layer)
         for obj in self.tmx_data.get_layer_by_name("paths"):
             self.paths.append(obj.points)
 

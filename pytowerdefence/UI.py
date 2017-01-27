@@ -2,6 +2,8 @@ import pygame
 
 from pygame.math import Vector2
 
+from pytowerdefence.gameplay.Scene import Camera
+
 
 class Widget(pygame.sprite.Sprite):
     """
@@ -138,6 +140,8 @@ class GameWindow(Widget):
     def on_mouse_click_event(self, event):
         if self.mediator is not None:
             self.mediator.on_mouse_click_event(event)
+        else:
+            Camera.set_position(event.pos)
 
     def _find_clicked_actor(self, pos):
         for actor in self.level.actor_iterator():

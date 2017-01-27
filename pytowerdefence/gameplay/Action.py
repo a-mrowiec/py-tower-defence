@@ -3,6 +3,7 @@ from pygame.math import Vector2
 
 from pytowerdefence.UI import Button
 from pytowerdefence.gameplay.Graphics import AttackRangeDrawer
+from pytowerdefence.gameplay.Scene import Camera
 
 
 class GameActionButton(Button):
@@ -65,14 +66,14 @@ class AddTowerAction(BaseContinuousAction):
             self._action_manager.set_window_mediator(None)
 
     def on_mouse_motion_event(self, event):
-        self._tower.position = Vector2(event.pos)
+        self._tower.position = Camera.to_world_position(event.pos)
         self._colliding = self._action_manager.level.is_rectangle_colliding(self._tower.rect)
 
     def draw(self, surface):
         if self._tower is not None:
             self._attack_range_drawer.color = (255, 0, 0) if self._colliding else (255, 255, 255)
             self._attack_range_drawer.draw(surface)
-            surface.blit(self._tower.image, [self._tower.rect.x, self._tower.rect.y])
+            surface.blit(self._tower.image, Camera.to_screen_position([self._tower.rect.x, self._tower.rect.y]))
 
 
 class ActionManager:
