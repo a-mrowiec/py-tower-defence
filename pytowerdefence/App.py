@@ -3,7 +3,7 @@ from pygame.math import Vector2
 
 from pytowerdefence.UI import UIManager, GameWindow, Button
 from pytowerdefence.gameplay.AI import StandardAI
-from pytowerdefence.gameplay.Action import ActionManager
+from pytowerdefence.gameplay.Action import ActionManager, GameActionButton
 from pytowerdefence.gameplay.Logic import WaveManager
 from pytowerdefence.gameplay.Monsters import Ogre, Bandit
 from pytowerdefence.gameplay.Scene import Level, CreaturesFactory
@@ -21,19 +21,10 @@ class App:
         self._creatures_factory = None
         self._action_manager = None
 
-    def on_add_tower(self, event):
-        if event.type == pygame.MOUSEBUTTONUP:
-            tower = Bandit()
-            self._action_manager.start_action('AddTower', tower=tower)
-            tower.update(0.0)
-
     def on_init(self):
         pygame.init()
         self._ui_manager = UIManager()
-        add_button = Button(img=pygame.image.load("data/add-button.png"))
-        add_button.position = Vector2(900, 650)
-        add_button.on_mouse_click_event = self.on_add_tower
-        self._ui_manager.add_widget(add_button)
+
         self._display_surf = pygame.display.set_mode(self.size, pygame.HWSURFACE | pygame.DOUBLEBUF)
         self._running = True
         self.level = Level(self.size)
@@ -44,7 +35,7 @@ class App:
         self._wave_manager.load("data/test_wave.json")
 
         self._game_window = GameWindow(self.width, self.height)
-        self._action_manager = ActionManager(self._game_window, self.level)
+        self._action_manager = ActionManager(self._game_window, self.level, self._creatures_factory)
         self._ui_manager.add_widget(self._game_window)
 
         static_actor = Bandit()
@@ -52,6 +43,10 @@ class App:
         static_actor.set_ai(StandardAI())
         static_actor.statistics.team = 1
         self.level.add(static_actor)
+
+        add_button = GameActionButton(img=pygame.image.load("data/add-button.png"),action_name="AddTower",action_manager=self._action_manager, tower='Bandit')
+        add_button.position = Vector2(900, 650)
+        self._ui_manager.add_widget(add_button)
 
     def on_event(self, event):
         if event.type == pygame.QUIT:

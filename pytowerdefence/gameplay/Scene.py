@@ -33,6 +33,9 @@ class Level:
     def add(self, sprite):
         self.group.add(sprite, layer=self.get_layer_index("actors"))
 
+    def add_obstacle(self, obstacle):
+        self.group.add(obstacle, layer=self.get_layer_index("obstacles"))
+
     def actor_iterator(self):
         for o in self.group.sprites():
             if isinstance(o, Actor):
@@ -76,10 +79,13 @@ class CreaturesFactory:
 
     @contextmanager
     def create_on_scene(self, name, **kwargs):
-        monsters_module = importlib.import_module("pytowerdefence.gameplay.Monsters")
-        monster = getattr(monsters_module, name)()
+        monster = self.create(name, **kwargs)
         yield monster, self._level
         self._level.add(monster)
+
+    def create(self, name, **kwargs):
+        monsters_module = importlib.import_module("pytowerdefence.gameplay.Monsters")
+        return getattr(monsters_module, name)()
 
 
 def is_visible(left, right):
