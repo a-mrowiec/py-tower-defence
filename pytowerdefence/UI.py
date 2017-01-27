@@ -13,6 +13,7 @@ class Widget(pygame.sprite.Sprite):
         self.z = 1
         self._rect = pygame.Rect(0, 0, 0, 0)
         self._position = Vector2()
+        self._visible = True
 
     @property
     def rect(self):
@@ -27,6 +28,14 @@ class Widget(pygame.sprite.Sprite):
         self._position = value
         self._rect.x = value.x
         self._rect.y = value.y
+
+    @property
+    def visible(self):
+        return self._visible
+
+    @visible.setter
+    def visible(self, value):
+        self._visible = value
 
     def on_mouse_click_event(self, event):
         """
@@ -176,7 +185,7 @@ class UIManager(object):
         """
         for z in sorted(self._widgets):
             layer = self._widgets[z]
-            for widget in layer:
+            for widget in self._visible_widgets_iterator(layer):
                 widget.draw(surface)
 
     def add_widget(self, widget):
@@ -208,10 +217,15 @@ class UIManager(object):
             if self._focused_widget is not None:
                 self._focused_widget.on_keyboard_event(event)
 
+    def _visible_widgets_iterator(self, layer):
+        for widget in layer:
+            if widget.visible:
+                yield widget
+
     def _get_colliding_widget(self, pos):
         for z in sorted(self._widgets, reverse=True):
             layer = self._widgets[z]
-            for widget in layer:
+            for widget in self._visible_widgets_iterator(layer):
                 if widget.rect.collidepoint(pos):
                     return widget
         return None

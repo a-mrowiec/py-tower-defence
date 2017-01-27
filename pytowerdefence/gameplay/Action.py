@@ -1,11 +1,4 @@
-from enum import Enum
-
 from pygame.math import Vector2
-
-
-class GameWindowState(Enum):
-    IDLE = 0,
-    ADDING_TOWER = 1
 
 
 class BaseAction:
