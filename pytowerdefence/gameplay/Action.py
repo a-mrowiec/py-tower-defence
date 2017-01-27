@@ -2,6 +2,7 @@ import pygame
 from pygame.math import Vector2
 
 from pytowerdefence.UI import Button
+from pytowerdefence.gameplay.Graphics import AttackRangeDrawer
 
 
 class GameActionButton(Button):
@@ -39,12 +40,14 @@ class AddTowerAction(BaseContinuousAction):
         self._finished = False
         self._colliding = True
         self._tower = None
+        self._attack_range_drawer = None
 
     def perform(self, action_manager):
         self._action_manager = action_manager
         self._tower = self._action_manager.creatures_factory.create(self._tower_template_name)
         self._tower.update(0.0)
         self._action_manager.set_window_mediator(self)
+        self._attack_range_drawer = AttackRangeDrawer(self._tower)
 
     def is_finished(self):
         return self._finished
@@ -67,6 +70,8 @@ class AddTowerAction(BaseContinuousAction):
 
     def draw(self, surface):
         if self._tower is not None:
+            self._attack_range_drawer.color = (255,0 ,0) if self._colliding else (255,255,255)
+            self._attack_range_drawer.draw(surface)
             surface.blit(self._tower.image, [self._tower.rect.x, self._tower.rect.y])
 
 
