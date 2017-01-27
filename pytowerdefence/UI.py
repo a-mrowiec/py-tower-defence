@@ -199,6 +199,15 @@ class UIManager(object):
 
         self._widgets[widget.z].append(widget)
 
+    def remove_widget(self, widget):
+        """
+        Removes widget
+        :param widget:
+        :return:
+        """
+        if widget.z in self._widgets:
+            self._widgets[widget.z].remove(widget)
+
     def process_event(self, event):
         """
         Process any input event. Delegates event to proper widget when needed
