@@ -37,6 +37,7 @@ class App:
         self._game_window = GameWindow(self.width, self.height)
         self._action_manager = ActionManager(self._game_window, self.level, self._creatures_factory)
         self._ui_manager.add_widget(self._game_window)
+        self._ui_manager.focus_widget(self._game_window)
 
         static_actor = Bandit()
         static_actor.position = Vector2(877, 117)

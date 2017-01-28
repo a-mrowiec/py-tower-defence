@@ -1,5 +1,4 @@
 import pygame
-
 from pygame.math import Vector2
 
 from pytowerdefence.gameplay.Scene import Camera
@@ -128,6 +127,7 @@ class GameWindow(Widget):
         self._rect.width = width
         self._rect.height = height
         self.mediator = None
+        self.camera_movement_speed = 128
 
     def on_mouse_motion_event(self, event):
         if self.mediator is not None:
@@ -140,8 +140,16 @@ class GameWindow(Widget):
     def on_mouse_click_event(self, event):
         if self.mediator is not None:
             self.mediator.on_mouse_click_event(event)
-        else:
-            Camera.set_position(event.pos)
+
+    def on_keyboard_event(self, event):
+        if event.key == pygame.K_LEFT:
+            Camera.move_by((-self.camera_movement_speed, 0))
+        elif event.key == pygame.K_RIGHT:
+            Camera.move_by((self.camera_movement_speed, 0))
+        elif event.key == pygame.K_UP:
+            Camera.move_by((0, -self.camera_movement_speed))
+        elif event.key == pygame.K_DOWN:
+            Camera.move_by((0, self.camera_movement_speed))
 
     def _find_clicked_actor(self, pos):
         for actor in self.level.actor_iterator():
@@ -151,7 +159,7 @@ class GameWindow(Widget):
 
 
 def is_keyboard_event(event):
-    return pygame.event.event_name(event.type).startswith("K_")
+    return event.type == pygame.KEYDOWN
 
 
 def is_mouse_click_event(event):
@@ -170,6 +178,9 @@ class UIManager(object):
     def __init__(self):
         self._widgets = {}
         self._focused_widget = None
+
+    def focus_widget(self, widget):
+        self._focused_widget = widget
 
     def update(self, dt):
         """

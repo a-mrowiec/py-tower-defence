@@ -14,24 +14,31 @@ class Camera:
     _position = Vector2(0, 0)
     _group = None
     _map_layer = None
+    _half_screen_size = None
 
     @classmethod
-    def set_up(cls, group, map_layer):
+    def set_up(cls, group, map_layer, screen_size):
         cls._group = group
         cls._map_layer = map_layer
+        cls._half_screen_size = Vector2(screen_size)/2
+        cls._position = Vector2(cls._half_screen_size)
 
     @classmethod
     def set_position(cls, value):
         cls._group.center(value)
-        cls._position = Vector2(cls._map_layer.get_center_offset())
+        cls._position = cls._half_screen_size - cls._map_layer.get_center_offset()
 
     @classmethod
+    def move_by(cls, value):
+        cls.set_position(cls._position + value)
+    @classmethod
     def to_world_position(cls, screen_position):
-        return screen_position - cls._position
+        return screen_position + cls._position - cls._half_screen_size
 
     @classmethod
     def to_screen_position(cls, world_position):
-        return world_position + cls._position
+        return world_position - cls._position + cls._half_screen_size
+
 
 class Level:
     def __init__(self, screen_size):
@@ -47,7 +54,7 @@ class Level:
         self.map_data = pyscroll.TiledMapData(self.tmx_data)
         self.map_layer = pyscroll.BufferedRenderer(self.map_data, self.screen_size, alpha=True)
         self.group = PyscrollGroup(map_layer=self.map_layer)
-        Camera.set_up(self.group, self.map_layer)
+        Camera.set_up(self.group, self.map_layer, self.screen_size)
         for obj in self.tmx_data.get_layer_by_name("paths"):
             self.paths.append(obj.points)
 
