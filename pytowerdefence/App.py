@@ -9,6 +9,7 @@ from pytowerdefence.gameplay.Logic import WaveManager
 from pytowerdefence.gameplay.Monsters import Bandit
 from pytowerdefence.gameplay.Objects import PLAYER_TEAM
 from pytowerdefence.gameplay.Scene import Level, CreaturesFactory
+from pytowerdefence.gameplay.Widgets import TowerPanel
 
 
 class App:

@@ -1,7 +1,7 @@
 import pygame
 
 from pytowerdefence.UI import Button
-from pytowerdefence.gameplay.Graphics import AttackRangeDrawer
+from pytowerdefence.gameplay.Graphics import AttackRangeDrawer, HealthDrawer
 from pytowerdefence.gameplay.Objects import PLAYER_TEAM
 from pytowerdefence.gameplay.Scene import Camera, is_actor_in_player_team
 
@@ -43,6 +43,7 @@ class ScrollingAction(BaseContinuousAction):
     def __init__(self):
         self._action_manager = None
         self._attack_range_drawer = AttackRangeDrawer()
+        self._health_drawer = HealthDrawer()
 
     def is_finished(self):
         return False
@@ -63,12 +64,16 @@ class ScrollingAction(BaseContinuousAction):
 
     def on_mouse_motion_event(self, event):
         actor = self._action_manager.level.get_actor_on_position(
-            Camera.to_world_position(event.pos),
-            is_actor_in_player_team)
-        self._attack_range_drawer.actor = actor
+            Camera.to_world_position(event.pos))
+        if actor is not None and is_actor_in_player_team(actor):
+            self._attack_range_drawer.actor = actor
+        elif actor is None:
+            self._attack_range_drawer._actor = None
+        self._health_drawer.actor = actor
 
     def draw(self, surface):
         self._attack_range_drawer.draw(surface)
+        self._health_drawer.draw(surface)
 
 
 class TowerManagingAction(BaseContinuousAction):

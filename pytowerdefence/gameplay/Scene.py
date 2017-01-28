@@ -92,7 +92,7 @@ class Level:
                 return True
         return False
 
-    def get_actor_on_position(self, position, lambda_filter):
+    def get_actor_on_position(self, position, lambda_filter=None):
         if lambda_filter is not None:
             for actor in self.actor_iterator():
                 if actor.rect.collidepoint(position.x,
