@@ -7,7 +7,8 @@ from pygame.math import Vector2
 from pyscroll.group import PyscrollGroup
 from pytmx.util_pygame import load_pygame
 
-from pytowerdefence.gameplay.Objects import GameObject, Actor, ActorState, PLAYER_TEAM
+from pytowerdefence.gameplay.Objects import GameObject, Actor, ActorState, \
+    PLAYER_TEAM
 
 
 class Camera:
@@ -20,7 +21,7 @@ class Camera:
     def set_up(cls, group, map_layer, screen_size):
         cls._group = group
         cls._map_layer = map_layer
-        cls._half_screen_size = Vector2(screen_size)/2
+        cls._half_screen_size = Vector2(screen_size) / 2
         cls._position = Vector2(cls._half_screen_size)
 
     @classmethod
@@ -31,6 +32,7 @@ class Camera:
     @classmethod
     def move_by(cls, value):
         cls.set_position(cls._position + value)
+
     @classmethod
     def to_world_position(cls, screen_position):
         return screen_position + cls._position - cls._half_screen_size
@@ -52,14 +54,16 @@ class Level:
     def load(self, filename):
         self.tmx_data = load_pygame(filename)
         self.map_data = pyscroll.TiledMapData(self.tmx_data)
-        self.map_layer = pyscroll.BufferedRenderer(self.map_data, self.screen_size, alpha=True)
+        self.map_layer = pyscroll.BufferedRenderer(self.map_data,
+                                                   self.screen_size, alpha=True)
         self.group = PyscrollGroup(map_layer=self.map_layer)
         Camera.set_up(self.group, self.map_layer, self.screen_size)
         for obj in self.tmx_data.get_layer_by_name("paths"):
             self.paths.append(obj.points)
 
         for obstacle in self.obstacle_iterator():
-            obstacle.rect = pygame.Rect(obstacle.x, obstacle.y, obstacle.width, obstacle.height)
+            obstacle.rect = pygame.Rect(obstacle.x, obstacle.y, obstacle.width,
+                                        obstacle.height)
 
     def add(self, sprite):
         self.group.add(sprite, layer=self.get_layer_index("actors"))
@@ -91,7 +95,8 @@ class Level:
     def get_actor_on_position(self, position, lambda_filter):
         if lambda_filter is not None:
             for actor in self.actor_iterator():
-                if actor.rect.collidepoint(position.x, position.y) and lambda_filter(actor):
+                if actor.rect.collidepoint(position.x,
+                                           position.y) and lambda_filter(actor):
                     return actor
         else:
             for actor in self.actor_iterator():
@@ -103,7 +108,8 @@ class Level:
         self.group.update(dt)
         for o in self.actor_iterator():
             if o.state != ActorState.DEATH:
-                visible = pygame.sprite.spritecollide(o, self.group.sprites(), False, is_visible)
+                visible = pygame.sprite.spritecollide(o, self.group.sprites(),
+                                                      False, is_visible)
                 o.actors_in_attack_range = visible
 
         for new_object in GameObject._objects_to_create:
@@ -126,7 +132,8 @@ class CreaturesFactory:
         self._level.add(monster)
 
     def create(self, name, **kwargs):
-        monsters_module = importlib.import_module("pytowerdefence.gameplay.Monsters")
+        monsters_module = importlib.import_module(
+            "pytowerdefence.gameplay.Monsters")
         return getattr(monsters_module, name)()
 
 
@@ -141,5 +148,6 @@ def is_visible(left, right):
     if left == right:
         return False
 
-    return right.state != ActorState.DEATH and (left.position - right.position).length() \
+    return right.state != ActorState.DEATH and (
+                                               left.position - right.position).length() \
                                                < left.statistics.attack_range + left.radius + right.radius

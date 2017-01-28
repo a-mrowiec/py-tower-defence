@@ -39,7 +39,8 @@ class Widget(pygame.sprite.Sprite):
 
     def on_mouse_click_event(self, event):
         """
-        Invoked when widget is on top (based on Z property), and rect collides with click point
+        Invoked when widget is on top (based on Z property), and rect collides
+        with click point
         :param event:
         :return:
         """
@@ -47,7 +48,8 @@ class Widget(pygame.sprite.Sprite):
 
     def on_mouse_motion_event(self, event):
         """
-        Invoked when widget is on top (based on Z property) and mouse is moved over element
+        Invoked when widget is on top (based on Z property) and mouse is moved
+        over element
         :param event:
         :return:
         """
@@ -91,7 +93,8 @@ class Text(Widget):
     def set_text(self, text):
         if text is not None:
             self._text = text
-            self._font = pygame.font.Font(pygame.font.get_default_font(), self._size)
+            self._font = pygame.font.Font(pygame.font.get_default_font(),
+                                          self._size)
             self._surface = self.font.render(text, True, self._color)
             self._rect.width = self.surface.get_width()
             self._rect.height = self.surface.get_height()
@@ -163,7 +166,8 @@ def is_keyboard_event(event):
 
 
 def is_mouse_click_event(event):
-    return (event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.MOUSEBUTTONUP) and event.button == 1
+    return (
+           event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.MOUSEBUTTONUP) and event.button == 1
 
 
 def is_mouse_motion_event(event):

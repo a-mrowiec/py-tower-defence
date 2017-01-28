@@ -26,7 +26,8 @@ class App:
         pygame.init()
         self._ui_manager = UIManager()
 
-        self._display_surf = pygame.display.set_mode(self.size, pygame.HWSURFACE | pygame.DOUBLEBUF)
+        self._display_surf = pygame.display.set_mode(
+            self.size, pygame.HWSURFACE | pygame.DOUBLEBUF)
         self._running = True
         self.level = Level(self.size)
         self.level.load("data/maps/test.tmx")
@@ -36,7 +37,8 @@ class App:
         self._wave_manager.load("data/test_wave.json")
 
         self._game_window = GameWindow(self.width, self.height)
-        self._action_manager = ActionManager(self._game_window, self.level, self._creatures_factory)
+        self._action_manager = ActionManager(self._game_window, self.level,
+                                             self._creatures_factory)
         self._ui_manager.add_widget(self._game_window)
         self._ui_manager.focus_widget(self._game_window)
 
@@ -46,8 +48,10 @@ class App:
         static_actor.statistics.team = PLAYER_TEAM
         self.level.add(static_actor)
 
-        add_button = GameActionButton(img=pygame.image.load("data/add-button.png"), action_name="AddTower",
-                                      action_manager=self._action_manager, tower='Bandit')
+        add_button = GameActionButton(
+            img=pygame.image.load("data/add-button.png"),
+            action_name="AddTower",
+            action_manager=self._action_manager, tower='Bandit')
         add_button.position = Vector2(900, 650)
         self._ui_manager.add_widget(add_button)
 

@@ -53,8 +53,10 @@ class PathController(BaseController):
         return self.path and not self.finished
 
     def update(self, dt):
-        self._actor.go_to_direction(self.path[self._current_path_point] - self._actor.position)
-        to_goal_vector = self._actor.position - self.path[self._current_path_point]
+        self._actor.go_to_direction(
+            self.path[self._current_path_point] - self._actor.position)
+        to_goal_vector = self._actor.position - self.path[
+            self._current_path_point]
         dot = self.path_vector.dot(to_goal_vector)
         if dot < 0:
             self._current_path_point += 1
@@ -77,7 +79,8 @@ class PathController(BaseController):
 
     def _on_path_point_change(self):
         if len(self.path) > 0:
-            self.path_vector = self._actor.position - self.path[self._current_path_point]
+            self.path_vector = self._actor.position - self.path[
+                self._current_path_point]
 
 
 class AttackController(BaseController):
@@ -94,7 +97,8 @@ class AttackController(BaseController):
         self._target = value
         if self._actor.state != ActorState.ATTACK:
             if self._target in self._actor.actors_in_attack_range:
-                self._actor.rotate_to_direction(self._target.position - self._actor.position)
+                self._actor.rotate_to_direction(
+                    self._target.position - self._actor.position)
                 self._actor.change_state(ActorState.ATTACK)
 
     def need_update(self):

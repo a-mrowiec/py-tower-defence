@@ -7,7 +7,8 @@ from pytowerdefence.gameplay.Scene import Camera, is_actor_in_player_team
 
 
 class GameActionButton(Button):
-    def __init__(self, action_name, action_manager, text=None, img=None, size=24, color=(0, 0, 0), **kwargs):
+    def __init__(self, action_name, action_manager, text=None, img=None,
+                 size=24, color=(0, 0, 0), **kwargs):
         super().__init__(text, img, size, color)
         self._action_name = action_name
         self._action_args = kwargs
@@ -15,7 +16,8 @@ class GameActionButton(Button):
 
     def on_mouse_click_event(self, event):
         if event.type == pygame.MOUSEBUTTONUP:
-            self._action_manager.start_action(self._action_name, **self._action_args)
+            self._action_manager.start_action(self._action_name,
+                                              **self._action_args)
 
 
 class BaseAction:
@@ -56,8 +58,9 @@ class ScrollingAction(BaseContinuousAction):
         pass
 
     def on_mouse_motion_event(self, event):
-        actor = self._action_manager.level.get_actor_on_position(Camera.to_world_position(event.pos),
-                                                                 is_actor_in_player_team)
+        actor = self._action_manager.level.get_actor_on_position(
+            Camera.to_world_position(event.pos),
+            is_actor_in_player_team)
         self._attack_range_drawer.actor = actor
 
     def draw(self, surface):
@@ -75,7 +78,8 @@ class AddTowerAction(BaseContinuousAction):
 
     def perform(self, action_manager):
         self._action_manager = action_manager
-        self._tower = self._action_manager.creatures_factory.create(self._tower_template_name)
+        self._tower = self._action_manager.creatures_factory.create(
+            self._tower_template_name)
         self._tower.update(0.0)
         self._action_manager.set_window_mediator(self)
         self._attack_range_drawer = AttackRangeDrawer(self._tower)
@@ -97,13 +101,16 @@ class AddTowerAction(BaseContinuousAction):
 
     def on_mouse_motion_event(self, event):
         self._tower.position = Camera.to_world_position(event.pos)
-        self._colliding = self._action_manager.level.is_rectangle_colliding(self._tower.rect)
+        self._colliding = self._action_manager.level.is_rectangle_colliding(
+            self._tower.rect)
 
     def draw(self, surface):
         if self._tower is not None:
-            self._attack_range_drawer.color = (255, 0, 0) if self._colliding else (255, 255, 255)
+            self._attack_range_drawer.color = (255, 0, 0) if \
+                self._colliding else (255, 255, 255)
             self._attack_range_drawer.draw(surface)
-            surface.blit(self._tower.image, Camera.to_screen_position([self._tower.rect.x, self._tower.rect.y]))
+            surface.blit(self._tower.image, Camera.to_screen_position(
+                [self._tower.rect.x, self._tower.rect.y]))
 
 
 class ActionManager:
@@ -122,7 +129,8 @@ class ActionManager:
         self._perform_action(action_created)
 
     def update(self, dt):
-        if self._current_action is not None and self._current_action.is_finished():
+        if self._current_action is not None and \
+                self._current_action.is_finished():
             self.start_action("Scrolling")
 
     def _perform_action(self, action):

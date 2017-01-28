@@ -1,5 +1,6 @@
 from pytowerdefence.gameplay.AI import StandardAI
-from pytowerdefence.gameplay.Controllers import PathController, DeathController, RangeAttackController, AttackController
+from pytowerdefence.gameplay.Controllers import PathController, DeathController, \
+    RangeAttackController, AttackController
 from pytowerdefence.gameplay.Objects import Actor, ActorState
 
 rects = [(0, 154, 94, 77),
@@ -62,10 +63,14 @@ class Ogre(Actor):
         super().__init__()
         self._statistics.speed = 50
 
-        self.create_and_set_animation('data/ogre-move.png', ogre_move_rects, ActorState.MOVE)
-        self.create_and_set_animation('data/ogre-move.png', ogre_idle_rects, ActorState.IDLE)
-        self.create_and_set_animation('data/ogre-attack.png', ogre_move_rects, ActorState.ATTACK, loop=False)
-        self.create_and_set_animation('data/ogre-death.png', ogre_death_rects, ActorState.DEATH, loop=False, speed=[20])
+        self.create_and_set_animation('data/ogre-move.png', ogre_move_rects,
+                                      ActorState.MOVE)
+        self.create_and_set_animation('data/ogre-move.png', ogre_idle_rects,
+                                      ActorState.IDLE)
+        self.create_and_set_animation('data/ogre-attack.png', ogre_move_rects,
+                                      ActorState.ATTACK, loop=False)
+        self.create_and_set_animation('data/ogre-death.png', ogre_death_rects,
+                                      ActorState.DEATH, loop=False, speed=[20])
 
         self.statistics.attack_range = 2
         self.statistics.attack_damage = 1
@@ -85,11 +90,15 @@ class Bandit(Actor):
         super().__init__()
         self._statistics.speed = 50
 
-        self.create_and_set_animation('data/bandit-move.png', ogre_move_rects, ActorState.MOVE)
-        self.create_and_set_animation('data/bandit-move.png', ogre_idle_rects, ActorState.IDLE)
-        self.create_and_set_animation('data/bandit-attack.png', ogre_move_rects, ActorState.ATTACK, loop=False,
+        self.create_and_set_animation('data/bandit-move.png', ogre_move_rects,
+                                      ActorState.MOVE)
+        self.create_and_set_animation('data/bandit-move.png', ogre_idle_rects,
+                                      ActorState.IDLE)
+        self.create_and_set_animation('data/bandit-attack.png', ogre_move_rects,
+                                      ActorState.ATTACK, loop=False,
                                       speed=[10])
-        self.create_and_set_animation('data/bandit-death.png', ogre_death_rects, ActorState.DEATH, loop=False)
+        self.create_and_set_animation('data/bandit-death.png', ogre_death_rects,
+                                      ActorState.DEATH, loop=False)
 
         self.statistics.attack_range = 100
         self.statistics.attack_damage = 1

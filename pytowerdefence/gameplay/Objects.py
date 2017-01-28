@@ -6,9 +6,9 @@ from pygame.math import Vector2
 
 from pytowerdefence.Utils import rot_center
 
-
 ENEMY_TEAM = 0
 PLAYER_TEAM = 1
+
 
 class GameObject(pygame.sprite.Sprite):
     """
@@ -182,7 +182,8 @@ class Actor(GameObject):
 
         super().update(dt)
         if self._current_animation is not None and self._sprite is None:
-            self.image = rot_center(self._current_animation.getCurrentFrame(), self._angle)
+            self.image = rot_center(self._current_animation.getCurrentFrame(),
+                                    self._angle)
             if self._current_animation.isFinished():
                 for controller in self._controllers:
                     controller.on_animation_end()
@@ -311,4 +312,5 @@ class EvolvingActor(Actor):
                 self.set_animation(state, animation)
 
     def can_evolve(self):
-        return self._current_evolution_level < len(self._evolution_statistics) - 1
+        return self._current_evolution_level < len(
+            self._evolution_statistics) - 1

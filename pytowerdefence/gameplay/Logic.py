@@ -12,14 +12,24 @@ class StandardWave:
         self._number_of_objects = json_object["number_of_objects"]
 
     def should_run(self, time_elapsed):
-        return self._start_time <= time_elapsed and self._number_of_created_objects < self._number_of_objects
+        return self._start_time <= time_elapsed \
+               and self._number_of_created_objects < self._number_of_objects
 
     def get_objects_to_create(self, time_elapsed):
         objects_to_create = []
-        while self._number_of_created_objects * self._object_creation_interval + self._start_time < time_elapsed and self._number_of_created_objects < self._number_of_objects:
-            objects_to_create.append(self._get_object_template(self._number_of_created_objects))
+        while self._should_create(time_elapsed) \
+                and self._still_need_create_objects():
+            objects_to_create.append(
+                self._get_object_template(self._number_of_created_objects))
             self._number_of_created_objects += 1
         return objects_to_create
+
+    def _should_create(self, time_elapsed):
+        return self._number_of_created_objects * self._object_creation_interval\
+               + self._start_time < time_elapsed
+
+    def _still_need_create_objects(self):
+        return self._number_of_created_objects < self._number_of_objects
 
     def _get_object_template(self, index):
         return self._objects[0]
@@ -44,12 +54,14 @@ class WaveManager:
 
         for wave in self._waves:
             if wave.should_run(self._time_elapsed):
-                objects_to_create = wave.get_objects_to_create(self._time_elapsed)
+                objects_to_create = wave.get_objects_to_create(
+                    self._time_elapsed)
                 for obj_template in objects_to_create:
                     self._create_object(obj_template)
 
     def _create_object(self, object_template):
-        with self._creatures_factory.create_on_scene(object_template["name"]) as (monster, level):
+        with self._creatures_factory.create_on_scene(
+                object_template["name"]) as (monster, level):
             path_controller = monster.get_controller(PathController)
             path = level.paths[object_template["path"]]
             if path_controller is not None and path is not None:
@@ -60,7 +72,8 @@ class WaveManager:
 
     def _load_waves(self):
         self._waves = []
-        sorted_waves = sorted(self._data["waves"], key=lambda x: x["start_time"])
+        sorted_waves = sorted(self._data["waves"],
+                              key=lambda x: x["start_time"])
         for wave in sorted_waves:
             if wave["type"] == "standard":
                 self._waves.append(StandardWave(wave))
