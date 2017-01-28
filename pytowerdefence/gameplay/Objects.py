@@ -4,6 +4,8 @@ import pygame
 import pyganim
 from pygame.math import Vector2
 
+from pytowerdefence.Resources import ResourceClass
+from pytowerdefence.Resources import ResourceManager
 from pytowerdefence.Utils import rot_center
 
 ENEMY_TEAM = 0
@@ -110,7 +112,8 @@ class Bullet(GameObject):
         self._owner = owner
         self._start_position = Vector2(owner.position)
         self._speed = 500
-        self.sprite = pygame.image.load('data/flaming-arrow.png')
+        self.sprite = ResourceManager.load_image(ResourceClass.BULLETS,
+                                                 'small-knife.png')
 
     @property
     def target(self):
@@ -220,14 +223,6 @@ class Actor(GameObject):
 
     def set_animation(self, state, animation):
         self._animations[state] = animation
-
-    def create_and_set_animation(self, images_path, rects, state, **kwargs):
-        images = pyganim.getImagesFromSpriteSheet(images_path, rects=rects)
-        speed = kwargs.get('speed', [100])
-        frames = list(zip(images, speed * len(images)))
-        animation = pyganim.PygAnimation(frames)
-        animation.loop = kwargs.get('loop', True)
-        self.set_animation(state, animation)
 
     def change_state(self, new_state):
         if self._state != new_state:

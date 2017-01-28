@@ -1,0 +1,7 @@
+{
+  "image": "ogre-death.png",
+  "cols": 8,
+  "rows": 1,
+  "speed": 20,
+  "loop": 0
+}

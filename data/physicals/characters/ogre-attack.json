@@ -1,0 +1,7 @@
+{
+  "image": "ogre-attack.png",
+  "cols": 8,
+  "rows": 1,
+  "speed": 100,
+  "loop": 0
+}

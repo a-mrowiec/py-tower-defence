@@ -1,3 +1,4 @@
+from pytowerdefence.Resources import ResourceClass, ResourceManager
 from pytowerdefence.gameplay.AI import StandardAI
 from pytowerdefence.gameplay.Controllers import PathController, DeathController, \
     RangeAttackController, AttackController
@@ -63,14 +64,14 @@ class Ogre(Actor):
         super().__init__()
         self._statistics.speed = 50
 
-        self.create_and_set_animation('data/ogre-move.png', ogre_move_rects,
-                                      ActorState.MOVE)
-        self.create_and_set_animation('data/ogre-move.png', ogre_idle_rects,
-                                      ActorState.IDLE)
-        self.create_and_set_animation('data/ogre-attack.png', ogre_move_rects,
-                                      ActorState.ATTACK, loop=False)
-        self.create_and_set_animation('data/ogre-death.png', ogre_death_rects,
-                                      ActorState.DEATH, loop=False, speed=[20])
+        self.set_animation(ActorState.IDLE,ResourceManager.load_animation(
+            ResourceClass.CHARACTERS, 'ogre-move.json'))
+        self.set_animation(ActorState.MOVE,ResourceManager.load_animation(
+            ResourceClass.CHARACTERS, 'ogre-move.json'))
+        self.set_animation(ActorState.ATTACK, ResourceManager.load_animation(
+            ResourceClass.CHARACTERS, 'ogre-attack.json'))
+        self.set_animation(ActorState.DEATH, ResourceManager.load_animation(
+            ResourceClass.CHARACTERS, 'ogre-death.json'))
 
         self.statistics.attack_range = 2
         self.statistics.attack_damage = 1
@@ -90,15 +91,14 @@ class Bandit(Actor):
         super().__init__()
         self._statistics.speed = 50
 
-        self.create_and_set_animation('data/bandit-move.png', ogre_move_rects,
-                                      ActorState.MOVE)
-        self.create_and_set_animation('data/bandit-move.png', ogre_idle_rects,
-                                      ActorState.IDLE)
-        self.create_and_set_animation('data/bandit-attack.png', ogre_move_rects,
-                                      ActorState.ATTACK, loop=False,
-                                      speed=[10])
-        self.create_and_set_animation('data/bandit-death.png', ogre_death_rects,
-                                      ActorState.DEATH, loop=False)
+        self.set_animation(ActorState.MOVE, ResourceManager.load_animation(
+            ResourceClass.CHARACTERS, 'bandit-move.json'))
+        self.set_animation(ActorState.IDLE, ResourceManager.load_animation(
+            ResourceClass.CHARACTERS, 'bandit-idle.json'))
+        self.set_animation(ActorState.ATTACK, ResourceManager.load_animation(
+            ResourceClass.CHARACTERS, 'bandit-attack.json'))
+        self.set_animation(ActorState.DEATH, ResourceManager.load_animation(
+            ResourceClass.CHARACTERS, 'bandit-death.json'))
 
         self.statistics.attack_range = 100
         self.statistics.attack_damage = 1

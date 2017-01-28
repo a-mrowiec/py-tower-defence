@@ -1,6 +1,7 @@
 import pygame
 from pygame.math import Vector2
 
+from pytowerdefence.Resources import ResourceManager, ResourceClass
 from pytowerdefence.UI import UIManager, GameWindow
 from pytowerdefence.gameplay.AI import StandardAI
 from pytowerdefence.gameplay.Action import ActionManager, GameActionButton
@@ -49,7 +50,7 @@ class App:
         self.level.add(static_actor)
 
         add_button = GameActionButton(
-            img=pygame.image.load("data/add-button.png"),
+            img=ResourceManager.load_image(ResourceClass.UI, 'add-button.png'),
             action_name="AddTower",
             action_manager=self._action_manager, tower='Bandit')
         add_button.position = Vector2(900, 650)
