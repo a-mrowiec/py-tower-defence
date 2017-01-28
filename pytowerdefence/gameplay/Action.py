@@ -1,9 +1,9 @@
 import pygame
-from pygame.math import Vector2
 
 from pytowerdefence.UI import Button
 from pytowerdefence.gameplay.Graphics import AttackRangeDrawer
-from pytowerdefence.gameplay.Scene import Camera
+from pytowerdefence.gameplay.Objects import PLAYER_TEAM
+from pytowerdefence.gameplay.Scene import Camera, is_actor_in_player_team
 
 
 class GameActionButton(Button):
@@ -33,6 +33,36 @@ class BaseContinuousAction(BaseAction):
     def is_finished(self):
         return True
 
+    def on_break(self):
+        pass
+
+
+class ScrollingAction(BaseContinuousAction):
+    def __init__(self):
+        self._action_manager = None
+        self._attack_range_drawer = AttackRangeDrawer()
+
+    def is_finished(self):
+        return False
+
+    def perform(self, action_manager):
+        self._action_manager = action_manager
+        self._action_manager.set_window_mediator(self)
+
+    def on_break(self):
+        self._action_manager.set_window_mediator(None)
+
+    def on_mouse_click_event(self, event):
+        pass
+
+    def on_mouse_motion_event(self, event):
+        actor = self._action_manager.level.get_actor_on_position(Camera.to_world_position(event.pos),
+                                                                 is_actor_in_player_team)
+        self._attack_range_drawer.actor = actor
+
+    def draw(self, surface):
+        self._attack_range_drawer.draw(surface)
+
 
 class AddTowerAction(BaseContinuousAction):
     def __init__(self, tower, **kwargs):
@@ -60,7 +90,7 @@ class AddTowerAction(BaseContinuousAction):
         if not self._colliding:
             self._action_manager.level.add(self._tower)
             self._action_manager.level.add_obstacle(self._tower)
-            self._tower.statistics.team = 1
+            self._tower.statistics.team = PLAYER_TEAM
             self._tower = None
             self._finished = True
             self._action_manager.set_window_mediator(None)
@@ -93,7 +123,7 @@ class ActionManager:
 
     def update(self, dt):
         if self._current_action is not None and self._current_action.is_finished():
-            self._current_action = None
+            self.start_action("Scrolling")
 
     def _perform_action(self, action):
         action.perform(self)
@@ -106,4 +136,7 @@ class ActionManager:
             self._current_action = None
 
     def create_action(self, name, **kwargs):
-        return AddTowerAction(kwargs['tower'])
+        if name == 'Scrolling':
+            return ScrollingAction()
+        else:
+            return AddTowerAction(kwargs['tower'])

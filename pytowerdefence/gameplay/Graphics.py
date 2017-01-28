@@ -18,11 +18,12 @@ class AttackRangeDrawer:
 
     @actor.setter
     def actor(self, value):
-        self._actor = value
-        if self._actor is not None:
-            self._attack_range = int(self._actor.statistics.attack_range + self._actor.radius)
-            self._surface = pygame.Surface((self._attack_range * 2, self._attack_range * 2), pygame.SRCALPHA)
-            self._surface.fill((0, 0, 0, 0))
+        if self._actor != value:
+            self._actor = value
+            if self._actor is not None:
+                self._attack_range = int(self._actor.statistics.attack_range + self._actor.radius)
+                self._surface = pygame.Surface((self._attack_range * 2, self._attack_range * 2), pygame.SRCALPHA)
+                self._surface.fill((0, 0, 0, 0))
 
     def draw(self, surface):
         if self._actor is not None:

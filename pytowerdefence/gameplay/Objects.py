@@ -7,6 +7,9 @@ from pygame.math import Vector2
 from pytowerdefence.Utils import rot_center
 
 
+ENEMY_TEAM = 0
+PLAYER_TEAM = 1
+
 class GameObject(pygame.sprite.Sprite):
     """
     Base class for any game object, which can be drawed and updated
@@ -150,7 +153,7 @@ class ActorState(Enum):
 
 class ActorStatistics:
     def __init__(self):
-        self.team = 0
+        self.team = ENEMY_TEAM
         self.current_health = 0
         self.max_health = 0
         self.speed = 0

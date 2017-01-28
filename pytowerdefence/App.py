@@ -6,6 +6,7 @@ from pytowerdefence.gameplay.AI import StandardAI
 from pytowerdefence.gameplay.Action import ActionManager, GameActionButton
 from pytowerdefence.gameplay.Logic import WaveManager
 from pytowerdefence.gameplay.Monsters import Bandit
+from pytowerdefence.gameplay.Objects import PLAYER_TEAM
 from pytowerdefence.gameplay.Scene import Level, CreaturesFactory
 
 
@@ -42,7 +43,7 @@ class App:
         static_actor = Bandit()
         static_actor.position = Vector2(877, 117)
         static_actor.set_ai(StandardAI())
-        static_actor.statistics.team = 1
+        static_actor.statistics.team = PLAYER_TEAM
         self.level.add(static_actor)
 
         add_button = GameActionButton(img=pygame.image.load("data/add-button.png"), action_name="AddTower",

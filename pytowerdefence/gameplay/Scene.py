@@ -7,7 +7,7 @@ from pygame.math import Vector2
 from pyscroll.group import PyscrollGroup
 from pytmx.util_pygame import load_pygame
 
-from pytowerdefence.gameplay.Objects import GameObject, Actor, ActorState
+from pytowerdefence.gameplay.Objects import GameObject, Actor, ActorState, PLAYER_TEAM
 
 
 class Camera:
@@ -88,6 +88,17 @@ class Level:
                 return True
         return False
 
+    def get_actor_on_position(self, position, lambda_filter):
+        if lambda_filter is not None:
+            for actor in self.actor_iterator():
+                if actor.rect.collidepoint(position.x, position.y) and lambda_filter(actor):
+                    return actor
+        else:
+            for actor in self.actor_iterator():
+                if actor.rect.collidepoint(position.x, position.y):
+                    return actor
+        return None
+
     def update(self, dt):
         self.group.update(dt)
         for o in self.actor_iterator():
@@ -117,6 +128,10 @@ class CreaturesFactory:
     def create(self, name, **kwargs):
         monsters_module = importlib.import_module("pytowerdefence.gameplay.Monsters")
         return getattr(monsters_module, name)()
+
+
+def is_actor_in_player_team(actor):
+    return actor.statistics.team == PLAYER_TEAM
 
 
 def is_visible(left, right):
