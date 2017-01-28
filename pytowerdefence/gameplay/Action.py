@@ -55,7 +55,11 @@ class ScrollingAction(BaseContinuousAction):
         self._action_manager.set_window_mediator(None)
 
     def on_mouse_click_event(self, event):
-        pass
+        if event.type == pygame.MOUSEBUTTONUP:
+            if self._attack_range_drawer.actor is not None:
+                self._action_manager.\
+                    start_action("TowerManaging",
+                                 attack_range_drawer=self._attack_range_drawer)
 
     def on_mouse_motion_event(self, event):
         actor = self._action_manager.level.get_actor_on_position(
@@ -65,6 +69,38 @@ class ScrollingAction(BaseContinuousAction):
 
     def draw(self, surface):
         self._attack_range_drawer.draw(surface)
+
+
+class TowerManagingAction(BaseContinuousAction):
+    def __init__(self, **kwargs):
+        self._action_manager = None
+        self._attack_range_drawer = kwargs["attack_range_drawer"]
+
+    def is_finished(self):
+        return self._attack_range_drawer.actor is None
+
+    def perform(self, action_manager):
+        self._action_manager = action_manager
+        self._action_manager.set_window_mediator(self)
+
+    def on_break(self):
+        self._action_manager.set_window_mediator(None)
+
+    def draw(self, surface):
+        self._attack_range_drawer.draw(surface)
+
+    def on_mouse_click_event(self, event):
+        if event.type == pygame.MOUSEBUTTONUP:
+            world_pos = Camera.to_world_position(event.pos)
+            clicked_actor = self._action_manager.level.get_actor_on_position(
+                world_pos, is_actor_in_player_team)
+            self._marked_actor_changed(clicked_actor)
+
+    def _marked_actor_changed(self, actor):
+        self._attack_range_drawer.actor = actor
+
+    def on_mouse_motion_event(self, event):
+        pass
 
 
 class AddTowerAction(BaseContinuousAction):
@@ -146,5 +182,7 @@ class ActionManager:
     def create_action(self, name, **kwargs):
         if name == 'Scrolling':
             return ScrollingAction()
+        elif name == 'TowerManaging':
+            return TowerManagingAction(**kwargs)
         else:
             return AddTowerAction(kwargs['tower'])
