@@ -75,7 +75,7 @@ class HealthDrawer:
             rect = pygame.Rect(self.actor.rect)
             rect.width += 10
             rect.height += 10
-            rect.center = Vector2(self.actor.rect.center)
+            rect.center = Camera.to_screen_position(self.actor.rect.center)
             percentage = self.actor.statistics.current_health/self.actor.statistics.max_health
             end_angle = pi * percentage * 2
             pygame.draw.arc(surface, (255, 0, 0), rect, 0, end_angle, 8)
