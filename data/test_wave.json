@@ -1,5 +1,15 @@
 {
   "waves": [
+     {
+      "type": "standard",
+      "number_of_objects": 1,
+      "objects": [{
+        "name": "Dragon",
+        "path": 1
+      }],
+      "start_time": 1,
+      "creation_interval": 2
+    },
     {
       "type": "standard",
       "number_of_objects": 0,

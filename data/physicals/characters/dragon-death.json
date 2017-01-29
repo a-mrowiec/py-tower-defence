@@ -1,0 +1,7 @@
+{
+  "image": "dragon-death.png",
+  "cols": 8,
+  "rows": 2,
+  "speed": 20,
+  "loop": 0
+}

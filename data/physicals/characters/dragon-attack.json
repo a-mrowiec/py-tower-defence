@@ -1,0 +1,7 @@
+{
+  "image": "dragon-attack.png",
+  "cols": 4,
+  "rows": 1,
+  "speed": 100,
+  "loop": 0
+}

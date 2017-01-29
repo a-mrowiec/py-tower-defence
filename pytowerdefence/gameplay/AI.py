@@ -19,7 +19,7 @@ class StandardAI(BaseAI):
         self._debug = debug
 
     def update(self, dt):
-        if self._actor.state != ActorState.ATTACK:
+        if self._actor.state == ActorState.IDLE:
             for t in self._actor.actors_in_attack_range:
                 if t.statistics.team != self._actor.statistics.team and \
                                 t.state != ActorState.DEATH:

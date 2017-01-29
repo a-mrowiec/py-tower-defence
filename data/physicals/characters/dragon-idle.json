@@ -1,0 +1,5 @@
+{
+  "image": "dragon-move.png",
+  "rects": [[0, 0, 128, 128]],
+  "speed": 10
+}

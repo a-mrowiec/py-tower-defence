@@ -18,4 +18,4 @@ class GameActionButton(Button):
             self._action_manager.start_action(self._action)
 
     def update(self, dt):
-        self.disabled = self._action_manager.is_action_allowed(self._action)
+        self.disabled = not self._action_manager.is_action_allowed(self._action)
