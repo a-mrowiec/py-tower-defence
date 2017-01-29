@@ -109,6 +109,28 @@ class Button(Text):
         super().__init__(text, size, color)
         self._img = None
         self.set_image(img)
+        self._click_callback = None
+        self._disabled = False
+
+    @property
+    def click_callback(self):
+        return self._click_callback
+
+    @click_callback.setter
+    def click_callback(self, value):
+        self._click_callback = value
+
+    @property
+    def disabled(self):
+        return self._disabled
+
+    @disabled.setter
+    def disabled(self, value):
+        self._disabled = value
+
+    def on_mouse_click_event(self, event):
+        if not self._disabled and self._click_callback is not None:
+            self._click_callback(event)
 
     def set_image(self, img):
         self._img = img
