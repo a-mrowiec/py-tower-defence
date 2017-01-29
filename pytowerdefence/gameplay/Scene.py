@@ -43,7 +43,8 @@ class Camera:
 
 
 class Level:
-    def __init__(self, screen_size):
+    def __init__(self, screen_size, logic_manager):
+        self._logic_manager = logic_manager
         self.screen_size = screen_size
         self.tmx_data = None
         self.map_data = None
@@ -65,8 +66,9 @@ class Level:
             obstacle.rect = pygame.Rect(obstacle.x, obstacle.y, obstacle.width,
                                         obstacle.height)
 
-    def add(self, sprite):
-        self.group.add(sprite, layer=self.get_layer_index("actors"))
+    def add(self, object):
+        self.group.add(object, layer=self.get_layer_index("actors"))
+        self._logic_manager.on_object_added_to_scene(object)
 
     def add_obstacle(self, obstacle):
         self.tmx_data.get_layer_by_name("obstacles").append(obstacle)

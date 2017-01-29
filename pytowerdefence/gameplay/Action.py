@@ -1,27 +1,15 @@
 import pygame
 
-from pytowerdefence.UI import Button
 from pytowerdefence.gameplay.Graphics import AttackRangeDrawer, HealthDrawer
 from pytowerdefence.gameplay.Objects import PLAYER_TEAM
 from pytowerdefence.gameplay.Scene import Camera, is_actor_in_player_team
 
 
-class GameActionButton(Button):
-    def __init__(self, action_name, action_manager, text=None, img=None,
-                 size=24, color=(0, 0, 0), **kwargs):
-        super().__init__(text, img, size, color)
-        self._action_name = action_name
-        self._action_args = kwargs
+class BaseAction:
+    def __init__(self, action_manager):
         self._action_manager = action_manager
 
-    def on_mouse_click_event(self, event):
-        if event.type == pygame.MOUSEBUTTONUP:
-            self._action_manager.start_action(self._action_name,
-                                              **self._action_args)
-
-
-class BaseAction:
-    def perform(self, action_manager):
+    def perform(self):
         pass
 
     def is_continuous(self):
@@ -40,16 +28,15 @@ class BaseContinuousAction(BaseAction):
 
 
 class ScrollingAction(BaseContinuousAction):
-    def __init__(self):
-        self._action_manager = None
+    def __init__(self, action_manager):
+        super().__init__(action_manager)
         self._attack_range_drawer = AttackRangeDrawer()
         self._health_drawer = HealthDrawer()
 
     def is_finished(self):
         return False
 
-    def perform(self, action_manager):
-        self._action_manager = action_manager
+    def perform(self):
         self._action_manager.set_window_mediator(self)
 
     def on_break(self):
@@ -59,8 +46,8 @@ class ScrollingAction(BaseContinuousAction):
         if event.type == pygame.MOUSEBUTTONUP:
             if self._attack_range_drawer.actor is not None:
                 self._action_manager.\
-                    start_action("TowerManaging",
-                                 attack_range_drawer=self._attack_range_drawer)
+                    create_and_start_action("TowerManaging",
+                                            attack_range_drawer=self._attack_range_drawer)
 
     def on_mouse_motion_event(self, event):
         actor = self._action_manager.level.get_actor_on_position(
@@ -77,15 +64,14 @@ class ScrollingAction(BaseContinuousAction):
 
 
 class TowerManagingAction(BaseContinuousAction):
-    def __init__(self, **kwargs):
-        self._action_manager = None
+    def __init__(self, action_manager, **kwargs):
+        super().__init__(action_manager)
         self._attack_range_drawer = kwargs["attack_range_drawer"]
 
     def is_finished(self):
         return self._attack_range_drawer.actor is None
 
-    def perform(self, action_manager):
-        self._action_manager = action_manager
+    def perform(self):
         self._action_manager.set_window_mediator(self)
 
     def on_break(self):
@@ -109,16 +95,16 @@ class TowerManagingAction(BaseContinuousAction):
 
 
 class AddTowerAction(BaseContinuousAction):
-    def __init__(self, tower, **kwargs):
+    def __init__(self, action_manager, tower, **kwargs):
+        super().__init__(action_manager)
         self._tower_template_name = tower
-        self._action_manager = None
         self._finished = False
         self._colliding = True
         self._tower = None
         self._attack_range_drawer = None
 
-    def perform(self, action_manager):
-        self._action_manager = action_manager
+    def perform(self):
+        self._finished = False
         self._tower = self._action_manager.creatures_factory.create(
             self._tower_template_name)
         self._tower.update(0.0)
@@ -155,27 +141,38 @@ class AddTowerAction(BaseContinuousAction):
 
 
 class ActionManager:
-    def __init__(self, game_window, level, creatures_factory):
+    def __init__(self, game_window, level, creatures_factory, logic_manager):
         self.game_window = game_window
         self._current_action = None
         self.level = level
         self.creatures_factory = creatures_factory
+        self.logic_manager = logic_manager
+        self.create_and_start_action("Scrolling")
 
     def set_window_mediator(self, mediator):
         self.game_window.mediator = mediator
 
-    def start_action(self, name, **kwargs):
-        self._stop_other_action()
+    def create_and_start_action(self, name, **kwargs):
         action_created = self.create_action(name, **kwargs)
-        self._perform_action(action_created)
+        return self.start_action(action_created)
+
+    def start_action(self, action):
+        if self.is_action_allowed(action):
+            self._stop_other_action()
+            self._perform_action(action)
+            return True
+        return False
+
+    def is_action_allowed(self, action):
+        return True
 
     def update(self, dt):
         if self._current_action is not None and \
                 self._current_action.is_finished():
-            self.start_action("Scrolling")
+            self.create_and_start_action("Scrolling")
 
     def _perform_action(self, action):
-        action.perform(self)
+        action.perform()
         if action.is_continuous():
             self._current_action = action
 
@@ -186,8 +183,8 @@ class ActionManager:
 
     def create_action(self, name, **kwargs):
         if name == 'Scrolling':
-            return ScrollingAction()
+            return ScrollingAction(self)
         elif name == 'TowerManaging':
-            return TowerManagingAction(**kwargs)
+            return TowerManagingAction(self, **kwargs)
         else:
-            return AddTowerAction(kwargs['tower'])
+            return AddTowerAction(self, kwargs['tower'])

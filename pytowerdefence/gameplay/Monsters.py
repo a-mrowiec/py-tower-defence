@@ -47,7 +47,7 @@ class Bandit(Actor):
             ResourceClass.CHARACTERS, 'bandit-death.json'))
 
         self.statistics.attack_range = 100
-        self.statistics.attack_damage = 1
+        self.statistics.attack_damage = 15
         self.statistics.max_health = self.statistics.current_health = 100
         self._play_current_animation()
 

@@ -4,12 +4,12 @@ from pygame.math import Vector2
 from pytowerdefence.Resources import ResourceManager, ResourceClass
 from pytowerdefence.UI import UIManager, GameWindow
 from pytowerdefence.gameplay.AI import StandardAI
-from pytowerdefence.gameplay.Action import ActionManager, GameActionButton
-from pytowerdefence.gameplay.Logic import WaveManager
+from pytowerdefence.gameplay.Action import ActionManager
+from pytowerdefence.gameplay.Logic import WaveManager, LogicManager
 from pytowerdefence.gameplay.Monsters import Bandit
 from pytowerdefence.gameplay.Objects import PLAYER_TEAM
 from pytowerdefence.gameplay.Scene import Level, CreaturesFactory
-from pytowerdefence.gameplay.Widgets import TowerPanel
+from pytowerdefence.gameplay.Widgets import GameActionButton
 
 
 class App:
@@ -23,15 +23,17 @@ class App:
         self.level = None
         self._creatures_factory = None
         self._action_manager = None
+        self._logic_manager = None
 
     def on_init(self):
         pygame.init()
+        self._logic_manager = LogicManager()
         self._ui_manager = UIManager()
 
         self._display_surf = pygame.display.set_mode(
             self.size, pygame.HWSURFACE | pygame.DOUBLEBUF)
         self._running = True
-        self.level = Level(self.size)
+        self.level = Level(self.size, self._logic_manager)
         self.level.load("data/maps/test.tmx")
         self._creatures_factory = CreaturesFactory(self.level)
 
@@ -40,7 +42,7 @@ class App:
 
         self._game_window = GameWindow(self.width, self.height)
         self._action_manager = ActionManager(self._game_window, self.level,
-                                             self._creatures_factory)
+                                             self._creatures_factory, self._logic_manager)
         self._ui_manager.add_widget(self._game_window)
         self._ui_manager.focus_widget(self._game_window)
 
@@ -68,6 +70,7 @@ class App:
             self._wave_manager.update(dt)
         self.level.update(dt)
         self._ui_manager.update(dt)
+        self._logic_manager.update(dt)
         self._action_manager.update(dt)
 
     def on_render(self):

@@ -28,6 +28,7 @@ class GameObject(pygame.sprite.Sprite):
         self.image = None
         self._sprite = None
         self._angle = 0
+        self._kill_callback = None
 
     def update(self, dt):
         """
@@ -93,11 +94,21 @@ class GameObject(pygame.sprite.Sprite):
         self._position = Vector2(value)
         self._rect.center = self._position
 
+    @property
+    def kill_callback(self):
+        return self._kill_callback
+
+    @kill_callback.setter
+    def kill_callback(self, value):
+        self._kill_callback = value
+
     def rotate_to_direction(self, direction):
         self._angle = direction.angle_to(Vector2(0, -1))
 
     def kill(self):
         self.alive = False
+        if self._kill_callback is not None:
+            self._kill_callback(self)
         super().kill()
 
 
