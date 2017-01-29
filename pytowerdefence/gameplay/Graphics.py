@@ -1,8 +1,8 @@
 import pygame
-from pygame.math import Vector2
 
+from pytowerdefence.Resources import ResourceManager, ResourceClass
+from pytowerdefence.Utils import half_size_of_rect
 from pytowerdefence.gameplay.Scene import Camera
-from math import pi
 
 
 class AttackRangeDrawer:
@@ -33,11 +33,11 @@ class AttackRangeDrawer:
     def _redraw(self):
         self._surface.fill((0, 0, 0, 0))
         pygame.draw.circle(self._surface, (
-        self._color[0], self._color[1], self._color[2], 128),
+            self._color[0], self._color[1], self._color[2], 128),
                            (self._attack_range, self._attack_range),
                            self._attack_range)
         pygame.draw.circle(self._surface, (
-        self._color[0], self._color[1], self._color[2], 255),
+            self._color[0], self._color[1], self._color[2], 255),
                            (self._attack_range, self._attack_range),
                            self._attack_range, 4)
 
@@ -59,8 +59,12 @@ class AttackRangeDrawer:
 
 
 class HealthDrawer:
-    def __init__(self, actor = None):
+    def __init__(self, actor=None):
         self._actor = actor
+        self._background = ResourceManager.load_image(
+            ResourceClass.UI, 'health-bar-background.png')
+        self._progress = ResourceManager.load_image(
+            ResourceClass.UI, 'health-bar.png')
 
     @property
     def actor(self):
@@ -72,10 +76,17 @@ class HealthDrawer:
 
     def draw(self, surface):
         if self._actor is not None:
-            rect = pygame.Rect(self.actor.rect)
-            rect.width += 10
-            rect.height += 10
-            rect.center = Camera.to_screen_position(self.actor.rect.center)
-            percentage = self.actor.statistics.current_health/self.actor.statistics.max_health
-            end_angle = pi * percentage * 2
-            pygame.draw.arc(surface, (255, 0, 0), rect, 0, end_angle, 8)
+            statistics = self.actor.statistics
+            percentage = statistics.current_health / statistics.max_health
+
+            rect = self._background.get_rect()
+            rect.center = Camera.to_screen_position(
+                self.actor.position) - half_size_of_rect(
+                self.actor.rect) + half_size_of_rect(
+                self._background.get_rect()) - (0, 10)
+
+            surface.blit(self._background, rect)
+
+            crop_rect = self._progress.get_rect()
+            crop_rect.width = crop_rect.width * percentage
+            surface.blit(self._progress.subsurface(crop_rect), rect)

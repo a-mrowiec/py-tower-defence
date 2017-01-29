@@ -1,4 +1,5 @@
 import pygame
+from pygame.math import Vector2
 
 
 def rot_center(image, angle):
@@ -9,3 +10,7 @@ def rot_center(image, angle):
     rot_rect.center = rot_image.get_rect().center
     rot_image = rot_image.subsurface(rot_rect).copy()
     return rot_image
+
+
+def half_size_of_rect(rect):
+    return Vector2(rect.width/2.0, rect.height/2.0)
