@@ -1,7 +1,7 @@
 import json
 
 from pytowerdefence.gameplay.Controllers import PathController
-from pytowerdefence.gameplay.Objects import Actor
+from pytowerdefence.gameplay.Objects import Actor, ActorCallback
 from pytowerdefence.gameplay.Scene import is_actor_in_player_team
 
 
@@ -96,7 +96,7 @@ class LogicManager:
 
     def on_object_added_to_scene(self, object):
         if isinstance(object, Actor) and not is_actor_in_player_team(object):
-            object.kill_callback = self.on_monster_killed
+            object.set_callback(ActorCallback.KILL, self.on_monster_killed)
 
     def on_monster_killed(self, actor):
         print("Yupi!. You killed the monster", actor)

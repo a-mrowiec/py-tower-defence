@@ -22,13 +22,15 @@ class AttackRangeDrawer:
     def actor(self, value):
         if self._actor != value:
             self._actor = value
-            if self._actor is not None:
-                self._attack_range = int(
-                    self._actor.statistics.attack_range + self._actor.radius)
-                self._surface = pygame.Surface(
-                    (self._attack_range * 2, self._attack_range * 2),
-                    pygame.SRCALPHA)
-                self._redraw()
+            self._refresh()
+
+    def _refresh(self):
+        if self._actor is not None:
+            self._attack_range = self._compute_attack_range()
+            self._surface = pygame.Surface(
+                (self._attack_range * 2, self._attack_range * 2),
+                pygame.SRCALPHA)
+            self._redraw()
 
     def _redraw(self):
         self._surface.fill((0, 0, 0, 0))
@@ -41,8 +43,14 @@ class AttackRangeDrawer:
                            (self._attack_range, self._attack_range),
                            self._attack_range, 4)
 
+    def _compute_attack_range(self):
+        return int(self._actor.statistics.attack_range + self._actor.radius)
+
     def draw(self, surface):
         if self._actor is not None:
+            if self._attack_range != self._compute_attack_range():
+                self._refresh()
+
             on_screen_pos = Camera.to_screen_position(self._actor.position)
             surface.blit(self._surface,
                          [on_screen_pos.x - self._attack_range,

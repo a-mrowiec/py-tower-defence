@@ -3,6 +3,7 @@ from pygame.math import Vector2
 
 from pytowerdefence.Resources import ResourceManager, ResourceClass
 from pytowerdefence.UI import Button, Panel, Text, ParentAttachType
+from pytowerdefence.gameplay.Objects import ActorCallback
 
 
 class GameActionButton(Button):
@@ -26,6 +27,7 @@ class GameActionButton(Button):
 class GuardianPanel(Panel):
     def __init__(self):
         super().__init__(img=ResourceManager.load_image(ResourceClass.UI, "panel.png"))
+        self._actor = None
         self.widget_id = "guardian_panel"
         self._upgrade_button = UpgradeButton(None)
         self._upgrade_button.parent_attach_type = ParentAttachType.CENTER
@@ -56,13 +58,26 @@ class GuardianPanel(Panel):
         self.visible = False
 
     def set_actor(self, actor):
-        if actor is not None:
+        if self._actor is not None:
+            self._actor.remove_callback(ActorCallback.EVOLVE)
+        self._actor = actor
+        self._on_actor_changed()
+
+    def _on_evolve(self, actor):
+        if actor != self._actor:
+            print("Caching evolve event from unknown actor!")
+        self._on_actor_changed()
+
+    def _on_actor_changed(self):
+        if self._actor is not None:
             self._guardian_name.text = "Bandit"
-            self._guardian_level.text = "Level: {0}".format(actor.current_evolution_level+1)
+            self._guardian_level.text = "Level: {0}".format(
+                self._actor.current_evolution_level + 1)
             self.visible = True
+            self._actor.set_callback(ActorCallback.EVOLVE, self._on_evolve)
         else:
             self.visible = False
-        self._upgrade_button.actor = actor
+        self._upgrade_button.actor = self._actor
 
 
 class UpgradeButton(Button):

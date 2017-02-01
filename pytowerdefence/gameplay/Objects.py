@@ -11,6 +11,11 @@ ENEMY_TEAM = 0
 PLAYER_TEAM = 1
 
 
+class ActorCallback(Enum):
+    KILL = 0,
+    EVOLVE = 1
+
+
 class GameObject(pygame.sprite.Sprite):
     """
     Base class for any game object, which can be drawed and updated
@@ -27,8 +32,8 @@ class GameObject(pygame.sprite.Sprite):
         self.image = None
         self._sprite = None
         self._angle = 0
-        self._kill_callback = None
         self._team = ENEMY_TEAM
+        self._callbacks = {}
 
     def update(self, dt):
         """
@@ -102,21 +107,19 @@ class GameObject(pygame.sprite.Sprite):
         self._position = Vector2(value)
         self._rect.center = self._position
 
-    @property
-    def kill_callback(self):
-        return self._kill_callback
+    def set_callback(self, type, callback):
+        self._callbacks[type] = callback
 
-    @kill_callback.setter
-    def kill_callback(self, value):
-        self._kill_callback = value
+    def remove_callback(self, type):
+        del self._callbacks[type]
 
     def rotate_to_direction(self, direction):
         self._angle = direction.angle_to(Vector2(0, -1))
 
     def kill(self):
         self.alive = False
-        if self._kill_callback is not None:
-            self._kill_callback(self)
+        if ActorCallback.KILL in self._callbacks:
+            self._callbacks[ActorCallback.KILL](self)
         super().kill()
 
 
@@ -323,6 +326,9 @@ class EvolvingActor(Actor):
         if animations is not None:
             for state, animation in animations:
                 self.set_animation(state, animation)
+
+        if ActorCallback.EVOLVE in self._callbacks:
+            self._callbacks[ActorCallback.EVOLVE](self)
 
     def can_evolve(self):
         return self._current_evolution_level < len(

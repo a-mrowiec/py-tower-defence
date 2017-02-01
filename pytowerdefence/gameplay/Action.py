@@ -79,6 +79,7 @@ class TowerManagingAction(BaseContinuousAction):
 
     def on_break(self):
         self._action_manager.set_window_mediator(None)
+        self._action_manager.ui_manager.get_by_id("guardian_panel").set_actor(None)
 
     def draw(self, surface):
         self._attack_range_drawer.draw(surface)
