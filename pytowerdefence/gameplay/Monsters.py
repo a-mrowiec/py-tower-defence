@@ -59,6 +59,7 @@ class Dragon(Actor):
         self.add_controller(PathController())
         self.set_ai(StandardAI())
 
+
 class Bandit(EvolvingActor):
     def __init__(self):
         super().__init__()

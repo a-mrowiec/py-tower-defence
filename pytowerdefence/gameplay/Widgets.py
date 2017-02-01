@@ -43,7 +43,7 @@ class GuardianPanel(Panel):
         self._guardian_name.parent_attach_type = ParentAttachType.CENTER
         self._guardian_name.position = Vector2(142, 18)
 
-        self._guardian_level = Text("Level: 1", size = 48)
+        self._guardian_level = Text("", size = 48)
         self._guardian_level.parent_attach_type = ParentAttachType.CENTER
         self._guardian_level.position = Vector2(142, 77)
 
@@ -58,6 +58,7 @@ class GuardianPanel(Panel):
     def set_actor(self, actor):
         if actor is not None:
             self._guardian_name.text = "Bandit"
+            self._guardian_level.text = "Level: {0}".format(actor.current_evolution_level+1)
             self.visible = True
         else:
             self.visible = False

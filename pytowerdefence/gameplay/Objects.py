@@ -312,7 +312,7 @@ class EvolvingActor(Actor):
 
     @property
     def current_evolution_level(self):
-        return self._current_animation
+        return self._current_evolution_level
 
     def evolve(self):
         i = self._current_evolution_level
