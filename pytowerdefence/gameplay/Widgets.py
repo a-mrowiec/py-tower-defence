@@ -2,8 +2,7 @@ import pygame
 from pygame.math import Vector2
 
 from pytowerdefence.Resources import ResourceManager, ResourceClass
-from pytowerdefence.UI import Button, Panel, Text
-from pytowerdefence.gameplay.Scene import Camera
+from pytowerdefence.UI import Button, Panel, Text, ParentAttachType
 
 
 class GameActionButton(Button):
@@ -27,17 +26,48 @@ class GameActionButton(Button):
 class GuardianPanel(Panel):
     def __init__(self):
         super().__init__(img=ResourceManager.load_image(ResourceClass.UI, "panel.png"))
+        self.widget_id = "guardian_panel"
         self._upgrade_button = UpgradeButton(None)
-        self._guardian_name = Text("Ogre", size=16)
+        self._upgrade_button.parent_attach_type = ParentAttachType.CENTER
+        self._upgrade_button.position = Vector2(55, 164)
+
+        self._coins = Text(text="50")
+        self._coins.parent_attach_type = ParentAttachType.CENTER
+        self._coins.position = Vector2(150, 164)
+
+        self._coins_icon = Panel(img=ResourceManager.load_image(ResourceClass.UI, "coins.png"))
+        self._coins_icon.parent_attach_type = ParentAttachType.CENTER
+        self._coins_icon.position = Vector2(200, 164)
+
+        self._guardian_name = Text("", size=16)
+        self._guardian_name.parent_attach_type = ParentAttachType.CENTER
+        self._guardian_name.position = Vector2(142, 18)
+
+        self._guardian_level = Text("Level: 1", size = 48)
+        self._guardian_level.parent_attach_type = ParentAttachType.CENTER
+        self._guardian_level.position = Vector2(142, 77)
+
         self.add_child(self._guardian_name)
-        self._guardian_name.center_position(Vector2(139, 18))
+        self.add_child(self._guardian_level)
+        self.add_child(self._upgrade_button)
+        self.add_child(self._coins)
+        self.add_child(self._coins_icon)
+
+        self.visible = False
+
+    def set_actor(self, actor):
+        if actor is not None:
+            self._guardian_name.text = "Bandit"
+            self.visible = True
+        else:
+            self.visible = False
+        self._upgrade_button.actor = actor
 
 
 class UpgradeButton(Button):
     def __init__(self, actor):
         super().__init__(img=ResourceManager.load_image(ResourceClass.UI, "upgrade.png"))
         self._actor = actor
-        self._update()
         self.z = 2
         self._click_callback = self.clicked
 
@@ -48,16 +78,6 @@ class UpgradeButton(Button):
     @actor.setter
     def actor(self, value):
         self._actor = value
-        self._update()
-
-    def update(self, dt):
-        super().update(dt)
-        self._update()
-
-    def _update(self):
-        if self._actor is not None:
-            rect = self._actor.rect
-            self.position = Camera.to_screen_position([rect.right, rect.top])
 
     def on_mouse_click_event(self, event):
         super().on_mouse_click_event(event)

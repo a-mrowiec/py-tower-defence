@@ -75,6 +75,7 @@ class TowerManagingAction(BaseContinuousAction):
 
     def perform(self):
         self._action_manager.set_window_mediator(self)
+        self._action_manager.ui_manager.get_by_id("guardian_panel").set_actor(self._attack_range_drawer.actor)
 
     def on_break(self):
         self._action_manager.set_window_mediator(None)
@@ -90,6 +91,7 @@ class TowerManagingAction(BaseContinuousAction):
             self._marked_actor_changed(clicked_actor)
 
     def _marked_actor_changed(self, actor):
+        self._action_manager.ui_manager.get_by_id("guardian_panel").set_actor(actor)
         self._attack_range_drawer.actor = actor
 
     def on_mouse_motion_event(self, event):
