@@ -83,7 +83,9 @@ class UpgradeButton(Button):
         super().on_mouse_click_event(event)
 
     def clicked(self, event):
-        print("Clicked")
+        if event.type == pygame.MOUSEBUTTONUP:
+            if self._actor is not None and self._actor.can_evolve():
+                self._actor.evolve()
 
 
 

@@ -1,3 +1,4 @@
+import copy
 from pytowerdefence.Resources import ResourceClass, ResourceManager
 from pytowerdefence.gameplay.AI import StandardAI
 from pytowerdefence.gameplay.Controllers import PathController, DeathController, \
@@ -74,6 +75,7 @@ class Bandit(EvolvingActor):
 
         self.statistics.attack_range = 100
         self.statistics.attack_damage = 15
+        self.statistics.team = 1
         self.statistics.max_health = self.statistics.current_health = 100
         self._play_current_animation()
 
@@ -85,4 +87,10 @@ class Bandit(EvolvingActor):
 
         self.set_ai(StandardAI(debug=True))
 
+        stats=copy.deepcopy(self._statistics)
+        stats.attack_damage += 15
+        self.add_evolution_level(stats,None)
 
+        stats=copy.deepcopy(stats)
+        stats.attack_range += 200
+        self.add_evolution_level(stats, None)

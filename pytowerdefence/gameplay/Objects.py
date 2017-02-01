@@ -308,8 +308,8 @@ class EvolvingActor(Actor):
         return self._current_animation
 
     def evolve(self):
-        self._current_evolution_level += 1
         i = self._current_evolution_level
+        self._current_evolution_level += 1
 
         self._statistics = self._evolution_statistics[i]
         animations = self._evolution_animations[i]
@@ -319,4 +319,4 @@ class EvolvingActor(Actor):
 
     def can_evolve(self):
         return self._current_evolution_level < len(
-            self._evolution_statistics) - 1
+            self._evolution_statistics)
