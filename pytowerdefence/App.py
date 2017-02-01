@@ -9,7 +9,7 @@ from pytowerdefence.gameplay.Logic import WaveManager, LogicManager
 from pytowerdefence.gameplay.Monsters import Bandit
 from pytowerdefence.gameplay.Objects import PLAYER_TEAM
 from pytowerdefence.gameplay.Scene import Level, CreaturesFactory
-from pytowerdefence.gameplay.Widgets import GameActionButton
+from pytowerdefence.gameplay.Widgets import GameActionButton, GuardianPanel
 
 
 class App:
@@ -42,7 +42,9 @@ class App:
 
         self._game_window = GameWindow(self.width, self.height)
         self._action_manager = ActionManager(self._game_window, self.level,
-                                             self._creatures_factory, self._logic_manager)
+                                             self._creatures_factory,
+                                             self._logic_manager,
+                                             self._ui_manager)
         self._ui_manager.add_widget(self._game_window)
         self._ui_manager.focus_widget(self._game_window)
 
@@ -58,6 +60,10 @@ class App:
             action_manager=self._action_manager, tower='Bandit')
         add_button.position = Vector2(900, 650)
         self._ui_manager.add_widget(add_button)
+
+        panel=GuardianPanel()
+        panel.position=Vector2(375,536)
+        self._ui_manager.add_widget(panel)
 
     def on_event(self, event):
         if event.type == pygame.QUIT:

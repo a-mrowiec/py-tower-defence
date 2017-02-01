@@ -2,7 +2,7 @@ from pytowerdefence.Resources import ResourceClass, ResourceManager
 from pytowerdefence.gameplay.AI import StandardAI
 from pytowerdefence.gameplay.Controllers import PathController, DeathController, \
     RangeAttackController, AttackController
-from pytowerdefence.gameplay.Objects import Actor, ActorState
+from pytowerdefence.gameplay.Objects import Actor, ActorState, EvolvingActor
 
 
 class Ogre(Actor):
@@ -58,7 +58,7 @@ class Dragon(Actor):
         self.add_controller(PathController())
         self.set_ai(StandardAI())
 
-class Bandit(Actor):
+class Bandit(EvolvingActor):
     def __init__(self):
         super().__init__()
         self._statistics.speed = 50
@@ -84,3 +84,5 @@ class Bandit(Actor):
         self.add_controller(PathController())
 
         self.set_ai(StandardAI(debug=True))
+
+

@@ -47,6 +47,7 @@ class AttackRangeDrawer:
             surface.blit(self._surface,
                          [on_screen_pos.x - self._attack_range,
                           on_screen_pos.y - self._attack_range])
+            surface.blit(self._actor.image, Camera.to_screen_position(self._actor.rect.topleft))
 
     @property
     def color(self):

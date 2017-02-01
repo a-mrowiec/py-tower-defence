@@ -54,9 +54,11 @@ class ScrollingAction(BaseContinuousAction):
             Camera.to_world_position(event.pos))
         if actor is not None and is_actor_in_player_team(actor):
             self._attack_range_drawer.actor = actor
+            self._health_drawer.actor = None
         elif actor is None:
             self._attack_range_drawer._actor = None
-        self._health_drawer.actor = actor
+        else:
+            self._health_drawer.actor = actor
 
     def draw(self, surface):
         self._attack_range_drawer.draw(surface)
@@ -141,12 +143,13 @@ class AddTowerAction(BaseContinuousAction):
 
 
 class ActionManager:
-    def __init__(self, game_window, level, creatures_factory, logic_manager):
+    def __init__(self, game_window, level, creatures_factory, logic_manager, ui_manager):
         self.game_window = game_window
         self._current_action = None
         self.level = level
         self.creatures_factory = creatures_factory
         self.logic_manager = logic_manager
+        self.ui_manager = ui_manager
         self.create_and_start_action("Scrolling")
 
     def set_window_mediator(self, mediator):
