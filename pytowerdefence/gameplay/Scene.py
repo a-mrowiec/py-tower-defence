@@ -140,7 +140,7 @@ class CreaturesFactory:
 
 
 def is_actor_in_player_team(actor):
-    return actor.statistics.team == PLAYER_TEAM
+    return actor.team == PLAYER_TEAM
 
 
 def is_visible(left, right):

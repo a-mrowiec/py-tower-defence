@@ -75,7 +75,6 @@ class Bandit(EvolvingActor):
 
         self.statistics.attack_range = 100
         self.statistics.attack_damage = 15
-        self.statistics.team = 1
         self.statistics.max_health = self.statistics.current_health = 100
         self._play_current_animation()
 

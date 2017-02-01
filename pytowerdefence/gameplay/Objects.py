@@ -1,7 +1,6 @@
 from enum import Enum
 
 import pygame
-import pyganim
 from pygame.math import Vector2
 
 from pytowerdefence.Resources import ResourceClass
@@ -29,6 +28,7 @@ class GameObject(pygame.sprite.Sprite):
         self._sprite = None
         self._angle = 0
         self._kill_callback = None
+        self._team = ENEMY_TEAM
 
     def update(self, dt):
         """
@@ -41,6 +41,14 @@ class GameObject(pygame.sprite.Sprite):
         self._rect.center = self._position
         if self._sprite is not None:
             self.image = rot_center(self._sprite, self._angle)
+
+    @property
+    def team(self):
+        return self._team
+
+    @team.setter
+    def team(self, value):
+        self._team = value
 
     @property
     def sprite(self):
@@ -167,7 +175,6 @@ class ActorState(Enum):
 
 class ActorStatistics:
     def __init__(self):
-        self.team = ENEMY_TEAM
         self.current_health = 0
         self.max_health = 0
         self.speed = 0

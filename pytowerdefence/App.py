@@ -51,7 +51,7 @@ class App:
         static_actor = Bandit()
         static_actor.position = Vector2(877, 117)
         static_actor.set_ai(StandardAI())
-        static_actor.statistics.team = PLAYER_TEAM
+        static_actor.team = PLAYER_TEAM
         self.level.add(static_actor)
 
         add_button = GameActionButton(

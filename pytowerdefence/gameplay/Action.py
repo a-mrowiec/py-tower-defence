@@ -125,7 +125,7 @@ class AddTowerAction(BaseContinuousAction):
         if not self._colliding:
             self._action_manager.level.add(self._tower)
             self._action_manager.level.add_obstacle(self._tower)
-            self._tower.statistics.team = PLAYER_TEAM
+            self._tower.team = PLAYER_TEAM
             self._tower = None
             self._finished = True
             self._action_manager.set_window_mediator(None)
