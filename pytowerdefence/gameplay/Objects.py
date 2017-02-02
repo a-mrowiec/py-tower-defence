@@ -1,4 +1,6 @@
-from enum import Enum
+from collections import defaultdict
+from enum import Enum, IntEnum
+from functools import reduce
 
 import pygame
 from pygame.math import Vector2
@@ -133,9 +135,9 @@ class Bullet(GameObject):
         self._target = None
         self._owner = owner
         self._start_position = Vector2(owner.position)
-        self._speed = 500
+        self._speed = owner.statistics.bullet_speed
         self.sprite = ResourceManager.load_image(ResourceClass.BULLETS,
-                                                 'small-knife.png')
+                                                 owner.statistics.bullet_image)
 
     @property
     def target(self):
@@ -176,14 +178,118 @@ class ActorState(Enum):
     DEATH = 3
 
 
+class StatisticType(IntEnum):
+    CURRENT_HEALTH = 0,
+    MAX_HEALTH = 1,
+    SPEED = 2,
+    ATTACK_DAMAGE = 3,
+    ATTACK_SPEED = 4,
+    ATTACK_RANGE = 5,
+    BULLET_SPEED = 6,
+    BULLET_IMAGE = 7
+
+
+class StatisticModifier:
+    def __init__(self, statistic_type, value, multiply=False):
+        self.statistic_type = statistic_type
+        self.value = value
+        self.multiply = multiply
+
+
 class ActorStatistics:
     def __init__(self):
-        self.current_health = 0
-        self.max_health = 0
-        self.speed = 0
-        self.attack_damage = 0
-        self.attack_speed = 0
-        self.attack_range = 0
+        self._values = [None] * len(StatisticType)
+
+    def set_value(self, type, value):
+        self._values[type] = value
+
+    def _categorized_modifiers(self, modifiers):
+        d = defaultdict(list)
+        modifiers_with_type = list(
+            (m.statistic_type, m) for m in modifiers)
+        for k, v in modifiers_with_type:
+            d[k].append(v)
+        return d
+
+    def modify_stat(self, statistic_type, modifiers):
+        s = sum(map(lambda m: m.value,
+                    filter(lambda m: not m.multiply, modifiers)))
+        mul = reduce(lambda x, y: x * y, map(lambda m: m.value,
+                                             filter(lambda m: m.multiply,
+                                                    modifiers)))
+
+        self._values[statistic_type] += s
+        self._values[statistic_type] *= mul
+
+    def get_modified_statistics(self, modifiers):
+        new_statistics = ActorStatistics()
+        categorized_modifiers = self._categorized_modifiers(modifiers)
+        for statistic_type, mods in categorized_modifiers.items():
+            new_statistics.modify_stat(statistic_type, mods)
+
+    @property
+    def current_health(self):
+        return self._values[StatisticType.CURRENT_HEALTH]
+
+    @current_health.setter
+    def current_health(self, value):
+        self.set_value(StatisticType.CURRENT_HEALTH, value)
+
+    @property
+    def max_health(self):
+        return self._values[StatisticType.MAX_HEALTH]
+
+    @max_health.setter
+    def max_health(self, value):
+        self.set_value(StatisticType.MAX_HEALTH, value)
+
+    @property
+    def speed(self):
+        return self._values[StatisticType.SPEED]
+
+    @speed.setter
+    def speed(self, value):
+        self.set_value(StatisticType.SPEED, value)
+
+    @property
+    def attack_speed(self):
+        return self._values[StatisticType.ATTACK_SPEED]
+
+    @attack_speed.setter
+    def attack_speed(self, value):
+        self.set_value(StatisticType.ATTACK_SPEED, value)
+
+    @property
+    def attack_damage(self):
+        return self._values[StatisticType.ATTACK_DAMAGE]
+
+    @attack_damage.setter
+    def attack_damage(self, value):
+        self.set_value(StatisticType.ATTACK_DAMAGE, value)
+
+    @property
+    def attack_range(self):
+        return self._values[StatisticType.ATTACK_RANGE]
+
+    @attack_range.setter
+    def attack_range(self, value):
+        self.set_value(StatisticType.ATTACK_RANGE, value)
+
+    @property
+    def bullet_speed(self):
+        return self._values[StatisticType.BULLET_SPEED]
+
+    @bullet_speed.setter
+    def bullet_speed(self, value):
+        self.set_value(StatisticType.BULLET_SPEED, value)
+
+    @property
+    def bullet_image(self):
+        return self._values[StatisticType.BULLET_IMAGE]
+
+    @bullet_image.setter
+    def bullet_image(self, value):
+        self.set_value(StatisticType.BULLET_IMAGE, value)
 
 
 class Actor(GameObject):
@@ -192,6 +298,7 @@ class Actor(GameObject):
         self._animations = {}
         self._current_animation = None
         self._controllers = []
+        self._statistic_modifiers = []
         self._state = ActorState.IDLE
         self._statistics = ActorStatistics()
         self._actors_in_attack_range = []

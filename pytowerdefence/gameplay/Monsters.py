@@ -76,6 +76,8 @@ class Bandit(EvolvingActor):
 
         self.statistics.attack_range = 100
         self.statistics.attack_damage = 15
+        self.statistics.bullet_speed = 1000
+        self.statistics.bullet_image = 'small-knife.png'
         self.statistics.max_health = self.statistics.current_health = 100
         self._play_current_animation()
 
