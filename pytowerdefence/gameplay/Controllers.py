@@ -1,6 +1,7 @@
 from pygame.math import Vector2
 
-from pytowerdefence.gameplay.Objects import Bullet, ActorState
+from pytowerdefence.gameplay.Objects import Bullet, ActorState, \
+    add_effects_to_actor
 
 
 class BaseController:
@@ -105,7 +106,7 @@ class AttackController(BaseController):
         return self._actor.state == ActorState.ATTACK
 
     def _process_animation_end(self):
-        self._target.hit(self._actor.statistics.attack_damage)
+        add_effects_to_actor(self._target, self._actor.statistics.hit_effects)
         self._actor.change_state(ActorState.IDLE)
 
     def on_animation_end(self):

@@ -168,10 +168,7 @@ class Bullet(GameObject):
             self._on_hit()
 
     def _on_hit(self):
-        #TODO: wczytanie efektów
-        add_effect_to_actor("HitEffect", self._target,
-                               damage=self._owner.statistics.attack_damage)
-        add_effect_to_actor("SlowEffect", self._target,  time=5, percent=0.5)
+        add_effects_to_actor(self._target, self._owner.statistics.hit_effects)
         self._owner.change_state(ActorState.IDLE)
         self.kill()
 
@@ -190,7 +187,8 @@ class StatisticType(IntEnum):
     ATTACK_SPEED = 3,
     ATTACK_RANGE = 4,
     BULLET_SPEED = 5,
-    BULLET_IMAGE = 6
+    BULLET_IMAGE = 6,
+    HIT_EFFECTS = 7
 
 
 class StatisticModifier:
@@ -294,6 +292,14 @@ class ActorStatistics:
     @bullet_image.setter
     def bullet_image(self, value):
         self.set_value(StatisticType.BULLET_IMAGE, value)
+
+    @property
+    def hit_effects(self):
+        return self._values[StatisticType.HIT_EFFECTS]
+
+    @hit_effects.setter
+    def hit_effects(self, value):
+        self.set_value(StatisticType.HIT_EFFECTS, value)
 
 
 class Actor(GameObject):
@@ -511,3 +517,8 @@ def create_effect(name, actor, **kwargs):
 def add_effect_to_actor(name, actor, **kwargs):
     effect = create_effect(name, actor, **kwargs)
     actor.add_logical_effect(effect)
+
+
+def add_effects_to_actor(actor, effect_list):
+    for ed in effect_list:
+        add_effect_to_actor(ed[0], actor, **ed[1])
