@@ -86,7 +86,7 @@ class HealthDrawer:
     def draw(self, surface):
         if self._actor is not None:
             statistics = self.actor.statistics
-            percentage = statistics.current_health / statistics.max_health
+            percentage = self.actor.hp / statistics.max_health
 
             rect = self._background.get_rect()
             rect.center = Camera.to_screen_position(

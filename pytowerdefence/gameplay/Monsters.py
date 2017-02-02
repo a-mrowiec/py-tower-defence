@@ -9,7 +9,6 @@ from pytowerdefence.gameplay.Objects import Actor, ActorState, EvolvingActor
 class Ogre(Actor):
     def __init__(self):
         super().__init__()
-        self._statistics.speed = 50
 
         self.set_animation(ActorState.IDLE, ResourceManager.load_animation(
             ResourceClass.CHARACTERS, 'ogre-move.json'))
@@ -20,9 +19,11 @@ class Ogre(Actor):
         self.set_animation(ActorState.DEATH, ResourceManager.load_animation(
             ResourceClass.CHARACTERS, 'ogre-death.json'))
 
-        self.statistics.attack_range = 2
-        self.statistics.attack_damage = 1
-        self.statistics.max_health = self.statistics.current_health = 100
+        self.base_statistics.speed = 50
+        self.base_statistics.attack_range = 2
+        self.base_statistics.attack_damage = 1
+        self.base_statistics.max_health = self.hp = 100
+        self.recalculate_statistics()
         self.change_state(ActorState.MOVE)
 
         self.rect.width = 64
@@ -36,7 +37,6 @@ class Ogre(Actor):
 class Dragon(Actor):
     def __init__(self):
         super().__init__()
-        self._statistics.speed = 50
 
         self.set_animation(ActorState.IDLE, ResourceManager.load_animation(
             ResourceClass.CHARACTERS, 'dragon-move.json'))
@@ -47,9 +47,11 @@ class Dragon(Actor):
         self.set_animation(ActorState.DEATH, ResourceManager.load_animation(
             ResourceClass.CHARACTERS, 'dragon-death.json'))
 
-        self.statistics.attack_range = 2
-        self.statistics.attack_damage = 1
-        self.statistics.max_health = self.statistics.current_health = 1000
+        self.base_statistics.speed = 50
+        self.base_statistics.attack_range = 2
+        self.base_statistics.attack_damage = 1
+        self.base_statistics.max_health = self.hp = 1000
+        self.recalculate_statistics()
         self.change_state(ActorState.MOVE)
 
         self.rect.width = 128
@@ -63,7 +65,6 @@ class Dragon(Actor):
 class Bandit(EvolvingActor):
     def __init__(self):
         super().__init__()
-        self._statistics.speed = 50
 
         self.set_animation(ActorState.MOVE, ResourceManager.load_animation(
             ResourceClass.CHARACTERS, 'bandit-move.json'))
@@ -74,11 +75,13 @@ class Bandit(EvolvingActor):
         self.set_animation(ActorState.DEATH, ResourceManager.load_animation(
             ResourceClass.CHARACTERS, 'bandit-death.json'))
 
-        self.statistics.attack_range = 100
-        self.statistics.attack_damage = 15
-        self.statistics.bullet_speed = 1000
-        self.statistics.bullet_image = 'small-knife.png'
-        self.statistics.max_health = self.statistics.current_health = 100
+        self.base_statistics.speed = 50
+        self.base_statistics.attack_range = 100
+        self.base_statistics.attack_damage = 15
+        self.base_statistics.bullet_speed = 1000
+        self.base_statistics.bullet_image = 'small-knife.png'
+        self.base_statistics.max_health = self.hp = 100
+        self.recalculate_statistics()
         self._play_current_animation()
 
         self.rect.width = 64
@@ -89,7 +92,7 @@ class Bandit(EvolvingActor):
 
         self.set_ai(StandardAI(debug=True))
 
-        stats=copy.deepcopy(self._statistics)
+        stats=copy.deepcopy(self._base_statistics)
         stats.attack_damage += 15
         self.add_evolution_level(stats,None)
 

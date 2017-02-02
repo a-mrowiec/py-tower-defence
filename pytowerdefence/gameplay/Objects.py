@@ -1,3 +1,4 @@
+import copy
 from collections import defaultdict
 from enum import Enum, IntEnum
 from functools import reduce
@@ -168,6 +169,7 @@ class Bullet(GameObject):
     def _on_hit(self):
         self._target.hit(self._owner.statistics.attack_damage)
         self._owner.change_state(ActorState.IDLE)
+        self._target.add_modifier(StatisticModifier(StatisticType.SPEED, 0.9, multiply=True))
         self.kill()
 
 
@@ -179,14 +181,13 @@ class ActorState(Enum):
 
 
 class StatisticType(IntEnum):
-    CURRENT_HEALTH = 0,
-    MAX_HEALTH = 1,
-    SPEED = 2,
-    ATTACK_DAMAGE = 3,
-    ATTACK_SPEED = 4,
-    ATTACK_RANGE = 5,
-    BULLET_SPEED = 6,
-    BULLET_IMAGE = 7
+    MAX_HEALTH = 0,
+    SPEED = 1,
+    ATTACK_DAMAGE = 2,
+    ATTACK_SPEED = 3,
+    ATTACK_RANGE = 4,
+    BULLET_SPEED = 5,
+    BULLET_IMAGE = 6
 
 
 class StatisticModifier:
@@ -197,11 +198,16 @@ class StatisticModifier:
 
 
 class ActorStatistics:
-    def __init__(self):
+    def __init__(self, readonly=False):
         self._values = [None] * len(StatisticType)
+        self._readonly = readonly
+
+    def readonly(self, value):
+        self._readonly = value
 
     def set_value(self, type, value):
-        self._values[type] = value
+        if not self._readonly:
+            self._values[type] = value
 
     def _categorized_modifiers(self, modifiers):
         d = defaultdict(list)
@@ -222,18 +228,13 @@ class ActorStatistics:
         self._values[statistic_type] *= mul
 
     def get_modified_statistics(self, modifiers):
-        new_statistics = ActorStatistics()
+        new_statistics = copy.deepcopy(self)
+        new_statistics.readonly(False)
         categorized_modifiers = self._categorized_modifiers(modifiers)
         for statistic_type, mods in categorized_modifiers.items():
             new_statistics.modify_stat(statistic_type, mods)
-
-    @property
-    def current_health(self):
-        return self._values[StatisticType.CURRENT_HEALTH]
-
-    @current_health.setter
-    def current_health(self, value):
-        self.set_value(StatisticType.CURRENT_HEALTH, value)
+        new_statistics.readonly(True)
+        return new_statistics
 
     @property
     def max_health(self):
@@ -300,10 +301,13 @@ class Actor(GameObject):
         self._controllers = []
         self._statistic_modifiers = []
         self._state = ActorState.IDLE
-        self._statistics = ActorStatistics()
+        self._base_statistics = ActorStatistics()
+        self._statistics = ActorStatistics(readonly=True)
+        self._modifiers = []
         self._actors_in_attack_range = []
         self._ai = None
         self._prev_updated_controller = None
+        self._hp = 0
 
     def update(self, dt):
         if self._ai is not None:
@@ -323,15 +327,22 @@ class Actor(GameObject):
         for controller in self._controllers:
             need_update = controller.need_update()
             if need_update:
-                if self._prev_updated_controller != controller and self._prev_updated_controller is not None:
+                if self._prev_updated_controller != controller \
+                        and self._prev_updated_controller is not None:
                     self._prev_updated_controller.on_update_end()
                 controller.update(dt)
                 self._prev_updated_controller = controller
 
     def hit(self, damage):
-        self._statistics.current_health -= damage
-        if self._statistics.current_health < 0:
+        self._hp -= damage
+        if self._hp < 0:
             self.on_death()
+
+    def recalculate_statistics(self):
+        self._statistics = \
+            self._base_statistics.get_modified_statistics(self._modifiers)
+
+        self._statistics.readonly(True)
 
     def add_controller(self, controller):
         controller.set_actor(self)
@@ -340,6 +351,18 @@ class Actor(GameObject):
     @property
     def controllers(self):
         return self._controllers
+
+    @property
+    def hp(self):
+        return self._hp
+
+    @hp.setter
+    def hp(self, value):
+        self._hp = value
+
+    @property
+    def base_statistics(self):
+        return self._base_statistics
 
     def on_death(self):
         self.stop_controllers()
@@ -408,6 +431,15 @@ class Actor(GameObject):
     def actors_in_attack_range(self, value):
         self._actors_in_attack_range = value
 
+    def statistics_changed(self):
+        self.recalculate_statistics()
+        if self.velocity.length() != 0:
+            self.velocity = self.velocity.normalize() * self._statistics.speed
+
+    def add_modifier(self, modifier):
+        self._modifiers.append(modifier)
+        self.statistics_changed()
+
 
 class EvolvingActor(Actor):
     def __init__(self):
@@ -428,7 +460,8 @@ class EvolvingActor(Actor):
         i = self._current_evolution_level
         self._current_evolution_level += 1
 
-        self._statistics = self._evolution_statistics[i]
+        self._base_statistics = self._evolution_statistics[i]
+        self.recalculate_statistics()
         animations = self._evolution_animations[i]
         if animations is not None:
             for state, animation in animations:
