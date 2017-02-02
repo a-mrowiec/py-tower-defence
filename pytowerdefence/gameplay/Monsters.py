@@ -78,7 +78,7 @@ class Bandit(EvolvingActor):
         self.base_statistics.speed = 50
         self.base_statistics.attack_range = 100
         self.base_statistics.attack_damage = 15
-        self.base_statistics.bullet_speed = 1000
+        self.base_statistics.bullet_speed = 100
         self.base_statistics.bullet_image = 'small-knife.png'
         self.base_statistics.max_health = self.hp = 100
         self.recalculate_statistics()
@@ -94,8 +94,11 @@ class Bandit(EvolvingActor):
 
         stats=copy.deepcopy(self._base_statistics)
         stats.attack_damage += 15
+        stats.bullet_speed = 500
         self.add_evolution_level(stats,None)
 
         stats=copy.deepcopy(stats)
         stats.attack_range += 200
+        stats.bullet_speed = 1000
+        stats.bullet_image = 'flaming-arrow.png'
         self.add_evolution_level(stats, None)

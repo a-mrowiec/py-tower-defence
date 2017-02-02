@@ -6,6 +6,7 @@ from pytowerdefence.UI import UIManager, GameWindow
 from pytowerdefence.gameplay.AI import StandardAI
 from pytowerdefence.gameplay.Action import ActionManager
 from pytowerdefence.gameplay.Logic import WaveManager, LogicManager
+from pytowerdefence.gameplay.LogicalEffects import LogicEffectManager
 from pytowerdefence.gameplay.Monsters import Bandit
 from pytowerdefence.gameplay.Objects import PLAYER_TEAM
 from pytowerdefence.gameplay.Scene import Level, CreaturesFactory
@@ -24,6 +25,7 @@ class App:
         self._creatures_factory = None
         self._action_manager = None
         self._logic_manager = None
+        self._logical_effect_manager = None
 
     def on_init(self):
         pygame.init()
@@ -47,6 +49,8 @@ class App:
                                              self._ui_manager)
         self._ui_manager.add_widget(self._game_window)
         self._ui_manager.focus_widget(self._game_window)
+
+        self._logical_effect_manager = LogicEffectManager(self.level)
 
         static_actor = Bandit()
         static_actor.position = Vector2(877, 117)
@@ -78,6 +82,7 @@ class App:
         self._ui_manager.update(dt)
         self._logic_manager.update(dt)
         self._action_manager.update(dt)
+        self._logical_effect_manager.update(dt)
 
     def on_render(self):
         self.level.draw(self._display_surf)

@@ -1,4 +1,5 @@
 import copy
+import importlib
 from collections import defaultdict
 from enum import Enum, IntEnum
 from functools import reduce
@@ -167,9 +168,11 @@ class Bullet(GameObject):
             self._on_hit()
 
     def _on_hit(self):
-        self._target.hit(self._owner.statistics.attack_damage)
+        #TODO: wczytanie efektów
+        add_effect_to_actor("HitEffect", self._target,
+                               damage=self._owner.statistics.attack_damage)
+        add_effect_to_actor("SlowEffect", self._target,  time=5, percent=0.5)
         self._owner.change_state(ActorState.IDLE)
-        self._target.add_modifier(StatisticModifier(StatisticType.SPEED, 0.9, multiply=True))
         self.kill()
 
 
@@ -308,6 +311,7 @@ class Actor(GameObject):
         self._ai = None
         self._prev_updated_controller = None
         self._hp = 0
+        self._logical_effects = []
 
     def update(self, dt):
         if self._ai is not None:
@@ -440,6 +444,29 @@ class Actor(GameObject):
         self._modifiers.append(modifier)
         self.statistics_changed()
 
+    @property
+    def logical_effects(self):
+        return self._logical_effects
+
+    def find_logical_effect_by_name(self, name):
+        for le in self._logical_effects:
+            if le.name == name:
+                return le
+        return None
+
+    def remove_effect(self, effect):
+        self._logical_effects.remove(effect)
+
+    def add_logical_effect(self, effect):
+        if effect.is_unique:
+            prev_effect = self.find_logical_effect_by_name(effect.name)
+            if prev_effect is not None:
+                prev_effect.on_merge(effect)
+            else:
+                self._logical_effects.append(effect)
+        else:
+            self._logical_effects.append(effect)
+
 
 class EvolvingActor(Actor):
     def __init__(self):
@@ -473,3 +500,14 @@ class EvolvingActor(Actor):
     def can_evolve(self):
         return self._current_evolution_level < len(
             self._evolution_statistics)
+
+
+def create_effect(name, actor, **kwargs):
+    effects_module = importlib.import_module(
+        "pytowerdefence.gameplay.LogicalEffects")
+    return getattr(effects_module, name)(actor, **kwargs)
+
+
+def add_effect_to_actor(name, actor, **kwargs):
+    effect = create_effect(name, actor, **kwargs)
+    actor.add_logical_effect(effect)
