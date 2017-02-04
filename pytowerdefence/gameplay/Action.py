@@ -9,7 +9,7 @@ class BaseAction:
     def __init__(self, action_manager):
         self._action_manager = action_manager
 
-    def perform(self):
+    def perform(self, **kwargs):
         pass
 
     def is_continuous(self):
@@ -39,7 +39,7 @@ class ScrollingAction(BaseContinuousAction):
     def is_finished(self):
         return False
 
-    def perform(self):
+    def perform(self, **kwargs):
         self._action_manager.set_window_mediator(self)
 
     def on_break(self):
@@ -76,7 +76,7 @@ class TowerManagingAction(BaseContinuousAction):
     def is_finished(self):
         return self._attack_range_drawer.actor is None
 
-    def perform(self):
+    def perform(self, **kwargs):
         self._action_manager.set_window_mediator(self)
         self._action_manager.ui_manager.get_by_id("guardian_panel").set_actor(self._attack_range_drawer.actor)
 
@@ -112,11 +112,13 @@ class AddTowerAction(BaseContinuousAction):
         self._tower = None
         self._attack_range_drawer = None
 
-    def perform(self):
+    def perform(self, **kwargs):
+        world_pos = Camera.to_world_position(kwargs['mouse_pos'])
         self._finished = False
         self._tower = self._action_manager.creatures_factory.create(
             self._tower_template_name)
         self._tower.update(0.0)
+        self._tower.position = world_pos
         self._action_manager.set_window_mediator(self)
         self._attack_range_drawer = AttackRangeDrawer(self._tower)
 
@@ -177,10 +179,10 @@ class ActionManager:
         action_created = self.create_action(name, **kwargs)
         return self.start_action(action_created)
 
-    def start_action(self, action):
+    def start_action(self, action, **kwargs):
         if self.is_action_allowed(action):
             self._stop_other_action()
-            self._perform_action(action)
+            self._perform_action(action, **kwargs)
             return True
         return False
 
@@ -192,8 +194,8 @@ class ActionManager:
                 self._current_action.is_finished():
             self.create_and_start_action("Scrolling")
 
-    def _perform_action(self, action):
-        action.perform()
+    def _perform_action(self, action, **kwargs):
+        action.perform(**kwargs)
         if action.is_continuous():
             self._current_action = action
 

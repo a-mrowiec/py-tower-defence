@@ -91,7 +91,7 @@ class GameActionButton(Button):
 
     def start_action(self, event):
         if event.type == pygame.MOUSEBUTTONUP:
-            self._action_manager.start_action(self._action)
+            self._action_manager.start_action(self._action, mouse_pos=event.pos)
 
     def update(self, dt):
         self.disabled = not self._action_manager.is_action_allowed(self._action)
