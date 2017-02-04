@@ -347,6 +347,7 @@ class Actor(GameObject):
                     self._prev_updated_controller.on_update_end()
                 controller.update(dt)
                 self._prev_updated_controller = controller
+                break
 
     def hit(self, damage):
         self._hp -= damage

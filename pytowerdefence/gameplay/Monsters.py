@@ -1,7 +1,7 @@
 import copy
 
 from pytowerdefence.Resources import ResourceClass, ResourceManager
-from pytowerdefence.gameplay.AI import StandardAI
+from pytowerdefence.gameplay.AI import StandardAI, AttackOnlyBase
 from pytowerdefence.gameplay.Controllers import PathController, DeathController, \
     RangeAttackController, AttackController, NotRotatingRangeAttackController
 from pytowerdefence.gameplay.Objects import ActorState, EvolvingActor, Actor
@@ -38,7 +38,7 @@ class Ogre(Actor):
         self.add_controller(DeathController())
         self.add_controller(AttackController())
         self.add_controller(PathController())
-        self.set_ai(StandardAI())
+        self.set_ai(AttackOnlyBase())
 
 
 class Dragon(Actor):
@@ -50,7 +50,7 @@ class Dragon(Actor):
         set_animations(self, 'dragon')
 
         self.base_statistics.speed = 50
-        self.base_statistics.attack_range = 30
+        self.base_statistics.attack_range = 100
         self.base_statistics.bullet_image = 'flaming-arrow.png'
         self.base_statistics.bullet_speed = 200
         self.base_statistics.hit_effects = [('HitEffect', {'damage': 1})]
@@ -63,7 +63,7 @@ class Dragon(Actor):
         self.add_controller(DeathController())
         self.add_controller(RangeAttackController())
         self.add_controller(PathController())
-        self.set_ai(StandardAI())
+        self.set_ai(AttackOnlyBase())
 
 
 class Base(EvolvingActor):
@@ -88,7 +88,7 @@ class Base(EvolvingActor):
         self.add_controller(DeathController())
         self.add_controller(NotRotatingRangeAttackController())
 
-        self.set_ai(StandardAI(debug=True))
+        self.set_ai(StandardAI())
 
         stats = copy.deepcopy(self._base_statistics)
         stats.hit_effects = [('HitEffect', {'damage': 70}),
@@ -122,7 +122,7 @@ class Bandit(EvolvingActor):
         self.add_controller(RangeAttackController())
         self.add_controller(PathController())
 
-        self.set_ai(StandardAI(debug=True))
+        self.set_ai(StandardAI())
 
         stats = copy.deepcopy(self._base_statistics)
         stats.hit_effects = [('HitEffect', {'damage': 30})]

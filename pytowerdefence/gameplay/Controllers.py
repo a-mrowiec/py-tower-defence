@@ -104,6 +104,7 @@ class AttackController(BaseController):
         self._actor.rotate_to_direction(
                 self._target.position - self._actor.position)
         self._actor.change_state(ActorState.ATTACK)
+        self._actor.zero_velocity()
 
     def need_update(self):
         return self._actor.state == ActorState.ATTACK
