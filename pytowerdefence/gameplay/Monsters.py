@@ -79,7 +79,6 @@ class Bandit(EvolvingActor):
 
         self.base_statistics.speed = 50
         self.base_statistics.attack_range = 100
-        # self.base_statistics.attack_damage = 15
         self.base_statistics.hit_effects =[('HitEffect', {'damage': 15})]
         self.base_statistics.bullet_speed = 100
         self.base_statistics.bullet_image = 'small-knife.png'
@@ -96,13 +95,12 @@ class Bandit(EvolvingActor):
         self.set_ai(StandardAI(debug=True))
 
         stats=copy.deepcopy(self._base_statistics)
-        # stats.attack_damage += 15
         stats.hit_effects = [('HitEffect', {'damage': 30}), ('SlowEffect', {'time': 5, 'percent': 0.5})]
         stats.bullet_speed = 500
-        self.add_evolution_level(stats, None)
+        self.add_evolution_level(stats, 50, None)
 
         stats=copy.deepcopy(stats)
         stats.attack_range += 200
         stats.bullet_speed = 1000
         stats.bullet_image = 'flaming-arrow.png'
-        self.add_evolution_level(stats, None)
+        self.add_evolution_level(stats, 50, None)

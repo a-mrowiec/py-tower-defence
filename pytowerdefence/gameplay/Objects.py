@@ -480,10 +480,12 @@ class EvolvingActor(Actor):
         self._current_evolution_level = 0
         self._evolution_statistics = []
         self._evolution_animations = []
+        self._evolution_costs = []
 
-    def add_evolution_level(self, statistics, animations=None):
+    def add_evolution_level(self, statistics, evolution_cost, animations=None):
         self._evolution_statistics.append(statistics)
         self._evolution_animations.append(animations)
+        self._evolution_costs.append(evolution_cost)
 
     @property
     def current_evolution_level(self):
@@ -503,7 +505,10 @@ class EvolvingActor(Actor):
         if ActorCallback.EVOLVE in self._callbacks:
             self._callbacks[ActorCallback.EVOLVE](self)
 
-    def can_evolve(self):
+    def get_current_evolution_cost(self):
+        return self._evolution_costs[self._current_evolution_level]
+
+    def has_max_level(self):
         return self._current_evolution_level < len(
             self._evolution_statistics)
 

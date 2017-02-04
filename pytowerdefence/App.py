@@ -65,7 +65,7 @@ class App:
         add_button.position = Vector2(900, 650)
         self._ui_manager.add_widget(add_button)
 
-        panel=GuardianPanel()
+        panel=GuardianPanel(self._logic_manager)
         panel.position=Vector2(375,536)
         self._ui_manager.add_widget(panel)
 

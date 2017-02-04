@@ -1,7 +1,7 @@
 import json
 
 from pytowerdefence.gameplay.Controllers import PathController
-from pytowerdefence.gameplay.Objects import Actor, ActorCallback
+from pytowerdefence.gameplay.Objects import Actor, ActorCallback, EvolvingActor
 from pytowerdefence.gameplay.Scene import is_actor_in_player_team
 
 
@@ -100,6 +100,15 @@ class LogicManager:
 
     def on_monster_killed(self, actor):
         print("Yupi!. You killed the monster", actor)
+        self.game_state.monsters_killed += 1
+        self.game_state.player_gold += 50
+
+    def can_evolve(self, actor):
+        if isinstance(actor, EvolvingActor):
+            if actor.has_max_level():
+                return actor.get_current_evolution_cost() < \
+                       self.game_state.player_gold
+        return False
 
     def update(self, dt):
         self.game_state.time_elapsed += dt

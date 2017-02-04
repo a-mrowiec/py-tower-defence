@@ -24,12 +24,18 @@ class GameActionButton(Button):
         self.disabled = not self._action_manager.is_action_allowed(self._action)
 
 
+# class GameStatePanel(Panel):
+#     def __init__(self):
+#         super
+
+
 class GuardianPanel(Panel):
-    def __init__(self):
+    def __init__(self, logic_manager):
         super().__init__(img=ResourceManager.load_image(ResourceClass.UI, "panel.png"))
         self._actor = None
+        self._logic_manager = logic_manager
         self.widget_id = "guardian_panel"
-        self._upgrade_button = UpgradeButton(None)
+        self._upgrade_button = UpgradeButton(None, self._logic_manager)
         self._upgrade_button.parent_attach_type = ParentAttachType.CENTER
         self._upgrade_button.position = Vector2(55, 164)
 
@@ -81,9 +87,10 @@ class GuardianPanel(Panel):
 
 
 class UpgradeButton(Button):
-    def __init__(self, actor):
+    def __init__(self, actor, logic_manager):
         super().__init__(img=ResourceManager.load_image(ResourceClass.UI, "upgrade.png"))
         self._actor = actor
+        self._logic_manager = logic_manager
         self.z = 2
         self._click_callback = self.clicked
 
@@ -100,7 +107,8 @@ class UpgradeButton(Button):
 
     def clicked(self, event):
         if event.type == pygame.MOUSEBUTTONUP:
-            if self._actor is not None and self._actor.can_evolve():
+            if self._actor is not None and \
+                    self._logic_manager.can_evolve(self.actor):
                 self._actor.evolve()
 
 
