@@ -1,3 +1,5 @@
+import json
+
 from pygame.math import Vector2
 
 from pytowerdefence.Phase import Phase
@@ -12,6 +14,8 @@ from pytowerdefence.gameplay.Widgets import GameWindow, GameActionButton, \
 
 
 class GamePhase(Phase):
+    LEVEL_REQUIRED_PROPERTIES = ['map_file', 'wave_file', 'start_properties']
+
     def __init__(self, app, ui_manager):
         self._app = app
         self._ui_manager = ui_manager
@@ -22,15 +26,17 @@ class GamePhase(Phase):
         self._action_manager = None
         self._logic_manager = None
         self._logical_effect_manager = None
+        self._level_data = None
 
     def initialise(self, **kwargs):
-        self._logic_manager = LogicManager()
+        self._load_level(kwargs['filename'])
+        self._logic_manager = LogicManager(self._level_data['start_properties'])
         self.level = Level(self._ui_manager.window_size, self._logic_manager)
-        self.level.load(kwargs['map_file'])
+        self.level.load(self._level_data['map_file'])
         self._creatures_factory = CreaturesFactory(self.level)
 
         self._wave_manager = WaveManager(factory=self._creatures_factory)
-        self._wave_manager.load("data/test_wave.json")
+        self._wave_manager.load(self._level_data['wave_file'])
 
         self._game_window = GameWindow(self._ui_manager.window_size.x,
                                        self._ui_manager.window_size.y)
@@ -58,6 +64,13 @@ class GamePhase(Phase):
         health_panel.position_attach_type = PositionAttachType.CENTER
         health_panel.position = Vector2(self._ui_manager.window_size.x / 2, 35)
         self._ui_manager.add_widget(health_panel)
+
+    def _load_level(self, filename):
+        with open(filename) as file_data:
+            self._level_data = json.load(file_data)
+            if not all(prop in self._level_data for prop in
+                       GamePhase.LEVEL_REQUIRED_PROPERTIES):
+                raise ValueError("Not all required properties provided!")
 
     def update(self, dt):
         if self._wave_manager is not None:

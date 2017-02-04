@@ -7,17 +7,7 @@
         "name": "Dragon",
         "path": 1
       }],
-      "start_time": 1,
-      "creation_interval": 2
-    },
-    {
-      "type": "standard",
-      "number_of_objects": 0,
-      "objects": [{
-        "name": "Bandit",
-        "path": 1
-      }],
-      "start_time": 1,
+      "start_time": 60,
       "creation_interval": 2
     },
     {
@@ -27,18 +17,28 @@
         "name": "Ogre",
         "path": 0
       }],
-      "start_time": 15,
+      "start_time": 10,
       "creation_interval": 2
     },
     {
       "type": "standard",
-      "number_of_objects": 2,
+      "number_of_objects": 5,
       "objects": [{
         "name": "Ogre",
         "path": 1
       }],
-      "start_time": 5,
-      "creation_interval": 3
+      "start_time": 20,
+      "creation_interval": 2
+    },
+    {
+      "type": "standard",
+      "number_of_objects": 10,
+      "objects": [{
+        "name": "Ogre",
+        "path": 1
+      }],
+      "start_time": 30,
+      "creation_interval": 2
     }
   ]
 }

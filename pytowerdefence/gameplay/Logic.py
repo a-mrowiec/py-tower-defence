@@ -91,8 +91,9 @@ class GameState:
 
 
 class LogicManager:
-    def __init__(self):
+    def __init__(self, start_properties):
         self.game_state = GameState()
+        self.game_state.player_gold = start_properties['player_gold']
 
     def on_object_added_to_scene(self, object):
         if isinstance(object, Actor) and not is_actor_in_player_team(object):

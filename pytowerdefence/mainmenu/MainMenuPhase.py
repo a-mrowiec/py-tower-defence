@@ -25,7 +25,7 @@ class MainMenuPhase(Phase):
         self._ui_manager.add_widget(panel)
 
     def start_game(self, event):
-        self._app.set_phase('game', map_file='data/maps/test.tmx')
+        self._app.set_phase('game', filename='data/maps/1.json')
 
     def on_destroy(self):
         self._ui_manager.clear_all_widgets()
