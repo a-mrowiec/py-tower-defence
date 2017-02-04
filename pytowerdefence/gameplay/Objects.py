@@ -303,7 +303,7 @@ class ActorStatistics:
 
 
 class Actor(GameObject):
-    def __init__(self):
+    def __init__(self, class_properties):
         super().__init__()
         self._animations = {}
         self._current_animation = None
@@ -318,6 +318,11 @@ class Actor(GameObject):
         self._prev_updated_controller = None
         self._hp = 0
         self._logical_effects = []
+        self._class_properties = class_properties
+
+    @property
+    def class_properties(self):
+        return self._class_properties
 
     def update(self, dt):
         if self._ai is not None:
@@ -478,15 +483,9 @@ class Actor(GameObject):
             self._logical_effects.append(effect)
 
 
-class Monster(Actor):
-    def __init__(self, gold_gain):
-        super().__init__()
-        self.gold_gain = gold_gain
-
-
 class EvolvingActor(Actor):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, class_properties):
+        super().__init__(class_properties)
         self._current_evolution_level = 0
         self._evolution_statistics = []
         self._evolution_animations = []

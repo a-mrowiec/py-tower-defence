@@ -101,7 +101,7 @@ class LogicManager:
     def on_monster_killed(self, actor):
         print("Yupi!. You killed the monster", actor)
         self.game_state.monsters_killed += 1
-        self.game_state.player_gold += actor.gold_gain
+        self.game_state.player_gold += actor.class_properties['gold_gain']
 
     def can_evolve(self, actor):
         if isinstance(actor, EvolvingActor):

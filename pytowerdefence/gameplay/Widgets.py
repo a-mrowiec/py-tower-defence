@@ -61,9 +61,9 @@ class PlayerInfoPanel(Panel):
 
 
 class GameActionButton(Button):
-    def __init__(self, action_name, action_manager, text=None, img=None,
+    def __init__(self, action_name, action_manager, text=None, img=None, disabled_img=None,
                  size=24, color=(0, 0, 0), **kwargs):
-        super().__init__(text, img, size, color)
+        super().__init__(text, img, disabled_img, size, color)
         self._action_name = action_name
         self._action_args = kwargs
         self._action_manager = action_manager
@@ -125,7 +125,7 @@ class GuardianPanel(Panel):
 
     def _on_actor_changed(self):
         if self._actor is not None:
-            self._guardian_name.text = "Bandit"
+            self._guardian_name.text = self._actor.class_properties["name"]
             self._guardian_level.text = "Level: {0}".format(
                 self._actor.current_evolution_level + 1)
             self.visible = True

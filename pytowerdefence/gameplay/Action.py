@@ -15,6 +15,9 @@ class BaseAction:
     def is_continuous(self):
         return False
 
+    def is_allowed(self):
+        return True
+
 
 class BaseContinuousAction(BaseAction):
     def is_continuous(self):
@@ -116,6 +119,9 @@ class AddTowerAction(BaseContinuousAction):
         self._action_manager.set_window_mediator(self)
         self._attack_range_drawer = AttackRangeDrawer(self._tower)
 
+    def is_allowed(self):
+        return False
+
     def is_finished(self):
         return self._finished
 
@@ -170,7 +176,7 @@ class ActionManager:
         return False
 
     def is_action_allowed(self, action):
-        return True
+        return action.is_allowed()
 
     def update(self, dt):
         if self._current_action is not None and \

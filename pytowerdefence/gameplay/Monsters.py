@@ -4,8 +4,7 @@ from pytowerdefence.Resources import ResourceClass, ResourceManager
 from pytowerdefence.gameplay.AI import StandardAI
 from pytowerdefence.gameplay.Controllers import PathController, DeathController, \
     RangeAttackController, AttackController, NotRotatingRangeAttackController
-from pytowerdefence.gameplay.Objects import ActorState, EvolvingActor, \
-    Monster
+from pytowerdefence.gameplay.Objects import ActorState, EvolvingActor, Actor
 
 
 def set_animations(actor, animation_name_prefix):
@@ -19,9 +18,11 @@ def set_animations(actor, animation_name_prefix):
         ResourceClass.CHARACTERS, animation_name_prefix + '-death.json'))
 
 
-class Ogre(Monster):
+class Ogre(Actor):
+    OGRE_PROPERTIES = {'gold_gain': 50, 'name': 'Ogre'}
+
     def __init__(self):
-        super().__init__(gold_gain=50)
+        super().__init__(Ogre.OGRE_PROPERTIES)
 
         set_animations(self, 'ogre')
 
@@ -40,9 +41,10 @@ class Ogre(Monster):
         self.set_ai(StandardAI())
 
 
-class Dragon(Monster):
+class Dragon(Actor):
+    DRAGON_PROPERTIES = {'name': 'Dragon', 'gold_gain': 500}
     def __init__(self):
-        super().__init__(gold_gain=500)
+        super().__init__(Dragon.DRAGON_PROPERTIES)
 
         set_animations(self, 'dragon')
 
@@ -64,8 +66,9 @@ class Dragon(Monster):
 
 
 class Base(EvolvingActor):
+    BASE_PROPERTIES = {'name':'Base'}
     def __init__(self):
-        super().__init__()
+        super().__init__(Base.BASE_PROPERTIES)
         set_animations(self, 'base')
 
         self.base_statistics.speed = 0
@@ -87,8 +90,9 @@ class Base(EvolvingActor):
 
 
 class Bandit(EvolvingActor):
+    BANDIT_PROPERTIES = {'name' : 'Bandit', 'cost': 50 }
     def __init__(self):
-        super().__init__()
+        super().__init__(Bandit.BANDIT_PROPERTIES)
 
         set_animations(self, 'bandit')
 
