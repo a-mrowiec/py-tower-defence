@@ -19,7 +19,7 @@ def set_animations(actor, animation_name_prefix):
 
 
 class Ogre(Actor):
-    PROPERTIES = {'gold_gain': 50, 'name': 'Ogre'}
+    PROPERTIES = {'gold_gain': 25, 'name': 'Ogre'}
 
     def __init__(self):
         super().__init__(Ogre.PROPERTIES)
@@ -90,6 +90,14 @@ class Base(EvolvingActor):
 
         self.set_ai(StandardAI(debug=True))
 
+        stats = copy.deepcopy(self._base_statistics)
+        stats.hit_effects = [('HitEffect', {'damage': 70}),
+                             ('SlowEffect', {'time': 1, 'percent': 0.8})]
+        self.add_evolution_level(stats, 1000, {ActorState.ATTACK,
+                                               ResourceManager.load_animation(
+                                                   ResourceClass.CHARACTERS,
+                                                   'base-attack-1.json')})
+
 
 class Bandit(EvolvingActor):
     PROPERTIES = {'name': 'Bandit', 'cost': 50}
@@ -117,13 +125,12 @@ class Bandit(EvolvingActor):
         self.set_ai(StandardAI(debug=True))
 
         stats = copy.deepcopy(self._base_statistics)
-        stats.hit_effects = [('HitEffect', {'damage': 30}),
-                             ('SlowEffect', {'time': 5, 'percent': 0.5})]
+        stats.hit_effects = [('HitEffect', {'damage': 30})]
         stats.bullet_speed = 500
-        self.add_evolution_level(stats, 50, None)
+        self.add_evolution_level(stats, 100, None)
 
         stats = copy.deepcopy(stats)
-        stats.attack_range += 200
-        stats.bullet_speed = 1000
+        stats.attack_range += 100
+        stats.bullet_speed = 500
         stats.bullet_image = 'flaming-arrow.png'
-        self.add_evolution_level(stats, 150, None)
+        self.add_evolution_level(stats, 250, None)

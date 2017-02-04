@@ -2,6 +2,6 @@
   "map_file": "data/maps/test.tmx",
   "wave_file": "data/maps/1-wave.json",
   "start_properties": {
-    "player_gold": 70
+    "player_gold": 75
   }
 }

@@ -511,7 +511,7 @@ class EvolvingActor(Actor):
         self.recalculate_statistics()
         animations = self._evolution_animations[i]
         if animations is not None:
-            for state, animation in animations:
+            for state, animation in animations.items():
                 self.set_animation(state, animation)
 
         if ActorCallback.EVOLVE in self._callbacks:
