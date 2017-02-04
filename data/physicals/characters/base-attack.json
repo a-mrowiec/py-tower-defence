@@ -1,0 +1,6 @@
+{
+  "image": "base.png",
+  "rects": [[0, 0, 64, 64]],
+  "speed": 1000,
+  "loop": 0
+}

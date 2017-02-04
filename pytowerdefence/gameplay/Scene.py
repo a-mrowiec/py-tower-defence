@@ -7,6 +7,7 @@ from pygame.math import Vector2
 from pyscroll.group import PyscrollGroup
 from pytmx.util_pygame import load_pygame
 
+from pytowerdefence.gameplay.Monsters import Base
 from pytowerdefence.gameplay.Objects import GameObject, Actor, ActorState, \
     PLAYER_TEAM
 
@@ -65,6 +66,13 @@ class Level:
         for obstacle in self.obstacle_iterator():
             obstacle.rect = pygame.Rect(obstacle.x, obstacle.y, obstacle.width,
                                         obstacle.height)
+
+        for actor in self.tmx_data.get_layer_by_name("actors"):
+            if actor.name == 'base':
+                base = Base()
+                base.position = Vector2(actor.x, actor.y)
+                base.team = PLAYER_TEAM
+                self.add(base)
 
     def add(self, object):
         self.group.add(object, layer=self.get_layer_index("actors"))

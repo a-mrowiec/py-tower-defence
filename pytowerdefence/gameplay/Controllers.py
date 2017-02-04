@@ -98,9 +98,12 @@ class AttackController(BaseController):
         self._target = value
         if self._actor.state != ActorState.ATTACK:
             if self._target in self._actor.actors_in_attack_range:
-                self._actor.rotate_to_direction(
-                    self._target.position - self._actor.position)
-                self._actor.change_state(ActorState.ATTACK)
+                self._on_target_in_range()
+
+    def _on_target_in_range(self):
+        self._actor.rotate_to_direction(
+                self._target.position - self._actor.position)
+        self._actor.change_state(ActorState.ATTACK)
 
     def need_update(self):
         return self._actor.state == ActorState.ATTACK
@@ -125,6 +128,11 @@ class RangeAttackController(AttackController):
             self._bullet.position = self._actor.position
             self._bullet.target = self._target
             self._actor._objects_to_create.append(self._bullet)
+
+
+class NotRotatingRangeAttackController(RangeAttackController):
+    def _on_target_in_range(self):
+        self._actor.change_state(ActorState.ATTACK)
 
 
 class DeathController(BaseController):

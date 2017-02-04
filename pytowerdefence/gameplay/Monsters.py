@@ -3,8 +3,8 @@ import copy
 from pytowerdefence.Resources import ResourceClass, ResourceManager
 from pytowerdefence.gameplay.AI import StandardAI
 from pytowerdefence.gameplay.Controllers import PathController, DeathController, \
-    RangeAttackController, AttackController
-from pytowerdefence.gameplay.Objects import Actor, ActorState, EvolvingActor, \
+    RangeAttackController, AttackController, NotRotatingRangeAttackController
+from pytowerdefence.gameplay.Objects import ActorState, EvolvingActor, \
     Monster
 
 
@@ -63,10 +63,27 @@ class Dragon(Monster):
         self.set_ai(StandardAI())
 
 
-class Base(Actor):
+class Base(EvolvingActor):
     def __init__(self):
         super().__init__()
         set_animations(self, 'base')
+
+        self.base_statistics.speed = 0
+        self.base_statistics.attack_range = 100
+        self.base_statistics.hit_effects = [('HitEffect', {'damage': 50})]
+        self.base_statistics.bullet_speed = 500
+        self.base_statistics.bullet_image = 'small-knife.png'
+        self.base_statistics.max_health = self.hp = 1000
+        self.recalculate_statistics()
+        self._play_current_animation()
+
+        self.rect.width = 64
+        self.rect.height = 64
+
+        self.add_controller(DeathController())
+        self.add_controller(NotRotatingRangeAttackController())
+
+        self.set_ai(StandardAI(debug=True))
 
 
 class Bandit(EvolvingActor):
@@ -78,7 +95,7 @@ class Bandit(EvolvingActor):
         self.base_statistics.speed = 50
         self.base_statistics.attack_range = 100
         self.base_statistics.hit_effects = [('HitEffect', {'damage': 15})]
-        self.base_statistics.bullet_speed = 100
+        self.base_statistics.bullet_speed = 200
         self.base_statistics.bullet_image = 'small-knife.png'
         self.base_statistics.max_health = self.hp = 100
         self.recalculate_statistics()
