@@ -129,13 +129,13 @@ class GuardianPanel(Panel):
             self._guardian_level.text = "Level: {0}".format(
                 self._actor.current_evolution_level + 1)
             self.visible = True
+            self._actor.set_callback(ActorCallback.EVOLVE, self._on_evolve)
             if self._actor.has_max_level():
                 self._coins_icon.visible = False
                 self._coins.text = "Max level reached"
             else:
                 self._coins_icon.visible = True
                 self._coins.text = str(self._actor.get_current_evolution_cost())
-                self._actor.set_callback(ActorCallback.EVOLVE, self._on_evolve)
         else:
             self.visible = False
         self._upgrade_button.actor = self._actor

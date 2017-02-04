@@ -53,12 +53,6 @@ class App:
 
         self._logical_effect_manager = LogicEffectManager(self.level)
 
-        static_actor = Bandit()
-        static_actor.position = Vector2(877, 117)
-        static_actor.set_ai(StandardAI())
-        static_actor.team = PLAYER_TEAM
-        self.level.add(static_actor)
-
         add_button = GameActionButton(
             img=ResourceManager.load_image(ResourceClass.UI, 'add-button.png'),
             action_name="AddTower",
