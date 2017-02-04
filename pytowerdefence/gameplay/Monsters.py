@@ -19,10 +19,10 @@ def set_animations(actor, animation_name_prefix):
 
 
 class Ogre(Actor):
-    OGRE_PROPERTIES = {'gold_gain': 50, 'name': 'Ogre'}
+    PROPERTIES = {'gold_gain': 50, 'name': 'Ogre'}
 
     def __init__(self):
-        super().__init__(Ogre.OGRE_PROPERTIES)
+        super().__init__(Ogre.PROPERTIES)
 
         set_animations(self, 'ogre')
 
@@ -42,9 +42,10 @@ class Ogre(Actor):
 
 
 class Dragon(Actor):
-    DRAGON_PROPERTIES = {'name': 'Dragon', 'gold_gain': 500}
+    PROPERTIES = {'name': 'Dragon', 'gold_gain': 500}
+
     def __init__(self):
-        super().__init__(Dragon.DRAGON_PROPERTIES)
+        super().__init__(Dragon.PROPERTIES)
 
         set_animations(self, 'dragon')
 
@@ -66,9 +67,10 @@ class Dragon(Actor):
 
 
 class Base(EvolvingActor):
-    BASE_PROPERTIES = {'name':'Base'}
+    PROPERTIES = {'name': 'Base'}
+
     def __init__(self):
-        super().__init__(Base.BASE_PROPERTIES)
+        super().__init__(Base.PROPERTIES)
         set_animations(self, 'base')
 
         self.base_statistics.speed = 0
@@ -90,9 +92,10 @@ class Base(EvolvingActor):
 
 
 class Bandit(EvolvingActor):
-    BANDIT_PROPERTIES = {'name' : 'Bandit', 'cost': 50 }
+    PROPERTIES = {'name': 'Bandit', 'cost': 50}
+
     def __init__(self):
-        super().__init__(Bandit.BANDIT_PROPERTIES)
+        super().__init__(Bandit.PROPERTIES)
 
         set_animations(self, 'bandit')
 

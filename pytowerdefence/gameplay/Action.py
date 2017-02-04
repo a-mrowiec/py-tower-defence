@@ -106,6 +106,7 @@ class AddTowerAction(BaseContinuousAction):
     def __init__(self, action_manager, tower, **kwargs):
         super().__init__(action_manager)
         self._tower_template_name = tower
+        self._tower_cost = self._get_cost()
         self._finished = False
         self._colliding = True
         self._tower = None
@@ -119,8 +120,15 @@ class AddTowerAction(BaseContinuousAction):
         self._action_manager.set_window_mediator(self)
         self._attack_range_drawer = AttackRangeDrawer(self._tower)
 
+    def _get_cost(self):
+        factory = self._action_manager.creatures_factory
+        properties = factory.get_creature_type_properties(
+            self._tower_template_name)
+        return properties['cost']
+
     def is_allowed(self):
-        return False
+        current_gold = self._action_manager.logic_manager.game_state.player_gold
+        return current_gold >= self._tower_cost
 
     def is_finished(self):
         return self._finished
@@ -130,6 +138,7 @@ class AddTowerAction(BaseContinuousAction):
 
     def on_mouse_click_event(self, event):
         if not self._colliding:
+            self._action_manager.logic_manager.game_state.player_gold -= self._tower_cost
             self._action_manager.level.add(self._tower)
             self._action_manager.level.add_obstacle(self._tower)
             self._tower.team = PLAYER_TEAM

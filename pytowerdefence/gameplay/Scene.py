@@ -141,10 +141,16 @@ class CreaturesFactory:
         yield monster, self._level
         self._level.add(monster)
 
-    def create(self, name, **kwargs):
+    def get_creature_type_properties(self, name):
+        return self._get_monster_class(name).PROPERTIES
+
+    def _get_monster_class(self, name):
         monsters_module = importlib.import_module(
             "pytowerdefence.gameplay.Monsters")
-        return getattr(monsters_module, name)()
+        return getattr(monsters_module, name)
+
+    def create(self, name, **kwargs):
+        return self._get_monster_class(name)()
 
 
 def is_actor_in_player_team(actor):
