@@ -253,9 +253,10 @@ class UIManager(object):
     Manager of any widget
     """
 
-    def __init__(self):
+    def __init__(self, window_size):
         self._widgets = {}
         self._focused_widget = None
+        self.window_size = Vector2(window_size[0], window_size[1])
 
     def focus_widget(self, widget):
         self._focused_widget = widget

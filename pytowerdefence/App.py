@@ -1,14 +1,7 @@
 import pygame
-from pygame.math import Vector2
 
-from pytowerdefence.Resources import ResourceManager, ResourceClass
-from pytowerdefence.UI import UIManager, PositionAttachType
-from pytowerdefence.gameplay.Action import ActionManager
-from pytowerdefence.gameplay.Logic import WaveManager, LogicManager
-from pytowerdefence.gameplay.LogicalEffects import LogicEffectManager
-from pytowerdefence.gameplay.Scene import Level, CreaturesFactory
-from pytowerdefence.gameplay.Widgets import GameActionButton, GuardianPanel, \
-    GameWindow, PlayerInfoPanel, PlayerHealthPanel
+from pytowerdefence.Game import Game
+from pytowerdefence.UI import UIManager
 
 
 class App:
@@ -16,55 +9,19 @@ class App:
         self._running = True
         self._display_surf = None
         self.size = self.width, self.height = 1024, 768
-        self._wave_manager = None
+        self._game = None
         self._ui_manager = None
-        self._game_window = None
-        self.level = None
-        self._creatures_factory = None
-        self._action_manager = None
-        self._logic_manager = None
-        self._logical_effect_manager = None
 
     def on_init(self):
         pygame.init()
-        self._logic_manager = LogicManager()
-        self._ui_manager = UIManager()
-
         self._display_surf = pygame.display.set_mode(
             self.size, pygame.HWSURFACE | pygame.DOUBLEBUF)
+
+        self._ui_manager = UIManager(self.size)
+
         self._running = True
-        self.level = Level(self.size, self._logic_manager)
-        self.level.load("data/maps/test.tmx")
-        self._creatures_factory = CreaturesFactory(self.level)
-
-        self._wave_manager = WaveManager(factory=self._creatures_factory)
-        self._wave_manager.load("data/test_wave.json")
-
-        self._game_window = GameWindow(self.width, self.height)
-        self._action_manager = ActionManager(self._game_window, self.level,
-                                             self._creatures_factory,
-                                             self._logic_manager,
-                                             self._ui_manager)
-        self._ui_manager.add_widget(self._game_window)
-        self._ui_manager.focus_widget(self._game_window)
-
-        self._logical_effect_manager = LogicEffectManager(self.level)
-
-        add_button = GameActionButton(
-            img=ResourceManager.load_image(ResourceClass.UI, 'add-button.png'),
-            action_name="AddTower",
-            action_manager=self._action_manager, tower='Bandit')
-        add_button.position = Vector2(900, 650)
-        self._ui_manager.add_widget(add_button)
-
-        panel = GuardianPanel(self._logic_manager)
-        panel.position = Vector2(375, 536)
-        self._ui_manager.add_widget(panel)
-        self._ui_manager.add_widget(PlayerInfoPanel(self._logic_manager))
-        health_panel = PlayerHealthPanel(self.level.base)
-        health_panel.position_attach_type = PositionAttachType.CENTER
-        health_panel.position = Vector2(self.width / 2, 35)
-        self._ui_manager.add_widget(health_panel)
+        self._game = Game(self._ui_manager)
+        self._game.start("data/maps/test.tmx")
 
     def on_event(self, event):
         if event.type == pygame.QUIT:
@@ -73,16 +30,11 @@ class App:
             self._ui_manager.process_event(event)
 
     def on_loop(self, dt):
-        if self._wave_manager is not None:
-            self._wave_manager.update(dt)
-        self.level.update(dt)
+        self._game.update(dt)
         self._ui_manager.update(dt)
-        self._logic_manager.update(dt)
-        self._action_manager.update(dt)
-        self._logical_effect_manager.update(dt)
 
     def on_render(self):
-        self.level.draw(self._display_surf)
+        self._game.draw(self._display_surf)
         self._ui_manager.draw(self._display_surf)
 
     def on_cleanup(self):
