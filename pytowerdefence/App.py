@@ -2,7 +2,7 @@ import pygame
 from pygame.math import Vector2
 
 from pytowerdefence.Resources import ResourceManager, ResourceClass
-from pytowerdefence.UI import UIManager, GameWindow
+from pytowerdefence.UI import UIManager
 from pytowerdefence.gameplay.AI import StandardAI
 from pytowerdefence.gameplay.Action import ActionManager
 from pytowerdefence.gameplay.Logic import WaveManager, LogicManager
@@ -10,7 +10,8 @@ from pytowerdefence.gameplay.LogicalEffects import LogicEffectManager
 from pytowerdefence.gameplay.Monsters import Bandit
 from pytowerdefence.gameplay.Objects import PLAYER_TEAM
 from pytowerdefence.gameplay.Scene import Level, CreaturesFactory
-from pytowerdefence.gameplay.Widgets import GameActionButton, GuardianPanel
+from pytowerdefence.gameplay.Widgets import GameActionButton, GuardianPanel, \
+    GameWindow
 
 
 class App:
