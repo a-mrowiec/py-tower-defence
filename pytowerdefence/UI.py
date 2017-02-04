@@ -7,7 +7,7 @@ from pytowerdefence.Resources import ResourceManager, ResourceClass
 from pytowerdefence.Utils import half_size_of_rect
 
 
-class ParentAttachType(Enum):
+class PositionAttachType(Enum):
     TOP_LEFT = 0,
     CENTER = 1
 
@@ -26,7 +26,7 @@ class Widget(pygame.sprite.Sprite):
         self._children = []
         self._parent = None
         self.widget_id = widget_id
-        self._parent_attach_type = ParentAttachType.TOP_LEFT
+        self._position_attach_type = PositionAttachType.TOP_LEFT
 
     def remove_child(self, child):
         if child in self._children:
@@ -38,12 +38,12 @@ class Widget(pygame.sprite.Sprite):
         child.parent = self
 
     @property
-    def parent_attach_type(self):
-        return self._parent_attach_type
+    def position_attach_type(self):
+        return self._position_attach_type
 
-    @parent_attach_type.setter
-    def parent_attach_type(self, value):
-        self._parent_attach_type = value
+    @position_attach_type.setter
+    def position_attach_type(self, value):
+        self._position_attach_type = value
         self.position_changed()
 
     @property
@@ -74,21 +74,21 @@ class Widget(pygame.sprite.Sprite):
 
     def position_changed(self):
         if self._parent is not None:
-            self._position = self._position_from_parent()  # self._relative_position + self._parent.position
+            self._position = self._real_position() + self._parent.position
         else:
-            self._position = Vector2(self._relative_position)
+            self._position = self._real_position()
 
         self._rect.x = self._position.x
         self._rect.y = self._position.y
         for child in self.children:
             child.position_changed()
 
-    def _position_from_parent(self):
-        if self._parent_attach_type == ParentAttachType.TOP_LEFT:
-            return self._relative_position + self._parent.position
+    def _real_position(self):
+        if self._position_attach_type == PositionAttachType.TOP_LEFT:
+            return self._relative_position
         else:
             return self._relative_position - half_size_of_rect(
-                self.rect) + self._parent.position
+                self.rect)
 
     @property
     def visible(self):
@@ -200,7 +200,8 @@ class ButtonState(IntEnum):
 
 
 class Button(Panel):
-    def __init__(self, text=None, img=None, disabled_img=None, size=24, color=(0, 0, 0)):
+    def __init__(self, text=None, img=None, disabled_img=None, size=24,
+                 color=(0, 0, 0)):
         super().__init__(text, img, size, color)
         self._click_callback = None
         self._disabled = False

@@ -52,6 +52,7 @@ class Level:
         self.map_layer = None
         self.group = None
         self.paths = []
+        self.base = None
 
     def load(self, filename):
         self.tmx_data = load_pygame(filename)
@@ -69,10 +70,10 @@ class Level:
 
         for actor in self.tmx_data.get_layer_by_name("actors"):
             if actor.name == 'base':
-                base = Base()
-                base.position = Vector2(actor.x, actor.y)
-                base.team = PLAYER_TEAM
-                self.add(base)
+                self.base = Base()
+                self.base.position = Vector2(actor.x, actor.y)
+                self.base.team = PLAYER_TEAM
+                self.add(self.base)
 
     def add(self, object):
         self.group.add(object, layer=self.get_layer_index("actors"))
@@ -165,5 +166,5 @@ def is_visible(left, right):
         return False
 
     return right.state != ActorState.DEATH and (
-                                               left.position - right.position).length() \
+                                                   left.position - right.position).length() \
                                                < left.statistics.attack_range + left.radius + right.radius

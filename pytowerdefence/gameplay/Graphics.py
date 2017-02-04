@@ -55,7 +55,8 @@ class AttackRangeDrawer:
             surface.blit(self._surface,
                          [on_screen_pos.x - self._attack_range,
                           on_screen_pos.y - self._attack_range])
-            surface.blit(self._actor.image, Camera.to_screen_position(self._actor.rect.topleft))
+            surface.blit(self._actor.image,
+                         Camera.to_screen_position(self._actor.rect.topleft))
 
     @property
     def color(self):
@@ -67,13 +68,23 @@ class AttackRangeDrawer:
         self._redraw()
 
 
+class ProgressBarDrawer:
+    def __init__(self, progress_image):
+        self._progress_image = progress_image
+
+    def draw(self, surface, rect, percentage):
+        crop_rect = self._progress_image.get_rect()
+        crop_rect.width = crop_rect.width * percentage
+        surface.blit(self._progress_image.subsurface(crop_rect), rect)
+
+
 class HealthDrawer:
     def __init__(self, actor=None):
         self._actor = actor
         self._background = ResourceManager.load_image(
             ResourceClass.UI, 'health-bar-background.png')
-        self._progress = ResourceManager.load_image(
-            ResourceClass.UI, 'health-bar.png')
+        self._progress = ProgressBarDrawer(ResourceManager.load_image(
+            ResourceClass.UI, 'health-bar.png'))
 
     @property
     def actor(self):
@@ -95,7 +106,4 @@ class HealthDrawer:
                 self._background.get_rect()) - (0, 10)
 
             surface.blit(self._background, rect)
-
-            crop_rect = self._progress.get_rect()
-            crop_rect.width = crop_rect.width * percentage
-            surface.blit(self._progress.subsurface(crop_rect), rect)
+            self._progress.draw(surface, rect, percentage)

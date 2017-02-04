@@ -2,16 +2,13 @@ import pygame
 from pygame.math import Vector2
 
 from pytowerdefence.Resources import ResourceManager, ResourceClass
-from pytowerdefence.UI import UIManager
-from pytowerdefence.gameplay.AI import StandardAI
+from pytowerdefence.UI import UIManager, PositionAttachType
 from pytowerdefence.gameplay.Action import ActionManager
 from pytowerdefence.gameplay.Logic import WaveManager, LogicManager
 from pytowerdefence.gameplay.LogicalEffects import LogicEffectManager
-from pytowerdefence.gameplay.Monsters import Bandit
-from pytowerdefence.gameplay.Objects import PLAYER_TEAM
 from pytowerdefence.gameplay.Scene import Level, CreaturesFactory
 from pytowerdefence.gameplay.Widgets import GameActionButton, GuardianPanel, \
-    GameWindow, PlayerInfoPanel
+    GameWindow, PlayerInfoPanel, PlayerHealthPanel
 
 
 class App:
@@ -60,10 +57,14 @@ class App:
         add_button.position = Vector2(900, 650)
         self._ui_manager.add_widget(add_button)
 
-        panel=GuardianPanel(self._logic_manager)
-        panel.position=Vector2(375,536)
+        panel = GuardianPanel(self._logic_manager)
+        panel.position = Vector2(375, 536)
         self._ui_manager.add_widget(panel)
         self._ui_manager.add_widget(PlayerInfoPanel(self._logic_manager))
+        health_panel = PlayerHealthPanel(self.level.base)
+        health_panel.position_attach_type = PositionAttachType.CENTER
+        health_panel.position = Vector2(self.width / 2, 35)
+        self._ui_manager.add_widget(health_panel)
 
     def on_event(self, event):
         if event.type == pygame.QUIT:

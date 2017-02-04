@@ -2,7 +2,8 @@ import pygame
 from pygame.math import Vector2
 
 from pytowerdefence.Resources import ResourceManager, ResourceClass
-from pytowerdefence.UI import Button, Panel, Text, ParentAttachType, Widget
+from pytowerdefence.UI import Button, Panel, Text, PositionAttachType, Widget
+from pytowerdefence.gameplay.Graphics import ProgressBarDrawer
 from pytowerdefence.gameplay.Objects import ActorCallback
 from pytowerdefence.gameplay.Scene import Camera
 
@@ -49,7 +50,8 @@ class PlayerInfoPanel(Panel):
     def __init__(self, logic_manager):
         super().__init__()
         self._logic_manager = logic_manager
-        self._gold_icon = Panel(img=ResourceManager.load_image(ResourceClass.UI, "coins.png"))
+        self._gold_icon = Panel(
+            img=ResourceManager.load_image(ResourceClass.UI, "coins.png"))
         self._gold_text = Text("")
         self._gold_text.position = Vector2(24, 0)
 
@@ -60,14 +62,31 @@ class PlayerInfoPanel(Panel):
         self._gold_text.text = str(self._logic_manager.game_state.player_gold)
 
 
+class PlayerHealthPanel(Panel):
+    def __init__(self, base):
+        super().__init__(img=ResourceManager.load_image(ResourceClass.UI,
+                                                        "base-health-panel.png"))
+        self._health_progress = ProgressBarDrawer(
+            ResourceManager.load_image(ResourceClass.UI, "base-health-bar.png"))
+        self._base = base
+
+    def draw(self, surface):
+        super().draw(surface)
+        percentage = self._base.get_hp_percentage()
+        pos = self.position + Vector2(16, 9)
+        self._health_progress.draw(surface, pos, percentage)
+
+
 class GameActionButton(Button):
-    def __init__(self, action_name, action_manager, text=None, img=None, disabled_img=None,
+    def __init__(self, action_name, action_manager, text=None, img=None,
+                 disabled_img=None,
                  size=24, color=(0, 0, 0), **kwargs):
         super().__init__(text, img, disabled_img, size, color)
         self._action_name = action_name
         self._action_args = kwargs
         self._action_manager = action_manager
-        self._action = action_manager.create_action(self._action_name, **self._action_args)
+        self._action = action_manager.create_action(self._action_name,
+                                                    **self._action_args)
         self.click_callback = self.start_action
 
     def start_action(self, event):
@@ -80,28 +99,30 @@ class GameActionButton(Button):
 
 class GuardianPanel(Panel):
     def __init__(self, logic_manager):
-        super().__init__(img=ResourceManager.load_image(ResourceClass.UI, "panel.png"))
+        super().__init__(
+            img=ResourceManager.load_image(ResourceClass.UI, "panel.png"))
         self._actor = None
         self._logic_manager = logic_manager
         self.widget_id = "guardian_panel"
         self._upgrade_button = UpgradeButton(None, self._logic_manager)
-        self._upgrade_button.parent_attach_type = ParentAttachType.CENTER
+        self._upgrade_button.position_attach_type = PositionAttachType.CENTER
         self._upgrade_button.position = Vector2(50, 164)
 
         self._coins = Text(text="")
-        self._coins.parent_attach_type = ParentAttachType.CENTER
+        self._coins.position_attach_type = PositionAttachType.CENTER
         self._coins.position = Vector2(150, 164)
 
-        self._coins_icon = Panel(img=ResourceManager.load_image(ResourceClass.UI, "coins.png"))
-        self._coins_icon.parent_attach_type = ParentAttachType.CENTER
+        self._coins_icon = Panel(
+            img=ResourceManager.load_image(ResourceClass.UI, "coins.png"))
+        self._coins_icon.position_attach_type = PositionAttachType.CENTER
         self._coins_icon.position = Vector2(200, 164)
 
         self._guardian_name = Text("", size=16)
-        self._guardian_name.parent_attach_type = ParentAttachType.CENTER
+        self._guardian_name.position_attach_type = PositionAttachType.CENTER
         self._guardian_name.position = Vector2(142, 18)
 
-        self._guardian_level = Text("", size = 48)
-        self._guardian_level.parent_attach_type = ParentAttachType.CENTER
+        self._guardian_level = Text("", size=48)
+        self._guardian_level.position_attach_type = PositionAttachType.CENTER
         self._guardian_level.position = Vector2(142, 77)
 
         self.add_child(self._guardian_name)
@@ -145,7 +166,8 @@ class UpgradeButton(Button):
     def __init__(self, actor, logic_manager):
         super().__init__(
             img=ResourceManager.load_image(ResourceClass.UI, "upgrade.png"),
-            disabled_img=ResourceManager.load_image(ResourceClass.UI, "upgrade-disabled.png"))
+            disabled_img=ResourceManager.load_image(ResourceClass.UI,
+                                                    "upgrade-disabled.png"))
         self._actor = actor
         self._logic_manager = logic_manager
         self.z = 2
@@ -171,9 +193,3 @@ class UpgradeButton(Button):
             if self._actor is not None and \
                     self._logic_manager.can_evolve(self.actor):
                 self._logic_manager.evolve(self._actor)
-
-
-
-
-
-

@@ -379,6 +379,9 @@ class Actor(GameObject):
     def base_statistics(self):
         return self._base_statistics
 
+    def get_hp_percentage(self):
+        return self._hp/self._statistics.max_health
+
     def on_death(self):
         self.stop_controllers()
         self._velocity = Vector2()
