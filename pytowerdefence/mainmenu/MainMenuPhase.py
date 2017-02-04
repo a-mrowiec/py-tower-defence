@@ -2,7 +2,7 @@ import pygame
 from pygame.math import Vector2
 
 from pytowerdefence.Phase import Phase
-from pytowerdefence.Resources import ResourceManager, ResourceClass
+from pytowerdefence.Resource import ResourceManager, ResourceClass
 from pytowerdefence.UI import Button, PositionAttachType, Panel
 
 

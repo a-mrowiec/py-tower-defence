@@ -1,3 +1,6 @@
+"""
+Utils
+"""
 import pygame
 from pygame.math import Vector2
 
@@ -13,4 +16,9 @@ def rot_center(image, angle):
 
 
 def half_size_of_rect(rect):
-    return Vector2(rect.width/2.0, rect.height/2.0)
+    """
+    Returns rect with half width and height
+    :param rect:
+    :return:
+    """
+    return Vector2(rect.width / 2.0, rect.height / 2.0)

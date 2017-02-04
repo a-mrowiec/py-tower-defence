@@ -1,6 +1,6 @@
 import copy
 
-from pytowerdefence.Resources import ResourceClass, ResourceManager
+from pytowerdefence.Resource import ResourceClass, ResourceManager
 from pytowerdefence.gameplay.AI import StandardAI, AttackOnlyBase
 from pytowerdefence.gameplay.Controllers import PathController, DeathController, \
     RangeAttackController, AttackController, NotRotatingRangeAttackController

@@ -1,13 +1,19 @@
+"""
+UI Module
+"""
 from enum import Enum, IntEnum
 
 import pygame
 from pygame.math import Vector2
 
-from pytowerdefence.Resources import ResourceManager, ResourceClass
+from pytowerdefence.Resource import ResourceManager, ResourceClass
 from pytowerdefence.Utils import half_size_of_rect
 
 
 class PositionAttachType(Enum):
+    """
+    Determines attach point, which will be used when widget.position is set
+    """
     TOP_LEFT = 0,
     CENTER = 1
 
@@ -29,16 +35,31 @@ class Widget(pygame.sprite.Sprite):
         self._position_attach_type = PositionAttachType.TOP_LEFT
 
     def remove_child(self, child):
+        """
+        Remove child
+        :param child:
+        :return:
+        """
         if child in self._children:
             self._children.remove(child)
             child.parent = None
 
     def add_child(self, child):
+        """
+        Add child
+        :param child:
+        :return:
+        """
         self._children.append(child)
         child.parent = self
 
     @property
     def position_attach_type(self):
+        """
+        Determines way that real widget position is calculated.
+        See @PositionAttachType
+        :return:
+        """
         return self._position_attach_type
 
     @position_attach_type.setter
@@ -48,18 +69,34 @@ class Widget(pygame.sprite.Sprite):
 
     @property
     def children(self):
+        """
+        Children of widget
+        :return:
+        """
         return self._children
 
     @property
     def rect(self):
+        """
+        Rectangle of widget
+        :return:
+        """
         return self._rect
 
     @property
     def position(self):
+        """
+        Real position of widget
+        :return:
+        """
         return self._position
 
     @property
     def parent(self):
+        """
+        Parent widget, position will be computed relative to parent position.
+        :return:
+        """
         return self._parent
 
     @parent.setter
@@ -73,6 +110,10 @@ class Widget(pygame.sprite.Sprite):
         self.position_changed()
 
     def position_changed(self):
+        """
+        Recalculate real position on screen
+        :return:
+        """
         if self._parent is not None:
             self._position = self._real_position() + self._parent.position
         else:
@@ -92,10 +133,19 @@ class Widget(pygame.sprite.Sprite):
 
     @property
     def visible(self):
+        """
+        Visible getter
+        :return:
+        """
         return self._visible
 
     @visible.setter
     def visible(self, value):
+        """
+        Visible setter
+        :param value:
+        :return:
+        """
         self._visible = value
         for child in self.children:
             child.visible = value
@@ -144,6 +194,9 @@ class Widget(pygame.sprite.Sprite):
 
 
 class Text(Widget):
+    """
+    Widget which shows text
+    """
     def __init__(self, text, size=24, color=(255, 255, 255)):
         super().__init__()
         self._color = color
@@ -155,10 +208,19 @@ class Text(Widget):
 
     @property
     def text(self):
+        """
+        Text value getter
+        :return:
+        """
         return self._text
 
     @text.setter
     def text(self, text):
+        """
+        Text value setter
+        :param text:
+        :return:
+        """
         if text is not None:
             self._text = text
             self._font = pygame.font.Font(
@@ -176,12 +238,21 @@ class Text(Widget):
 
 
 class Panel(Text):
+    """
+    Panel class
+    """
+
     def __init__(self, text=None, img=None, size=24, color=(0, 0, 0)):
         super().__init__(text, size, color)
         self._img = None
         self.set_image(img)
 
     def set_image(self, img):
+        """
+        Change image
+        :param img:
+        :return:
+        """
         self._img = img
         if self._img is not None:
             rect = self._img.get_rect()
@@ -195,11 +266,18 @@ class Panel(Text):
 
 
 class ButtonState(IntEnum):
+    """
+    Button state
+    """
     IDLE = 0,
     DISABLED = 1
 
 
 class Button(Panel):
+    """
+    Button class
+    """
+
     def __init__(self, text=None, img=None, disabled_img=None, size=24,
                  color=(0, 0, 0)):
         super().__init__(text, img, size, color)
@@ -210,6 +288,10 @@ class Button(Panel):
 
     @property
     def disabled(self):
+        """
+        Determines if button should react on click events
+        :return:
+        """
         return self._state == ButtonState.DISABLED
 
     @disabled.setter
@@ -224,10 +306,19 @@ class Button(Panel):
 
     @property
     def click_callback(self):
+        """
+        Click callback getter
+        :return:
+        """
         return self._click_callback
 
     @click_callback.setter
     def click_callback(self, value):
+        """
+        Click callback setter
+        :param value:
+        :return:
+        """
         self._click_callback = value
 
     def on_mouse_click_event(self, event):
@@ -236,16 +327,42 @@ class Button(Panel):
 
 
 def is_keyboard_event(event):
+    """
+    Check if event is keyboard event
+    :param event:
+    :return:
+    """
     return event.type == pygame.KEYDOWN
 
 
 def is_mouse_click_event(event):
-    return (
-               event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.MOUSEBUTTONUP) and event.button == 1
+    """
+    Check if event is mouse click
+    :param event:
+    :return:
+    """
+    return (event.type == pygame.MOUSEBUTTONDOWN or
+            event.type == pygame.MOUSEBUTTONUP) and event.button == 1
 
 
 def is_mouse_motion_event(event):
+    """
+    Check if event is mouse motion
+    :param event:
+    :return:
+    """
     return event.type == pygame.MOUSEMOTION
+
+
+def visible_widgets_iterator(layer):
+    """
+    Iterate through visible widgets
+    :param layer:
+    :return:
+    """
+    for widget in layer:
+        if widget.visible:
+            yield widget
 
 
 class UIManager(object):
@@ -259,9 +376,18 @@ class UIManager(object):
         self.window_size = Vector2(window_size[0], window_size[1])
 
     def focus_widget(self, widget):
+        """
+        Focus widget. Focused widget will receive keyboard events
+        :param widget:
+        :return:
+        """
         self._focused_widget = widget
 
     def clear_all_widgets(self):
+        """
+        Removes all widgets
+        :return:
+        """
         self._widgets = {}
 
     def update(self, dt):
@@ -280,9 +406,9 @@ class UIManager(object):
         :param surface:
         :return:
         """
-        for z in sorted(self._widgets):
-            layer = self._widgets[z]
-            for widget in self._visible_widgets_iterator(layer):
+        for z_key in sorted(self._widgets):
+            layer = self._widgets[z_key]
+            for widget in visible_widgets_iterator(layer):
                 widget.draw(surface)
 
     def add_widget(self, widget):
@@ -311,8 +437,13 @@ class UIManager(object):
             self.remove_widget(child)
 
     def get_by_id(self, widget_id):
-        for z in self._widgets:
-            layer = self._widgets[z]
+        """
+        Returns widget with specified id
+        :param widget_id:
+        :return:
+        """
+        for z_key in self._widgets:
+            layer = self._widgets[z_key]
             for widget in layer:
                 if widget.widget_id == widget_id:
                     return widget
@@ -336,15 +467,10 @@ class UIManager(object):
             if self._focused_widget is not None:
                 self._focused_widget.on_keyboard_event(event)
 
-    def _visible_widgets_iterator(self, layer):
-        for widget in layer:
-            if widget.visible:
-                yield widget
-
     def _get_colliding_widget(self, pos):
-        for z in sorted(self._widgets, reverse=True):
-            layer = self._widgets[z]
-            for widget in self._visible_widgets_iterator(layer):
+        for z_key in sorted(self._widgets, reverse=True):
+            layer = self._widgets[z_key]
+            for widget in visible_widgets_iterator(layer):
                 if widget.rect.collidepoint(pos):
                     return widget
         return None

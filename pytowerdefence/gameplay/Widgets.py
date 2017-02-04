@@ -1,7 +1,7 @@
 import pygame
 from pygame.math import Vector2
 
-from pytowerdefence.Resources import ResourceManager, ResourceClass
+from pytowerdefence.Resource import ResourceManager, ResourceClass
 from pytowerdefence.UI import Button, Panel, Text, PositionAttachType, Widget
 from pytowerdefence.gameplay.Graphics import ProgressBarDrawer
 from pytowerdefence.gameplay.Objects import ActorCallback

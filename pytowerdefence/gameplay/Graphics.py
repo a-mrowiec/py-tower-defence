@@ -1,6 +1,6 @@
 import pygame
 
-from pytowerdefence.Resources import ResourceManager, ResourceClass
+from pytowerdefence.Resource import ResourceManager, ResourceClass
 from pytowerdefence.Utils import half_size_of_rect
 from pytowerdefence.gameplay.Scene import Camera
 

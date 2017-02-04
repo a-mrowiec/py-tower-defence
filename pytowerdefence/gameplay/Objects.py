@@ -7,8 +7,8 @@ from functools import reduce
 import pygame
 from pygame.math import Vector2
 
-from pytowerdefence.Resources import ResourceClass
-from pytowerdefence.Resources import ResourceManager
+from pytowerdefence.Resource import ResourceClass
+from pytowerdefence.Resource import ResourceManager
 from pytowerdefence.Utils import rot_center
 
 ENEMY_TEAM = 0
