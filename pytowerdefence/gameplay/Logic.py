@@ -101,12 +101,12 @@ class LogicManager:
     def on_monster_killed(self, actor):
         print("Yupi!. You killed the monster", actor)
         self.game_state.monsters_killed += 1
-        self.game_state.player_gold += 50
+        self.game_state.player_gold += actor.gold_gain
 
     def can_evolve(self, actor):
         if isinstance(actor, EvolvingActor):
             if not actor.has_max_level():
-                return actor.get_current_evolution_cost() < self.game_state.player_gold
+                return actor.get_current_evolution_cost() <= self.game_state.player_gold
         return False
 
     def evolve(self, actor):

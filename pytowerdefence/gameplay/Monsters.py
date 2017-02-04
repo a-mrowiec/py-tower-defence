@@ -3,12 +3,13 @@ from pytowerdefence.Resources import ResourceClass, ResourceManager
 from pytowerdefence.gameplay.AI import StandardAI
 from pytowerdefence.gameplay.Controllers import PathController, DeathController, \
     RangeAttackController, AttackController
-from pytowerdefence.gameplay.Objects import Actor, ActorState, EvolvingActor
+from pytowerdefence.gameplay.Objects import Actor, ActorState, EvolvingActor, \
+    Monster
 
 
-class Ogre(Actor):
+class Ogre(Monster):
     def __init__(self):
-        super().__init__()
+        super().__init__(gold_gain=50)
 
         self.set_animation(ActorState.IDLE, ResourceManager.load_animation(
             ResourceClass.CHARACTERS, 'ogre-move.json'))
@@ -35,9 +36,9 @@ class Ogre(Actor):
         self.set_ai(StandardAI())
 
 
-class Dragon(Actor):
+class Dragon(Monster):
     def __init__(self):
-        super().__init__()
+        super().__init__(gold_gain=500)
 
         self.set_animation(ActorState.IDLE, ResourceManager.load_animation(
             ResourceClass.CHARACTERS, 'dragon-move.json'))
@@ -49,8 +50,9 @@ class Dragon(Actor):
             ResourceClass.CHARACTERS, 'dragon-death.json'))
 
         self.base_statistics.speed = 50
-        self.base_statistics.attack_range = 2
-        # self.base_statistics.attack_damage = 1
+        self.base_statistics.attack_range = 30
+        self.base_statistics.bullet_image = 'flaming-arrow.png'
+        self.base_statistics.bullet_speed = 200
         self.base_statistics.hit_effects =[('HitEffect', {'damage': 1})]
         self.base_statistics.max_health = self.hp = 1000
         self.recalculate_statistics()
@@ -59,7 +61,7 @@ class Dragon(Actor):
         self.rect.width = 128
         self.rect.height = 128
         self.add_controller(DeathController())
-        self.add_controller(AttackController())
+        self.add_controller(RangeAttackController())
         self.add_controller(PathController())
         self.set_ai(StandardAI())
 
@@ -103,4 +105,4 @@ class Bandit(EvolvingActor):
         stats.attack_range += 200
         stats.bullet_speed = 1000
         stats.bullet_image = 'flaming-arrow.png'
-        self.add_evolution_level(stats, 50, None)
+        self.add_evolution_level(stats, 150, None)

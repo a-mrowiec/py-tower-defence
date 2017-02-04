@@ -450,6 +450,10 @@ class Actor(GameObject):
         self._modifiers.append(modifier)
         self.statistics_changed()
 
+    def remove_modifier(self, modifier):
+        self._modifiers.remove(modifier)
+        self.statistics_changed()
+
     @property
     def logical_effects(self):
         return self._logical_effects
@@ -472,6 +476,12 @@ class Actor(GameObject):
                 self._logical_effects.append(effect)
         else:
             self._logical_effects.append(effect)
+
+
+class Monster(Actor):
+    def __init__(self, gold_gain):
+        super().__init__()
+        self.gold_gain = gold_gain
 
 
 class EvolvingActor(Actor):

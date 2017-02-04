@@ -11,7 +11,7 @@ from pytowerdefence.gameplay.Monsters import Bandit
 from pytowerdefence.gameplay.Objects import PLAYER_TEAM
 from pytowerdefence.gameplay.Scene import Level, CreaturesFactory
 from pytowerdefence.gameplay.Widgets import GameActionButton, GuardianPanel, \
-    GameWindow
+    GameWindow, PlayerInfoPanel
 
 
 class App:
@@ -69,6 +69,7 @@ class App:
         panel=GuardianPanel(self._logic_manager)
         panel.position=Vector2(375,536)
         self._ui_manager.add_widget(panel)
+        self._ui_manager.add_widget(PlayerInfoPanel(self._logic_manager))
 
     def on_event(self, event):
         if event.type == pygame.QUIT:

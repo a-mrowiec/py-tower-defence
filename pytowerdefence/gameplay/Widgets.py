@@ -45,6 +45,21 @@ class GameWindow(Widget):
         return None
 
 
+class PlayerInfoPanel(Panel):
+    def __init__(self, logic_manager):
+        super().__init__()
+        self._logic_manager = logic_manager
+        self._gold_icon = Panel(img=ResourceManager.load_image(ResourceClass.UI, "coins.png"))
+        self._gold_text = Text("")
+        self._gold_text.position = Vector2(24, 0)
+
+        self.add_child(self._gold_icon)
+        self.add_child(self._gold_text)
+
+    def update(self, dt):
+        self._gold_text.text = str(self._logic_manager.game_state.player_gold)
+
+
 class GameActionButton(Button):
     def __init__(self, action_name, action_manager, text=None, img=None,
                  size=24, color=(0, 0, 0), **kwargs):
@@ -71,9 +86,9 @@ class GuardianPanel(Panel):
         self.widget_id = "guardian_panel"
         self._upgrade_button = UpgradeButton(None, self._logic_manager)
         self._upgrade_button.parent_attach_type = ParentAttachType.CENTER
-        self._upgrade_button.position = Vector2(55, 164)
+        self._upgrade_button.position = Vector2(50, 164)
 
-        self._coins = Text(text="50")
+        self._coins = Text(text="")
         self._coins.parent_attach_type = ParentAttachType.CENTER
         self._coins.position = Vector2(150, 164)
 
@@ -114,7 +129,13 @@ class GuardianPanel(Panel):
             self._guardian_level.text = "Level: {0}".format(
                 self._actor.current_evolution_level + 1)
             self.visible = True
-            self._actor.set_callback(ActorCallback.EVOLVE, self._on_evolve)
+            if self._actor.has_max_level():
+                self._coins_icon.visible = False
+                self._coins.text = "Max level reached"
+            else:
+                self._coins_icon.visible = True
+                self._coins.text = str(self._actor.get_current_evolution_cost())
+                self._actor.set_callback(ActorCallback.EVOLVE, self._on_evolve)
         else:
             self.visible = False
         self._upgrade_button.actor = self._actor
@@ -144,7 +165,6 @@ class UpgradeButton(Button):
     def update(self, dt):
         if self._actor is not None:
             self.disabled = not self._logic_manager.can_evolve(self.actor)
-            print("Disabled", self.disabled)
 
     def clicked(self, event):
         if event.type == pygame.MOUSEBUTTONUP:
