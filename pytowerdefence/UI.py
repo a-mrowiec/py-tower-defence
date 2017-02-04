@@ -261,6 +261,9 @@ class UIManager(object):
     def focus_widget(self, widget):
         self._focused_widget = widget
 
+    def clear_all_widgets(self):
+        self._widgets = {}
+
     def update(self, dt):
         """
         Updates every widget every frame

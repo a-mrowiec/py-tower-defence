@@ -1,5 +1,6 @@
 from pygame.math import Vector2
 
+from pytowerdefence.Phase import Phase
 from pytowerdefence.Resources import ResourceManager, ResourceClass
 from pytowerdefence.UI import PositionAttachType
 from pytowerdefence.gameplay.Action import ActionManager
@@ -10,8 +11,9 @@ from pytowerdefence.gameplay.Widgets import GameWindow, GameActionButton, \
     GuardianPanel, PlayerInfoPanel, PlayerHealthPanel
 
 
-class Game:
-    def __init__(self, ui_manager):
+class GamePhase(Phase):
+    def __init__(self, app, ui_manager):
+        self._app = app
         self._ui_manager = ui_manager
         self._wave_manager = None
         self._game_window = None
@@ -21,10 +23,10 @@ class Game:
         self._logic_manager = None
         self._logical_effect_manager = None
 
-    def start(self, map_file):
+    def initialise(self, **kwargs):
         self._logic_manager = LogicManager()
         self.level = Level(self._ui_manager.window_size, self._logic_manager)
-        self.level.load(map_file)
+        self.level.load(kwargs['map_file'])
         self._creatures_factory = CreaturesFactory(self.level)
 
         self._wave_manager = WaveManager(factory=self._creatures_factory)
@@ -67,3 +69,6 @@ class Game:
 
     def draw(self, surface):
         self.level.draw(surface)
+
+    def on_destroy(self):
+        self._ui_manager.clear_all_widgets()
