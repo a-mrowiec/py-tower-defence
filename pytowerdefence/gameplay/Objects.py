@@ -509,7 +509,7 @@ class EvolvingActor(Actor):
         return self._evolution_costs[self._current_evolution_level]
 
     def has_max_level(self):
-        return self._current_evolution_level < len(
+        return self._current_evolution_level >= len(
             self._evolution_statistics)
 
 

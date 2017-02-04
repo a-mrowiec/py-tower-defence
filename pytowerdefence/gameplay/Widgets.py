@@ -63,11 +63,6 @@ class GameActionButton(Button):
         self.disabled = not self._action_manager.is_action_allowed(self._action)
 
 
-# class GameStatePanel(Panel):
-#     def __init__(self):
-#         super
-
-
 class GuardianPanel(Panel):
     def __init__(self, logic_manager):
         super().__init__(img=ResourceManager.load_image(ResourceClass.UI, "panel.png"))
@@ -127,7 +122,9 @@ class GuardianPanel(Panel):
 
 class UpgradeButton(Button):
     def __init__(self, actor, logic_manager):
-        super().__init__(img=ResourceManager.load_image(ResourceClass.UI, "upgrade.png"))
+        super().__init__(
+            img=ResourceManager.load_image(ResourceClass.UI, "upgrade.png"),
+            disabled_img=ResourceManager.load_image(ResourceClass.UI, "upgrade-disabled.png"))
         self._actor = actor
         self._logic_manager = logic_manager
         self.z = 2
@@ -144,11 +141,16 @@ class UpgradeButton(Button):
     def on_mouse_click_event(self, event):
         super().on_mouse_click_event(event)
 
+    def update(self, dt):
+        if self._actor is not None:
+            self.disabled = not self._logic_manager.can_evolve(self.actor)
+            print("Disabled", self.disabled)
+
     def clicked(self, event):
         if event.type == pygame.MOUSEBUTTONUP:
             if self._actor is not None and \
                     self._logic_manager.can_evolve(self.actor):
-                self._actor.evolve()
+                self._logic_manager.evolve(self._actor)
 
 
 

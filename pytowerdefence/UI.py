@@ -1,15 +1,16 @@
-from enum import Enum
+from enum import Enum, IntEnum
 
 import pygame
 from pygame.math import Vector2
 
 from pytowerdefence.Resources import ResourceManager, ResourceClass
 from pytowerdefence.Utils import half_size_of_rect
-from pytowerdefence.gameplay.Scene import Camera
+
 
 class ParentAttachType(Enum):
-    TOP_LEFT=0,
-    CENTER=1
+    TOP_LEFT = 0,
+    CENTER = 1
+
 
 class Widget(pygame.sprite.Sprite):
     """
@@ -73,7 +74,7 @@ class Widget(pygame.sprite.Sprite):
 
     def position_changed(self):
         if self._parent is not None:
-            self._position = self._position_from_parent()#self._relative_position + self._parent.position
+            self._position = self._position_from_parent()  # self._relative_position + self._parent.position
         else:
             self._position = Vector2(self._relative_position)
 
@@ -86,7 +87,8 @@ class Widget(pygame.sprite.Sprite):
         if self._parent_attach_type == ParentAttachType.TOP_LEFT:
             return self._relative_position + self._parent.position
         else:
-            return self._relative_position - half_size_of_rect(self.rect) + self._parent.position
+            return self._relative_position - half_size_of_rect(
+                self.rect) + self._parent.position
 
     @property
     def visible(self):
@@ -159,8 +161,10 @@ class Text(Widget):
     def text(self, text):
         if text is not None:
             self._text = text
-            self._font = pygame.font.Font(ResourceManager.get_path(ResourceClass.UI, "monotype-corsiva.ttf"),
-                                          self._size)
+            self._font = pygame.font.Font(
+                ResourceManager.get_path(ResourceClass.UI,
+                                         "monotype-corsiva.ttf"),
+                self._size)
             self._surface = self._font.render(text, True, self._color)
             self._rect.width = self._surface.get_width()
             self._rect.height = self._surface.get_height()
@@ -190,11 +194,32 @@ class Panel(Text):
         super().draw(surface)
 
 
+class ButtonState(IntEnum):
+    IDLE = 0,
+    DISABLED = 1
+
+
 class Button(Panel):
-    def __init__(self, text=None, img=None, size=24, color=(0, 0, 0)):
+    def __init__(self, text=None, img=None, disabled_img=None, size=24, color=(0, 0, 0)):
         super().__init__(text, img, size, color)
         self._click_callback = None
         self._disabled = False
+        self._images = [img, disabled_img]
+        self._state = ButtonState.IDLE
+
+    @property
+    def disabled(self):
+        return self._state == ButtonState.DISABLED
+
+    @disabled.setter
+    def disabled(self, value):
+        self._change_state(ButtonState.DISABLED if value else ButtonState.IDLE)
+
+    def _change_state(self, value):
+        if value != self._state:
+            self._state = value
+            if self._images[self._state] is not None:
+                self.set_image(self._images[self._state])
 
     @property
     def click_callback(self):
@@ -204,16 +229,8 @@ class Button(Panel):
     def click_callback(self, value):
         self._click_callback = value
 
-    @property
-    def disabled(self):
-        return self._disabled
-
-    @disabled.setter
-    def disabled(self, value):
-        self._disabled = value
-
     def on_mouse_click_event(self, event):
-        if not self._disabled and self._click_callback is not None:
+        if self._state != ButtonState.DISABLED and self._click_callback is not None:
             self._click_callback(event)
 
 
@@ -223,7 +240,7 @@ def is_keyboard_event(event):
 
 def is_mouse_click_event(event):
     return (
-           event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.MOUSEBUTTONUP) and event.button == 1
+               event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.MOUSEBUTTONUP) and event.button == 1
 
 
 def is_mouse_motion_event(event):

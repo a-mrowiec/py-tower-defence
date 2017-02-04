@@ -105,10 +105,13 @@ class LogicManager:
 
     def can_evolve(self, actor):
         if isinstance(actor, EvolvingActor):
-            if actor.has_max_level():
-                return actor.get_current_evolution_cost() < \
-                       self.game_state.player_gold
+            if not actor.has_max_level():
+                return actor.get_current_evolution_cost() < self.game_state.player_gold
         return False
+
+    def evolve(self, actor):
+        self.game_state.player_gold -= actor.get_current_evolution_cost()
+        actor.evolve()
 
     def update(self, dt):
         self.game_state.time_elapsed += dt
