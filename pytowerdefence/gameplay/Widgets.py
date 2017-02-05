@@ -22,6 +22,15 @@ class GameWindow(Widget):
         self._rect.height = height
         self.mediator = None
         self.camera_movement_speed = 128
+        self._action_manager = None
+
+    @property
+    def action_manager(self):
+        return self._action_manager
+
+    @action_manager.setter
+    def action_manager(self, value):
+        self._action_manager = value
 
     def on_mouse_motion_event(self, event):
         if self.mediator is not None:
@@ -44,6 +53,9 @@ class GameWindow(Widget):
             Camera.move_by((0, -self.camera_movement_speed))
         elif event.key == pygame.K_DOWN:
             Camera.move_by((0, self.camera_movement_speed))
+        elif event.key == pygame.K_ESCAPE:
+            if self._action_manager is not None:
+                self._action_manager.set_default_action()
 
     def _find_clicked_actor(self, pos):
         for actor in self.level.actor_iterator():

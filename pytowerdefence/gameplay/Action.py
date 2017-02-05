@@ -266,6 +266,8 @@ class ActionManager:
         self.ui_manager = ui_manager
         self.create_and_start_action("Scrolling")
 
+        self.game_window.action_manager = self
+
     def set_window_mediator(self, mediator):
         """
         Changes game window mediator
@@ -292,7 +294,7 @@ class ActionManager:
         :return:
         """
         if self.is_action_allowed(action):
-            self._stop_other_action()
+            self.cancel_current_action()
             self._perform_action(action, **kwargs)
             return True
         return False
@@ -320,7 +322,19 @@ class ActionManager:
         if action.is_continuous():
             self._current_action = action
 
-    def _stop_other_action(self):
+    def set_default_action(self):
+        """
+        Sets action to default
+        :return:
+        """
+        self.cancel_current_action()
+        self.create_and_start_action("Scrolling")
+
+    def cancel_current_action(self):
+        """
+        Cancel current action
+        :return:
+        """
         if self._current_action is not None:
             self._current_action.on_break()
             self._current_action = None
