@@ -111,7 +111,7 @@ class Base(EvolvingActor):
         stats = copy.deepcopy(self._base_statistics)
         stats.hit_effects = [('HitEffect', {'damage': 70}),
                              ('SlowEffect', {'time': 1, 'percent': 0.8})]
-        self.add_evolution_level(stats, 1000, {ActorState.ATTACK,
+        self.add_evolution_level(stats, 1000, {ActorState.ATTACK:
                                                ResourceManager.load_animation(
                                                    ResourceClass.CHARACTERS,
                                                    'base-attack-1.json')})
