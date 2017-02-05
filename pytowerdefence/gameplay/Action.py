@@ -1,3 +1,6 @@
+"""
+Action module
+"""
 import pygame
 
 from pytowerdefence.gameplay.Graphics import AttackRangeDrawer, HealthDrawer
@@ -6,31 +9,61 @@ from pytowerdefence.gameplay.Scene import Camera, is_actor_in_player_team
 
 
 class BaseAction:
+    """
+    Base class for action
+    """
     def __init__(self, action_manager):
         self._action_manager = action_manager
 
     def perform(self, **kwargs):
+        """
+        Perform action
+        :param kwargs:
+        :return:
+        """
         pass
 
     def is_continuous(self):
+        """
+        Returns true if action is continuous
+        :return:
+        """
         return False
 
     def is_allowed(self):
+        """
+        Return True if action is currently allowed
+        :return:
+        """
         return True
 
 
 class BaseContinuousAction(BaseAction):
+    """
+    Base class for continuous actions
+    """
     def is_continuous(self):
         return True
 
     def is_finished(self):
+        """
+        Returns true if action is finished
+        :return:
+        """
         return True
 
     def on_break(self):
+        """
+        Called when action is break
+        :return:
+        """
         pass
 
 
 class ScrollingAction(BaseContinuousAction):
+    """
+    Default pending scrolling action
+    """
     def __init__(self, action_manager):
         super().__init__(action_manager)
         self._attack_range_drawer = AttackRangeDrawer()
@@ -46,29 +79,48 @@ class ScrollingAction(BaseContinuousAction):
         self._action_manager.set_window_mediator(None)
 
     def on_mouse_click_event(self, event):
+        """
+        On mouse click event
+        :param event:
+        :return:
+        """
         if event.type == pygame.MOUSEBUTTONUP:
             if self._attack_range_drawer.actor is not None:
-                self._action_manager.\
-                    create_and_start_action("TowerManaging",
+                self._action_manager. \
+                    create_and_start_action("GuardManaging",
                                             attack_range_drawer=self._attack_range_drawer)
 
     def on_mouse_motion_event(self, event):
+        """
+        On mouse motion event
+        :param event:
+        :return:
+        """
         actor = self._action_manager.level.get_actor_on_position(
             Camera.to_world_position(event.pos))
         if actor is not None and is_actor_in_player_team(actor):
             self._attack_range_drawer.actor = actor
             self._health_drawer.actor = None
         elif actor is None:
-            self._attack_range_drawer._actor = None
+            self._attack_range_drawer.actor = None
         else:
             self._health_drawer.actor = actor
 
     def draw(self, surface):
+        """
+        Draw
+        :param surface:
+        :return:
+        """
         self._attack_range_drawer.draw(surface)
         self._health_drawer.draw(surface)
 
 
-class TowerManagingAction(BaseContinuousAction):
+class GuardManagingAction(BaseContinuousAction):
+    """
+    Creating guard action
+    """
+
     def __init__(self, action_manager, **kwargs):
         super().__init__(action_manager)
         self._attack_range_drawer = kwargs["attack_range_drawer"]
@@ -78,16 +130,28 @@ class TowerManagingAction(BaseContinuousAction):
 
     def perform(self, **kwargs):
         self._action_manager.set_window_mediator(self)
-        self._action_manager.ui_manager.get_by_id("guardian_panel").set_actor(self._attack_range_drawer.actor)
+        self._action_manager.ui_manager.get_by_id("guardian_panel").set_actor(
+            self._attack_range_drawer.actor)
 
     def on_break(self):
         self._action_manager.set_window_mediator(None)
-        self._action_manager.ui_manager.get_by_id("guardian_panel").set_actor(None)
+        self._action_manager.ui_manager.get_by_id("guardian_panel").set_actor(
+            None)
 
     def draw(self, surface):
+        """
+        Draw needed elements
+        :param surface:
+        :return:
+        """
         self._attack_range_drawer.draw(surface)
 
     def on_mouse_click_event(self, event):
+        """
+        On mouse click event
+        :param event:
+        :return:
+        """
         if event.type == pygame.MOUSEBUTTONUP:
             world_pos = Camera.to_world_position(event.pos)
             clicked_actor = self._action_manager.level.get_actor_on_position(
@@ -95,15 +159,25 @@ class TowerManagingAction(BaseContinuousAction):
             self._marked_actor_changed(clicked_actor)
 
     def _marked_actor_changed(self, actor):
-        self._action_manager.ui_manager.get_by_id("guardian_panel").set_actor(actor)
+        self._action_manager.ui_manager.get_by_id("guardian_panel").set_actor(
+            actor)
         self._attack_range_drawer.actor = actor
 
     def on_mouse_motion_event(self, event):
+        """
+        On mouse motion event
+        :param event:
+        :return:
+        """
         pass
 
 
 class AddTowerAction(BaseContinuousAction):
-    def __init__(self, action_manager, tower, **kwargs):
+    """
+    Add tower action
+    """
+
+    def __init__(self, action_manager, tower):
         super().__init__(action_manager)
         self._tower_template_name = tower
         self._tower_cost = self._get_cost()
@@ -139,6 +213,11 @@ class AddTowerAction(BaseContinuousAction):
         self._action_manager.set_window_mediator(None)
 
     def on_mouse_click_event(self, event):
+        """
+        On mouse click event
+        :param event:
+        :return:
+        """
         if not self._colliding:
             self._action_manager.logic_manager.game_state.player_gold -= self._tower_cost
             self._action_manager.level.add(self._tower)
@@ -149,11 +228,21 @@ class AddTowerAction(BaseContinuousAction):
             self._action_manager.set_window_mediator(None)
 
     def on_mouse_motion_event(self, event):
+        """
+        On mouse motion event
+        :param event:
+        :return:
+        """
         self._tower.position = Camera.to_world_position(event.pos)
         self._colliding = self._action_manager.level.is_rectangle_colliding(
             self._tower.rect)
 
     def draw(self, surface):
+        """
+        Draw needed elements
+        :param surface:
+        :return:
+        """
         if self._tower is not None:
             self._attack_range_drawer.color = (255, 0, 0) if \
                 self._colliding else (255, 255, 255)
@@ -163,7 +252,12 @@ class AddTowerAction(BaseContinuousAction):
 
 
 class ActionManager:
-    def __init__(self, game_window, level, creatures_factory, logic_manager, ui_manager):
+    """
+    Action Manager
+    """
+
+    def __init__(self, game_window, level, creatures_factory, logic_manager,
+                 ui_manager):
         self.game_window = game_window
         self._current_action = None
         self.level = level
@@ -173,13 +267,30 @@ class ActionManager:
         self.create_and_start_action("Scrolling")
 
     def set_window_mediator(self, mediator):
+        """
+        Changes game window mediator
+        :param mediator:
+        :return:
+        """
         self.game_window.mediator = mediator
 
     def create_and_start_action(self, name, **kwargs):
+        """
+        Creates and start action
+        :param name:
+        :param kwargs:
+        :return:
+        """
         action_created = self.create_action(name, **kwargs)
         return self.start_action(action_created)
 
     def start_action(self, action, **kwargs):
+        """
+        Start performing of action instance
+        :param action:
+        :param kwargs:
+        :return:
+        """
         if self.is_action_allowed(action):
             self._stop_other_action()
             self._perform_action(action, **kwargs)
@@ -187,9 +298,19 @@ class ActionManager:
         return False
 
     def is_action_allowed(self, action):
+        """
+        Returns true if action is allowed
+        :param action:
+        :return:
+        """
         return action.is_allowed()
 
     def update(self, dt):
+        """
+        Update action manager
+        :param dt:
+        :return:
+        """
         if self._current_action is not None and \
                 self._current_action.is_finished():
             self.create_and_start_action("Scrolling")
@@ -205,9 +326,15 @@ class ActionManager:
             self._current_action = None
 
     def create_action(self, name, **kwargs):
+        """
+        Create and return action instance
+        :param name:
+        :param kwargs:
+        :return:
+        """
         if name == 'Scrolling':
             return ScrollingAction(self)
-        elif name == 'TowerManaging':
-            return TowerManagingAction(self, **kwargs)
+        elif name == 'GuardManaging':
+            return GuardManagingAction(self, **kwargs)
         else:
             return AddTowerAction(self, kwargs['tower'])
