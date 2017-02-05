@@ -1,3 +1,6 @@
+"""
+Module which contains definitions of monsters
+"""
 import copy
 
 from pytowerdefence.Resource import ResourceClass, ResourceManager
@@ -8,6 +11,12 @@ from pytowerdefence.gameplay.Objects import ActorState, EvolvingActor, Actor
 
 
 def set_animations(actor, animation_name_prefix):
+    """
+    Creates all animations set based on animation_name_prefix
+    :param actor:
+    :param animation_name_prefix:
+    :return:
+    """
     actor.set_animation(ActorState.IDLE, ResourceManager.load_animation(
         ResourceClass.CHARACTERS, animation_name_prefix + '-idle.json'))
     actor.set_animation(ActorState.MOVE, ResourceManager.load_animation(
@@ -19,6 +28,9 @@ def set_animations(actor, animation_name_prefix):
 
 
 class Ogre(Actor):
+    """
+    Ogre
+    """
     PROPERTIES = {'gold_gain': 25, 'name': 'Ogre'}
 
     def __init__(self):
@@ -42,6 +54,9 @@ class Ogre(Actor):
 
 
 class Dragon(Actor):
+    """
+    Dragon. Very powerful monster
+    """
     PROPERTIES = {'name': 'Dragon', 'gold_gain': 500}
 
     def __init__(self):
@@ -67,6 +82,9 @@ class Dragon(Actor):
 
 
 class Base(EvolvingActor):
+    """
+    Base. Is object to protect
+    """
     PROPERTIES = {'name': 'Base'}
 
     def __init__(self):
@@ -100,6 +118,9 @@ class Base(EvolvingActor):
 
 
 class Bandit(EvolvingActor):
+    """
+    Bandit
+    """
     PROPERTIES = {'name': 'Bandit', 'cost': 50}
 
     def __init__(self):

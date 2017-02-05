@@ -1,29 +1,63 @@
+"""
+Logical effects module
+"""
 from pytowerdefence.gameplay.Objects import StatisticModifier, StatisticType
 
 
 class LogicalEffectBase:
+    """
+    Base class for any logical effect
+    """
     def __init__(self, actor, name, is_unique):
         self._actor = actor
         self.name = name
         self.is_unique = is_unique
 
     def need_to_perform(self, dt, logic_manager):
+        """
+        Returns true when effect must be performed
+        :param dt:
+        :param logic_manager:
+        :return:
+        """
         return True
 
     def perform(self, logic_manager):
+        """
+        Performs effect
+        :param logic_manager:
+        :return:
+        """
         pass
 
     def is_finished(self):
+        """
+        If True effect will be removed in nearest frame tick
+        :return:
+        """
         return True
 
     def on_remove(self, logic_manager):
+        """
+        Called before removing effect
+        :param logic_manager:
+        :return:
+        """
         pass
 
     def on_merge(self, effect):
+        """
+        Called only for unique effect
+        :param effect:
+        :return:
+        """
         pass
 
 
 class HitEffect(LogicalEffectBase):
+    """
+    Simply hit effect
+    """
     def __init__(self, actor, **kwargs):
         super().__init__(actor, 'hit', False)
         self._damage = kwargs['damage']
@@ -33,6 +67,9 @@ class HitEffect(LogicalEffectBase):
 
 
 class TimeEffect(LogicalEffectBase):
+    """
+    Base class for time lasting effects
+    """
     def __init__(self, actor, name, is_unique, time, repeat_time=None,
                  repeat=False):
         super().__init__(actor, name, is_unique)
@@ -67,6 +104,9 @@ class TimeEffect(LogicalEffectBase):
 
 
 class SlowEffect(TimeEffect):
+    """
+    Slows actor speed
+    """
     def __init__(self, actor, **kwargs):
         super().__init__(actor, 'slow', True, kwargs['time'])
         self.speed_modifier = StatisticModifier(StatisticType.SPEED,
@@ -88,14 +128,22 @@ class SlowEffect(TimeEffect):
 
 
 class LogicEffectManager:
+    """
+    Manages logical effects
+    """
     def __init__(self, level):
         self.level = level
 
     def update(self, dt):
+        """
+        Update logical effects
+        :param dt:
+        :return:
+        """
         for actor in self.level.actor_iterator():
-            for le in actor.logical_effects:
-                if le.need_to_perform(dt, self):
-                    le.perform(self)
-                if le.is_finished():
-                    le.on_remove(self)
-                    actor.remove_effect(le)
+            for logical_effect in actor.logical_effects:
+                if logical_effect.need_to_perform(dt, self):
+                    logical_effect.perform(self)
+                if logical_effect.is_finished():
+                    logical_effect.on_remove(self)
+                    actor.remove_effect(logical_effect)

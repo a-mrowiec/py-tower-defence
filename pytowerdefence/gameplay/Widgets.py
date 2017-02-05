@@ -1,3 +1,6 @@
+"""
+Widgets that are used in game
+"""
 import pygame
 from pygame.math import Vector2
 
@@ -9,6 +12,9 @@ from pytowerdefence.gameplay.Scene import Camera
 
 
 class GameWindow(Widget):
+    """
+    Game window
+    """
     def __init__(self, width, height):
         super().__init__()
         self.z = 0
@@ -47,6 +53,9 @@ class GameWindow(Widget):
 
 
 class PlayerInfoPanel(Panel):
+    """
+    Shows how many coins do player have
+    """
     def __init__(self, logic_manager):
         super().__init__()
         self._logic_manager = logic_manager
@@ -63,6 +72,9 @@ class PlayerInfoPanel(Panel):
 
 
 class PlayerHealthPanel(Panel):
+    """
+    Shows health of player
+    """
     def __init__(self, base):
         super().__init__(img=ResourceManager.load_image(ResourceClass.UI,
                                                         "base-health-panel.png"))
@@ -78,6 +90,9 @@ class PlayerHealthPanel(Panel):
 
 
 class GameActionButton(Button):
+    """
+    Generic button which starts player action
+    """
     def __init__(self, action_name, action_manager, text=None, img=None,
                  disabled_img=None,
                  size=24, color=(0, 0, 0), **kwargs):
@@ -90,6 +105,11 @@ class GameActionButton(Button):
         self.click_callback = self.start_action
 
     def start_action(self, event):
+        """
+        Starts action
+        :param event:
+        :return:
+        """
         if event.type == pygame.MOUSEBUTTONUP:
             self._action_manager.start_action(self._action, mouse_pos=event.pos)
 
@@ -98,6 +118,9 @@ class GameActionButton(Button):
 
 
 class GuardianPanel(Panel):
+    """
+    Panel which shows guard info, and allows actions on that guard
+    """
     def __init__(self, logic_manager):
         super().__init__(
             img=ResourceManager.load_image(ResourceClass.UI, "panel.png"))
@@ -134,6 +157,11 @@ class GuardianPanel(Panel):
         self.visible = False
 
     def set_actor(self, actor):
+        """
+        Changes actor
+        :param actor:
+        :return:
+        """
         if self._actor is not None:
             self._actor.remove_callback(ActorCallback.EVOLVE)
         self._actor = actor
@@ -163,6 +191,9 @@ class GuardianPanel(Panel):
 
 
 class UpgradeButton(Button):
+    """
+    Button which upgrades/evolves actor
+    """
     def __init__(self, actor, logic_manager):
         super().__init__(
             img=ResourceManager.load_image(ResourceClass.UI, "upgrade.png"),
@@ -175,6 +206,10 @@ class UpgradeButton(Button):
 
     @property
     def actor(self):
+        """
+        Actor which we want to upgrade. Must be instance of EvolvingActor
+        :return:
+        """
         return self._actor
 
     @actor.setter
@@ -189,6 +224,11 @@ class UpgradeButton(Button):
             self.disabled = not self._logic_manager.can_evolve(self.actor)
 
     def clicked(self, event):
+        """
+        Handler
+        :param event:
+        :return:
+        """
         if event.type == pygame.MOUSEBUTTONUP:
             if self._actor is not None and \
                     self._logic_manager.can_evolve(self.actor):

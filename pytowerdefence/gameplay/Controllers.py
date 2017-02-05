@@ -128,7 +128,7 @@ class RangeAttackController(AttackController):
             self._bullet = Bullet(self._actor)
             self._bullet.position = self._actor.position
             self._bullet.target = self._target
-            self._actor._objects_to_create.append(self._bullet)
+            self._actor.objects_to_create.append(self._bullet)
 
 
 class NotRotatingRangeAttackController(RangeAttackController):
