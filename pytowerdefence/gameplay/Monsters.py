@@ -146,7 +146,8 @@ class Bandit(EvolvingActor):
         self.set_ai(StandardAI())
 
         stats = copy.deepcopy(self._base_statistics)
-        stats.hit_effects = [('HitEffect', {'damage': 30})]
+        stats.hit_effects = [('HitEffect', {'damage': 30}),
+                             ('SlowEffect', {'percent': 0.5, 'time': 3})]
         stats.bullet_speed = 500
         self.add_evolution_level(stats, 100, None)
 
