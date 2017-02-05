@@ -1,3 +1,6 @@
+"""
+Controller module
+"""
 from pygame.math import Vector2
 
 from pytowerdefence.gameplay.Objects import Bullet, ActorState, \
@@ -5,29 +8,63 @@ from pytowerdefence.gameplay.Objects import Bullet, ActorState, \
 
 
 class BaseController:
+    """
+    Base class for any controller
+    """
+
     def __init__(self):
         self._actor = None
 
     def need_update(self):
+        """
+        Returns True if controller need update
+        :return:
+        """
         return False
 
     def on_update_end(self):
+        """
+        Called when higher priority controller take control of actor
+        :return:
+        """
         pass
 
     def set_actor(self, actor):
+        """
+        Set actor
+        :param actor:
+        :return:
+        """
         self._actor = actor
 
     def update(self, dt):
+        """
+        Update controller
+        :param dt:
+        :return:
+        """
         pass
 
     def on_animation_end(self):
+        """
+        Called when animation is ended
+        :return:
+        """
         pass
 
     def stop(self):
+        """
+        Stop updating controller
+        :return:
+        """
         pass
 
 
 class PathController(BaseController):
+    """
+    Controller which drives monster at specific path
+    """
+
     def __init__(self):
         super().__init__()
         self.path = []
@@ -36,6 +73,11 @@ class PathController(BaseController):
         self.path_vector = Vector2()
 
     def set_path(self, path):
+        """
+        Set path
+        :param path:
+        :return:
+        """
         self.path = path
         self._current_path_point = 0
         self.finished = False
@@ -43,6 +85,10 @@ class PathController(BaseController):
 
     @property
     def current_path_point(self):
+        """
+        Current path point which is the target
+        :return:
+        """
         return self._current_path_point
 
     @current_path_point.setter
@@ -85,12 +131,20 @@ class PathController(BaseController):
 
 
 class AttackController(BaseController):
+    """
+    Standard attack controller
+    """
+
     def __init__(self):
         super().__init__()
         self._target = None
 
     @property
     def target(self):
+        """
+        Target
+        :return:
+        """
         return self._target
 
     @target.setter
@@ -102,7 +156,7 @@ class AttackController(BaseController):
 
     def _on_target_in_range(self):
         self._actor.rotate_to_direction(
-                self._target.position - self._actor.position)
+            self._target.position - self._actor.position)
         self._actor.change_state(ActorState.ATTACK)
         self._actor.zero_velocity()
 
@@ -119,6 +173,10 @@ class AttackController(BaseController):
 
 
 class RangeAttackController(AttackController):
+    """
+    Controller for range attack
+    """
+
     def __init__(self):
         super().__init__()
         self._bullet = None
@@ -132,11 +190,19 @@ class RangeAttackController(AttackController):
 
 
 class NotRotatingRangeAttackController(RangeAttackController):
+    """
+    Range attack controller, which won't turn toward target
+    """
+
     def _on_target_in_range(self):
         self._actor.change_state(ActorState.ATTACK)
 
 
 class DeathController(BaseController):
+    """
+    Death controller
+    """
+
     def need_update(self):
         return self._actor.state == ActorState.DEATH
 

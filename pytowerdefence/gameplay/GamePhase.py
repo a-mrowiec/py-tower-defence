@@ -1,3 +1,6 @@
+"""
+Game phase module
+"""
 import json
 
 from pygame.math import Vector2
@@ -14,6 +17,9 @@ from pytowerdefence.gameplay.Widgets import GameWindow, GameActionButton, \
 
 
 class GamePhase(Phase):
+    """
+    Game phase
+    """
     LEVEL_REQUIRED_PROPERTIES = ['map_file', 'wave_file', 'start_properties']
 
     def __init__(self, app, ui_manager):

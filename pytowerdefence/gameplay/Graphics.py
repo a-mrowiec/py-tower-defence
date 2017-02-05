@@ -1,3 +1,6 @@
+"""
+Graphics elements
+"""
 import pygame
 
 from pytowerdefence.Resource import ResourceManager, ResourceClass
@@ -6,6 +9,9 @@ from pytowerdefence.gameplay.Scene import Camera
 
 
 class AttackRangeDrawer:
+    """
+    Draws attack range
+    """
     def __init__(self, actor=None, color=(255, 255, 255)):
         self._actor = None
         self._color = color
@@ -16,6 +22,10 @@ class AttackRangeDrawer:
 
     @property
     def actor(self):
+        """
+        Actor
+        :return:
+        """
         return self._actor
 
     @actor.setter
@@ -47,6 +57,11 @@ class AttackRangeDrawer:
         return int(self._actor.statistics.attack_range + self._actor.radius)
 
     def draw(self, surface):
+        """
+        Draws range
+        :param surface:
+        :return:
+        """
         if self._actor is not None:
             if self._attack_range != self._compute_attack_range():
                 self._refresh()
@@ -60,6 +75,10 @@ class AttackRangeDrawer:
 
     @property
     def color(self):
+        """
+        Color
+        :return:
+        """
         return self._color
 
     @color.setter
@@ -69,16 +88,29 @@ class AttackRangeDrawer:
 
 
 class ProgressBarDrawer:
+    """
+    Progress bar drawer
+    """
     def __init__(self, progress_image):
         self._progress_image = progress_image
 
     def draw(self, surface, rect, percentage):
+        """
+        Draws performance on specified rect position
+        :param surface:
+        :param rect:
+        :param percentage:
+        :return:
+        """
         crop_rect = self._progress_image.get_rect()
         crop_rect.width = crop_rect.width * percentage
         surface.blit(self._progress_image.subsurface(crop_rect), rect)
 
 
 class HealthDrawer:
+    """
+    Draws health of actor, on top of actor
+    """
     def __init__(self, actor=None):
         self._actor = actor
         self._background = ResourceManager.load_image(
@@ -88,6 +120,10 @@ class HealthDrawer:
 
     @property
     def actor(self):
+        """
+        Actor
+        :return:
+        """
         return self._actor
 
     @actor.setter
@@ -95,15 +131,19 @@ class HealthDrawer:
         self._actor = value
 
     def draw(self, surface):
+        """
+        Draw actor health on screen
+        :param surface:
+        :return:
+        """
         if self._actor is not None:
             statistics = self.actor.statistics
             percentage = self.actor.hp / statistics.max_health
 
             rect = self._background.get_rect()
-            rect.center = Camera.to_screen_position(
-                self.actor.position) - half_size_of_rect(
-                self.actor.rect) + half_size_of_rect(
-                self._background.get_rect()) - (0, 10)
+            rect.center = Camera.to_screen_position(self.actor.position) \
+                      - half_size_of_rect(self.actor.rect) \
+                      + half_size_of_rect(self._background.get_rect()) - (0, 10)
 
             surface.blit(self._background, rect)
             self._progress.draw(surface, rect, percentage)
