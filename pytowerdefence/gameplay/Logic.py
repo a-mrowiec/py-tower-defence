@@ -29,6 +29,13 @@ class StandardWave:
         return self._start_time <= time_elapsed \
                and self._number_of_created_objects < self._number_of_objects
 
+    def is_finished(self):
+        """
+        Returns True if there is no monsters to create
+        :return:
+        """
+        return self._number_of_created_objects >= self._number_of_objects
+
     def get_objects_to_create(self, time_elapsed):
         """
         Returns list of actors templates to create
@@ -65,6 +72,15 @@ class WaveManager:
         self._time_elapsed = 0.
         self._last_wave_index = 0
         self._creatures_factory = factory
+        self._monsters_created = 0
+
+    @property
+    def monsters_created(self):
+        """
+        Number of monsters created
+        :return:
+        """
+        return self._monsters_created
 
     def load(self, filename):
         """
@@ -92,9 +108,19 @@ class WaveManager:
                 for obj_template in objects_to_create:
                     self._create_object(obj_template)
 
+        self._waves = [wave for wave in self._waves if not wave.is_finished()]
+
+    def no_waves_left(self):
+        """
+        Returns true if there is no waves left
+        :return:
+        """
+        return len(self._waves) == 0
+
     def _create_object(self, object_template):
         with self._creatures_factory.create_on_scene(object_template["name"]) \
                 as (monster, level):
+            self._monsters_created += 1
             path_controller = monster.get_controller(PathController)
             path = level.paths[object_template["path"]]
             if path_controller is not None and path is not None:
@@ -130,9 +156,19 @@ class LogicManager:
     Logic manager
     """
 
-    def __init__(self, start_properties):
+    def __init__(self, start_properties, app):
         self.game_state = GameState()
         self.game_state.player_gold = start_properties['player_gold']
+        self._app = app
+        self._wave_manager = None
+
+    @property
+    def wave_manager(self):
+        return self._wave_manager
+
+    @wave_manager.setter
+    def wave_manager(self, value):
+        self._wave_manager = value
 
     def on_object_added_to_scene(self, actor_object):
         """
@@ -140,10 +176,12 @@ class LogicManager:
         :param actor_object:
         :return:
         """
-        if isinstance(actor_object, Actor) and not is_actor_in_player_team(
-                actor_object):
-            actor_object.set_callback(ActorCallback.KILL,
+        if isinstance(actor_object, Actor):
+            if not is_actor_in_player_team(actor_object):
+                actor_object.set_callback(ActorCallback.KILL,
                                       self.on_monster_killed)
+            elif actor_object.class_properties['name'] == 'Base':
+                actor_object.set_callback(ActorCallback.KILL, self.on_base_destroyed)
 
     def on_monster_killed(self, actor):
         """
@@ -153,6 +191,9 @@ class LogicManager:
         """
         self.game_state.monsters_killed += 1
         self.game_state.player_gold += actor.class_properties['gold_gain']
+
+    def on_base_destroyed(self, actor):
+        self._app.set_phase('game_end', won=False)
 
     def can_evolve(self, actor):
         """
@@ -181,3 +222,6 @@ class LogicManager:
         :return:
         """
         self.game_state.time_elapsed += dt
+        if self._wave_manager.no_waves_left():
+            if self.game_state.monsters_killed >= self._wave_manager.monsters_created:
+                self._app.set_phase('game_end', won=True)

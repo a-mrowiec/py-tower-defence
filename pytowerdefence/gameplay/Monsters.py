@@ -41,7 +41,7 @@ class Ogre(Actor):
         self.base_statistics.speed = 50
         self.base_statistics.attack_range = 2
         self.base_statistics.max_health = self.hp = 100
-        self.base_statistics.hit_effects = [('HitEffect', {'damage': 1})]
+        self.base_statistics.hit_effects = [('HitEffect', {'damage': 15})]
         self.recalculate_statistics()
         self.change_state(ActorState.MOVE)
 
@@ -68,7 +68,7 @@ class Dragon(Actor):
         self.base_statistics.attack_range = 100
         self.base_statistics.bullet_image = 'flaming-arrow.png'
         self.base_statistics.bullet_speed = 200
-        self.base_statistics.hit_effects = [('HitEffect', {'damage': 1})]
+        self.base_statistics.hit_effects = [('HitEffect', {'damage': 50})]
         self.base_statistics.max_health = self.hp = 1000
         self.recalculate_statistics()
         self.change_state(ActorState.MOVE)
@@ -96,7 +96,7 @@ class Base(EvolvingActor):
         self.base_statistics.hit_effects = [('HitEffect', {'damage': 50})]
         self.base_statistics.bullet_speed = 500
         self.base_statistics.bullet_image = 'small-knife.png'
-        self.base_statistics.max_health = self.hp = 1000
+        self.base_statistics.max_health = self.hp = 200
         self.recalculate_statistics()
         self._play_current_animation()
 

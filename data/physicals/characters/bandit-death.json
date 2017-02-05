@@ -3,5 +3,5 @@
   "cols": 8,
   "rows": 1,
   "speed": 100,
-  "loop": "false"
+  "loop": 0
 }

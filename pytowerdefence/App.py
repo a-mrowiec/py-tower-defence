@@ -4,7 +4,7 @@ Start module
 import pygame
 
 from pytowerdefence.UI import UIManager
-from pytowerdefence.gameplay.GamePhase import GamePhase
+from pytowerdefence.gameplay.GamePhase import GamePhase, GameEndPhase
 from pytowerdefence.mainmenu.MainMenuPhase import MainMenuPhase
 
 
@@ -59,6 +59,8 @@ class App:
             self._current_phase = GamePhase(self, self._ui_manager)
         elif phase_type == 'main_menu':
             self._current_phase = MainMenuPhase(self, self._ui_manager)
+        elif phase_type == 'game_end':
+            self._current_phase = GameEndPhase(self, self._ui_manager)
 
         self._current_phase.initialise(**kwargs)
 

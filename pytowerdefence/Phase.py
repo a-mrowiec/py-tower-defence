@@ -7,6 +7,9 @@ class Phase:
     """
     Base class for phase
     """
+    def __init__(self, app, ui_manager):
+        self._app = app
+        self._ui_manager = ui_manager
 
     def initialise(self, **kwargs):
         """

@@ -14,10 +14,6 @@ class MainMenuPhase(Phase):
     Main menu phase
     """
 
-    def __init__(self, app, ui_manager):
-        self._app = app
-        self._ui_manager = ui_manager
-
     def initialise(self, **kwargs):
         image = ResourceManager.load_image(ResourceClass.UI, 'main-menu-bg.jpg')
         panel = Panel(img=pygame.transform.scale(image, (1024, 768)))
