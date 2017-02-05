@@ -69,7 +69,7 @@ class Dragon(Actor):
         self.base_statistics.bullet_image = 'flaming-arrow.png'
         self.base_statistics.bullet_speed = 200
         self.base_statistics.hit_effects = [('HitEffect', {'damage': 50})]
-        self.base_statistics.max_health = self.hp = 1000
+        self.base_statistics.max_health = self.hp = 2700
         self.recalculate_statistics()
         self.change_state(ActorState.MOVE)
 
